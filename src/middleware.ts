@@ -4,10 +4,35 @@ import type { NextRequest } from 'next/server';
 export async function middleware(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
   
-  // Exclude API, Admin, Next.js internal, Maintenance page, and static assets
+  // Basic Authentication for Admin and API routes
+  if (pathName.startsWith('/admin') || (pathName.startsWith('/api') && request.method !== 'GET')) {
+    const basicAuth = request.headers.get('authorization');
+    const url = request.nextUrl;
+
+    if (basicAuth) {
+      const authValue = basicAuth.split(' ')[1];
+      const [user, pwd] = atob(authValue).split(':');
+
+      const expectedUser = process.env.ADMIN_USERNAME || 'admin';
+      const expectedPwd = process.env.ADMIN_PASSWORD || 'password';
+
+      if (user === expectedUser && pwd === expectedPwd) {
+        return NextResponse.next();
+      }
+    }
+
+    url.pathname = '/api/auth'; // Not actually used, just a dummy redirect or rewrite is not needed for 401
+    return new NextResponse('Auth required', {
+      status: 401,
+      headers: {
+        'WWW-Authenticate': 'Basic realm="Secure Area"',
+      },
+    });
+  }
+
+  // Exclude API GET, Next.js internal, Maintenance page, and static assets
   if (
     pathName.startsWith('/api') || 
-    pathName.startsWith('/admin') || 
     pathName.startsWith('/_next') || 
     pathName.startsWith('/maintenance') ||
     pathName.match(/\.(pdf|json|ico|png|jpg|jpeg|svg|css|js)$/)
@@ -37,6 +62,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

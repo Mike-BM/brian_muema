@@ -11,11 +11,9 @@ export function Navbar() {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "About", href: "#about" },
-    { name: "Skills", href: "#skills" },
+    { name: "Skills & Education", href: "#skills" },
     { name: "Projects", href: "#projects" },
-    { name: "Insights", href: "#insights" },
     { name: "Experience", href: "#experience" },
-    { name: "Education", href: "#education" },
     { name: "Contact", href: "#contact" },
   ];
 
