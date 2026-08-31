@@ -42,8 +42,6 @@ export function HeroSection() {
             <span className="hidden sm:inline">•</span>
             <span>Statistics</span>
             <span className="hidden sm:inline">•</span>
-            <span>Power BI</span>
-            <span className="hidden sm:inline">•</span>
             <span>Machine Learning</span>
           </div>
         </div>
