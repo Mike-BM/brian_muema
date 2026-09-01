@@ -28,6 +28,7 @@ export async function POST(request: Request) {
     const technologies = (formData.get('technologies') as string)?.split(',').map(t => t.trim()) || [];
     const link = formData.get('link') as string;
     const github = formData.get('github') as string;
+    const liveUrl = formData.get('liveUrl') as string;
     const imageFile = formData.get('image') as File | null;
 
     if (!title || !description || !category || !filterCategory) {
@@ -67,6 +68,7 @@ export async function POST(request: Request) {
       technologies,
       link: link || '#',
       github: github || '#',
+      liveUrl: liveUrl || '',
       image: imagePath
     };
 

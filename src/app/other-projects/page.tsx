@@ -102,7 +102,13 @@ export default function OtherProjectsPage() {
                 >
                   <div className="h-48 bg-muted flex items-center justify-center border-b border-border overflow-hidden relative">
                     {project.image ? (
-                      <Image fill src={project.image} alt={project.title} className="object-cover" />
+                      <Image 
+                        fill 
+                        src={project.image} 
+                        alt={`Screenshot of ${project.title}`} 
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover" 
+                      />
                     ) : (
                       <span className="text-muted-foreground text-sm">[Project Image / Visual]</span>
                     )}

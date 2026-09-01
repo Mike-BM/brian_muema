@@ -27,6 +27,9 @@ interface Certification {
 }
 
 export default function AdminPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
   const [certifications, setCertifications] = useState<Certification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,6 +52,7 @@ export default function AdminPage() {
     technologies: "",
     link: "",
     github: "",
+    liveUrl: "",
     projectType: "Professional"
   });
   const [certFormData, setCertFormData] = useState({
@@ -119,7 +123,19 @@ export default function AdminPage() {
     fetchSettings();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAbout();
-  }, []);
+  }, [isAuthenticated]);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Use an environment variable for production, fallback for development
+    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "admin123";
+    if (password === adminPassword) {
+      setIsAuthenticated(true);
+      setLoginError("");
+    } else {
+      setLoginError("Invalid password");
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -276,6 +292,7 @@ export default function AdminPage() {
           technologies: "",
           link: "",
           github: "",
+          liveUrl: "",
           projectType: "Professional"
         });
         setImageFile(null);
@@ -294,6 +311,35 @@ export default function AdminPage() {
       setSubmitting(false);
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <div className="bg-card border border-border p-8 rounded-lg shadow-sm max-w-md w-full text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-6">Admin Access</h1>
+          {loginError && <p className="text-red-500 text-sm mb-4">{loginError}</p>}
+          <form onSubmit={handleLogin} className="space-y-4">
+            <input 
+              type="password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter admin password"
+              className="w-full p-3 bg-background border border-border rounded focus:outline-none focus:border-primary"
+            />
+            <button 
+              type="submit"
+              className="w-full bg-foreground text-background font-medium py-3 rounded hover:bg-foreground/90 transition-colors"
+            >
+              Login
+            </button>
+          </form>
+          <Link href="/" className="inline-block mt-6 text-sm text-muted-foreground hover:text-foreground">
+            &larr; Back to Portfolio
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background p-8">
@@ -441,6 +487,10 @@ export default function AdminPage() {
                 <div>
                   <label htmlFor="github" className="block text-sm font-medium mb-1">GitHub Link</label>
                   <input type="text" id="github" name="github" value={formData.github} onChange={handleInputChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <label htmlFor="liveUrl" className="block text-sm font-medium mb-1">Live URL (Optional)</label>
+                  <input type="text" id="liveUrl" name="liveUrl" value={formData.liveUrl} onChange={handleInputChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
                 </div>
               </div>
 

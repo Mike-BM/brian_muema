@@ -1,8 +1,41 @@
 "use client";
 
-import { Mail, MessageSquare } from "lucide-react";
+import { Mail, MessageSquare, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function ContactSection() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    const formData = new FormData(e.currentTarget);
+    
+    try {
+      // Replace with your actual Formspree ID or custom API endpoint
+      const response = await fetch("https://formspree.io/f/YOUR_FORM_ID", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+      
+      if (response.ok) {
+        router.push("/success");
+      } else {
+        alert("Oops! There was a problem submitting your form.");
+      }
+    } catch (error) {
+      alert("Oops! There was a problem submitting your form.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section id="contact" className="py-16 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,40 +100,48 @@ export function ContactSection() {
 
           {/* Contact Form */}
           <div className="lg:col-span-3">
-            <form className="bg-card border border-border p-8 rounded-none shadow-sm space-y-6">
+            <form onSubmit={handleSubmit} className="bg-card border border-border p-8 rounded-none shadow-sm space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-medium text-foreground">Name</label>
+                  <label htmlFor="name" className="text-sm font-medium text-foreground">Name *</label>
                   <input 
                     type="text" 
                     id="name" 
+                    name="name"
+                    required
                     className="w-full p-3 bg-background border border-border rounded-none focus:outline-none focus:border-foreground transition-all"
                     placeholder="Your Name"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-foreground">Email</label>
+                  <label htmlFor="email" className="text-sm font-medium text-foreground">Email *</label>
                   <input 
                     type="email" 
                     id="email" 
+                    name="email"
+                    required
                     className="w-full p-3 bg-background border border-border rounded-none focus:outline-none focus:border-foreground transition-all"
                     placeholder="your@email.com"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <label htmlFor="subject" className="text-sm font-medium text-foreground">Subject</label>
+                <label htmlFor="subject" className="text-sm font-medium text-foreground">Subject *</label>
                 <input 
                   type="text" 
                   id="subject" 
+                  name="subject"
+                  required
                   className="w-full p-3 bg-background border border-border rounded-none focus:outline-none focus:border-foreground transition-all"
                   placeholder="Data Project Collaboration"
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="message" className="text-sm font-medium text-foreground">Message</label>
+                <label htmlFor="message" className="text-sm font-medium text-foreground">Message *</label>
                 <textarea 
                   id="message" 
+                  name="message"
+                  required
                   rows={5}
                   className="w-full p-3 bg-background border border-border rounded-none focus:outline-none focus:border-foreground transition-all resize-none"
                   placeholder="Tell me about your project or problem..."
@@ -108,10 +149,16 @@ export function ContactSection() {
               </div>
               <button 
                 type="submit" 
-                className="w-full bg-foreground hover:bg-foreground/90 text-background font-medium py-3 rounded-none transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
-                onClick={(e) => e.preventDefault()}
+                disabled={isSubmitting}
+                className="w-full flex items-center justify-center gap-2 bg-foreground hover:bg-foreground/90 text-background font-medium py-3 rounded-none transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Send Message
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" /> Sending...
+                  </>
+                ) : (
+                  "Send Message"
+                )}
               </button>
             </form>
           </div>
