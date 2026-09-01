@@ -17,11 +17,22 @@ interface Project {
   image: string | null;
 }
 
+interface Certification {
+  id: string;
+  institution: string;
+  course: string;
+  year: string;
+  certificateUrl: string;
+}
+
 export default function AdminPage() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [certifications, setCertifications] = useState<Certification[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [submittingCert, setSubmittingCert] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+  const [certMessage, setCertMessage] = useState({ text: "", type: "" });
   const [cvMessage, setCvMessage] = useState({ text: "", type: "" });
   
   const [maintenance, setMaintenance] = useState(false);
@@ -36,7 +47,14 @@ export default function AdminPage() {
     link: "",
     github: ""
   });
+  const [certFormData, setCertFormData] = useState({
+    institution: "",
+    course: "",
+    year: "",
+    certificateUrl: ""
+  });
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [certImageFile, setCertImageFile] = useState<File | null>(null);
 
   const fetchProjects = async () => {
     try {
@@ -47,6 +65,18 @@ export default function AdminPage() {
       }
     } catch (error) {
       console.error('Failed to fetch projects', error);
+    }
+  };
+
+  const fetchCertifications = async () => {
+    try {
+      const res = await fetch('/api/certifications');
+      if (res.ok) {
+        const data = await res.json();
+        setCertifications(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch certifications', error);
     }
   };
 
@@ -68,6 +98,8 @@ export default function AdminPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjects();
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchCertifications();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSettings();
   }, []);
 
@@ -76,10 +108,16 @@ export default function AdminPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleCertInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setCertFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       if (e.target.name === 'image') setImageFile(e.target.files[0]);
       if (e.target.name === 'cv') setCvFile(e.target.files[0]);
+      if (e.target.name === 'certImage') setCertImageFile(e.target.files[0]);
     }
   };
 
@@ -123,6 +161,51 @@ export default function AdminPage() {
       }
     } catch {
       setCvMessage({ text: "An error occurred", type: "error" });
+    }
+  };
+
+  const handleCertSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmittingCert(true);
+    setCertMessage({ text: "", type: "" });
+
+    const data = new FormData();
+    Object.entries(certFormData).forEach(([key, value]) => {
+      data.append(key, value);
+    });
+    
+    if (certImageFile) {
+      data.append('image', certImageFile);
+    }
+
+    try {
+      const res = await fetch('/api/certifications', {
+        method: 'POST',
+        body: data,
+      });
+
+      if (res.ok) {
+        setCertMessage({ text: "Certification added successfully!", type: "success" });
+        setCertFormData({
+          institution: "",
+          course: "",
+          year: "",
+          certificateUrl: ""
+        });
+        setCertImageFile(null);
+        
+        const fileInput = document.getElementById('certImage') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+        
+        fetchCertifications();
+      } else {
+        const errData = await res.json();
+        setCertMessage({ text: errData.error || "Failed to add certification", type: "error" });
+      }
+    } catch {
+      setCertMessage({ text: "An error occurred", type: "error" });
+    } finally {
+      setSubmittingCert(false);
     }
   };
 
@@ -337,6 +420,89 @@ export default function AdminPage() {
                     </div>
                     
                     <button className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded transition-colors" title="Delete Project (Not implemented)">
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Certifications Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12 pt-12 border-t border-border">
+          {/* Add Certification Form */}
+          <div className="lg:col-span-1 bg-card border border-border p-6 rounded-lg">
+            <h2 className="text-xl font-bold mb-6 flex items-center">
+              <Plus className="mr-2 h-5 w-5" /> Add Certification
+            </h2>
+            
+            {certMessage.text && (
+              <div className={`p-4 mb-6 rounded text-sm ${certMessage.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
+                {certMessage.text}
+              </div>
+            )}
+
+            <form onSubmit={handleCertSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="course" className="block text-sm font-medium mb-1">Course / Certificate Name *</label>
+                <input required type="text" id="course" name="course" value={certFormData.course} onChange={handleCertInputChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
+              </div>
+              
+              <div>
+                <label htmlFor="institution" className="block text-sm font-medium mb-1">Institution *</label>
+                <input required type="text" id="institution" name="institution" value={certFormData.institution} onChange={handleCertInputChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
+              </div>
+              
+              <div>
+                <label htmlFor="year" className="block text-sm font-medium mb-1">Year *</label>
+                <input required type="text" id="year" name="year" value={certFormData.year} onChange={handleCertInputChange} placeholder="2024" className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
+              </div>
+
+              <div>
+                <label htmlFor="certificateUrl" className="block text-sm font-medium mb-1">Certificate Link (Optional)</label>
+                <input type="text" id="certificateUrl" name="certificateUrl" value={certFormData.certificateUrl} onChange={handleCertInputChange} placeholder="https://..." className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
+              </div>
+
+              <div>
+                <label htmlFor="certImage" className="block text-sm font-medium mb-1">Or Upload Certificate PDF/Image</label>
+                <input type="file" id="certImage" name="certImage" accept="image/*,.pdf" onChange={handleFileChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
+              </div>
+
+              <button disabled={submittingCert} type="submit" className="w-full bg-foreground text-background font-medium py-2 rounded hover:bg-foreground/90 transition-colors disabled:opacity-50 mt-4">
+                {submittingCert ? "Saving..." : "Add Certification"}
+              </button>
+            </form>
+          </div>
+
+          {/* Existing Certifications List */}
+          <div className="lg:col-span-2">
+            <h2 className="text-xl font-bold mb-6">Existing Certifications</h2>
+            
+            {loading ? (
+              <div className="flex justify-center p-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : certifications.length === 0 ? (
+              <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground">
+                No certifications found. Add one to get started!
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {certifications.map((cert) => (
+                  <div key={cert.id} className="bg-card border border-border rounded-lg p-4 flex gap-4 items-center group">
+                    <div className="flex-grow">
+                      <h3 className="font-bold text-foreground">{cert.course}</h3>
+                      <p className="text-sm text-muted-foreground">{cert.institution}</p>
+                      <div className="flex gap-2 mt-2 items-center">
+                        <span className="text-[10px] uppercase bg-muted px-2 py-0.5 rounded text-muted-foreground">{cert.year}</span>
+                        {cert.certificateUrl && cert.certificateUrl !== "#" && (
+                          <a href={cert.certificateUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">View File/Link</a>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <button className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded transition-colors" title="Delete Certification (Not implemented)">
                       <Trash2 className="h-5 w-5" />
                     </button>
                   </div>

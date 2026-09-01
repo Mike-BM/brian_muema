@@ -1,6 +1,36 @@
+"use client";
+
 import { GraduationCap, Award, Briefcase } from "lucide-react";
+import { useState, useEffect } from "react";
+
+interface Certification {
+  id: string;
+  institution: string;
+  course: string;
+  year: string;
+  certificateUrl: string;
+}
 
 export function ExperienceAndSkillsSection() {
+  const [certifications, setCertifications] = useState<Certification[]>([]);
+  const [loadingCerts, setLoadingCerts] = useState(true);
+
+  useEffect(() => {
+    const fetchCertifications = async () => {
+      try {
+        const res = await fetch('/api/certifications');
+        if (res.ok) {
+          const data = await res.json();
+          setCertifications(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch certifications', error);
+      } finally {
+        setLoadingCerts(false);
+      }
+    };
+    fetchCertifications();
+  }, []);
   const skillCategories = [
     {
       title: "Data Analysis",
@@ -32,26 +62,7 @@ export function ExperienceAndSkillsSection() {
     }
   ];
 
-  const certifications = [
-    {
-      institution: "PLP Academy",
-      course: "Software Development / AI for Software Engineering",
-      year: "2024",
-      certificateUrl: "#" // Add your certificate link here
-    },
-    {
-      institution: "Moringa School",
-      course: "AI for Software Development Advanced",
-      year: "2024",
-      certificateUrl: "#" // Add your certificate link here
-    },
-    {
-      institution: "[Institution]",
-      course: "Data Analytics Training",
-      year: "2023",
-      certificateUrl: "#" // Add your certificate link here
-    }
-  ];
+
 
   return (
     <section id="experience-skills" className="py-16 bg-muted/30">
@@ -117,27 +128,37 @@ export function ExperienceAndSkillsSection() {
               <h2 className="text-3xl font-bold text-foreground">Certifications</h2>
             </div>
             
-            <div className="space-y-4">
-              {certifications.map((cert, index) => (
-                <div
-                  key={index}
-                  className="bg-card border border-border p-5 rounded-none flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                >
-                  <div>
-                    <h3 className="font-bold text-foreground">{cert.course}</h3>
-                    <p className="text-sm text-muted-foreground">{cert.institution}</p>
-                    {cert.certificateUrl && cert.certificateUrl !== "#" && (
-                      <a href={cert.certificateUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline mt-2 inline-block">
-                        View Certificate
-                      </a>
-                    )}
+            {loadingCerts ? (
+              <div className="flex justify-center p-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : certifications.length === 0 ? (
+              <div className="text-muted-foreground p-4 bg-card border border-border rounded-none text-sm text-center">
+                No certifications added yet.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {certifications.map((cert) => (
+                  <div
+                    key={cert.id}
+                    className="bg-card border border-border p-5 rounded-none flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                  >
+                    <div>
+                      <h3 className="font-bold text-foreground">{cert.course}</h3>
+                      <p className="text-sm text-muted-foreground">{cert.institution}</p>
+                      {cert.certificateUrl && cert.certificateUrl !== "#" && (
+                        <a href={cert.certificateUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline mt-2 inline-block">
+                          View Certificate
+                        </a>
+                      )}
+                    </div>
+                    <span className="text-xs font-semibold px-3 py-1 bg-muted border border-border rounded-none w-fit">
+                      {cert.year}
+                    </span>
                   </div>
-                  <span className="text-xs font-semibold px-3 py-1 bg-muted border border-border rounded-none w-fit">
-                    {cert.year}
-                  </span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
         </div>
