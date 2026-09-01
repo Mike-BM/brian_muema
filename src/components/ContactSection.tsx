@@ -15,13 +15,11 @@ export function ContactSection() {
     const formData = new FormData(e.currentTarget);
     
     try {
-      // Replace with your actual Formspree ID or custom API endpoint
-      const response = await fetch("https://formspree.io/f/YOUR_FORM_ID", {
+      // Use our internal API route that handles Resend
+      const response = await fetch("/api/contact", {
         method: "POST",
         body: formData,
-        headers: {
-          Accept: "application/json",
-        },
+        // Remove Accept header for FormData as fetch will set the correct Content-Type with boundary
       });
       
       if (response.ok) {
