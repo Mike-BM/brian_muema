@@ -24,6 +24,7 @@ export async function POST(request: Request) {
     const description = formData.get('description') as string;
     const category = formData.get('category') as string;
     const filterCategory = formData.get('filterCategory') as string;
+    const projectType = (formData.get('projectType') as string) || 'Professional';
     const technologies = (formData.get('technologies') as string)?.split(',').map(t => t.trim()) || [];
     const link = formData.get('link') as string;
     const github = formData.get('github') as string;
@@ -62,6 +63,7 @@ export async function POST(request: Request) {
       description,
       category,
       filterCategory,
+      projectType,
       technologies,
       link: link || '#',
       github: github || '#',

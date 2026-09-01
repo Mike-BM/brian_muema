@@ -15,6 +15,7 @@ interface Project {
   link: string;
   github: string;
   image: string | null;
+  projectType?: string;
 }
 
 export function ProjectsSection() {
@@ -41,9 +42,9 @@ export function ProjectsSection() {
     fetchProjects();
   }, []);
 
-  const filteredProjects = filter === "All" 
-    ? projects 
-    : projects.filter(p => p.filterCategory.includes(filter) || p.category.includes(filter));
+  const filteredProjects = projects
+    .filter(p => !p.projectType || p.projectType === 'Professional')
+    .filter(p => filter === "All" || p.filterCategory.includes(filter) || p.category.includes(filter));
 
   return (
     <section id="projects" className="py-16 bg-background">

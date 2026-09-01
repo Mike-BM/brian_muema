@@ -1,6 +1,29 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export function AboutSection() {
+  const [aboutContent, setAboutContent] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAbout = async () => {
+      try {
+        const res = await fetch('/api/about');
+        if (res.ok) {
+          const data = await res.json();
+          setAboutContent(data.content);
+        }
+      } catch (error) {
+        console.error('Failed to fetch about data', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAbout();
+  }, []);
+
   return (
     <section id="about" className="py-16 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -8,19 +31,21 @@ export function AboutSection() {
           <div>
             <h2 className="text-3xl font-bold text-foreground mb-6">About Me</h2>
             <div className="prose prose-lg dark:prose-invert text-muted-foreground leading-relaxed max-w-none">
-              <p>
-                I am a data professional with a strong foundation in <strong>Economics and Statistics</strong>, 
-                focused on developing practical expertise in <strong>Data Analytics and Data Science</strong>.
-              </p>
-              <p>
-                My approach to data is rooted in statistical thinking and business problem solving. I believe 
-                that data without a narrative is just numbers. I specialize in turning complex datasets into 
-                clear, actionable insights through data analysis, data visualization, and data storytelling.
-              </p>
-              <p>
-                Using tools like Python, SQL, and Machine Learning, I build scalable data-driven solutions 
-                and continuously expand my skill set to stay at the forefront of the industry.
-              </p>
+              {loading ? (
+                <div className="animate-pulse space-y-4">
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                  <div className="h-4 bg-muted rounded w-full"></div>
+                  <div className="h-4 bg-muted rounded w-5/6"></div>
+                </div>
+              ) : aboutContent ? (
+                aboutContent.split('\n').map((paragraph, index) => (
+                  paragraph.trim() && (
+                    <p key={index} dangerouslySetInnerHTML={{ __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                  )
+                ))
+              ) : (
+                <p>Failed to load about section.</p>
+              )}
             </div>
             
             <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 bg-card border border-border p-6 rounded-lg shadow-sm">

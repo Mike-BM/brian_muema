@@ -15,6 +15,7 @@ interface Project {
   link: string;
   github: string;
   image: string | null;
+  projectType?: string;
 }
 
 interface Certification {
@@ -34,9 +35,11 @@ export default function AdminPage() {
   const [message, setMessage] = useState({ text: "", type: "" });
   const [certMessage, setCertMessage] = useState({ text: "", type: "" });
   const [cvMessage, setCvMessage] = useState({ text: "", type: "" });
+  const [aboutMessage, setAboutMessage] = useState({ text: "", type: "" });
   
   const [maintenance, setMaintenance] = useState(false);
   const [cvFile, setCvFile] = useState<File | null>(null);
+  const [aboutContent, setAboutContent] = useState("");
   
   const [formData, setFormData] = useState({
     title: "",
@@ -45,7 +48,8 @@ export default function AdminPage() {
     filterCategory: "Data Analysis",
     technologies: "",
     link: "",
-    github: ""
+    github: "",
+    projectType: "Professional"
   });
   const [certFormData, setCertFormData] = useState({
     institution: "",
@@ -94,6 +98,18 @@ export default function AdminPage() {
     }
   };
 
+  const fetchAbout = async () => {
+    try {
+      const res = await fetch('/api/about');
+      if (res.ok) {
+        const data = await res.json();
+        setAboutContent(data.content || "");
+      }
+    } catch (error) {
+      console.error('Failed to fetch about data', error);
+    }
+  };
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjects();
@@ -101,6 +117,8 @@ export default function AdminPage() {
     fetchCertifications();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSettings();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchAbout();
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -161,6 +179,25 @@ export default function AdminPage() {
       }
     } catch {
       setCvMessage({ text: "An error occurred", type: "error" });
+    }
+  };
+
+  const handleAboutSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAboutMessage({ text: "Saving...", type: "" });
+    try {
+      const res = await fetch('/api/about', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: aboutContent }),
+      });
+      if (res.ok) {
+        setAboutMessage({ text: "About section updated!", type: "success" });
+      } else {
+        setAboutMessage({ text: "Failed to update About section", type: "error" });
+      }
+    } catch {
+      setAboutMessage({ text: "An error occurred", type: "error" });
     }
   };
 
@@ -238,7 +275,8 @@ export default function AdminPage() {
           filterCategory: "Data Analysis",
           technologies: "",
           link: "",
-          github: ""
+          github: "",
+          projectType: "Professional"
         });
         setImageFile(null);
         // Reset file input visually
@@ -317,6 +355,27 @@ export default function AdminPage() {
                 </button>
               </form>
             </div>
+            
+            {/* About Section Editor */}
+            <div className="bg-card border border-border p-6 rounded-lg md:col-span-2">
+              <h2 className="text-xl font-bold flex items-center mb-4">
+                <FileText className="mr-2 h-5 w-5" /> Edit About Section
+              </h2>
+              {aboutMessage.text && (
+                <div className={`p-3 mb-4 rounded text-xs ${aboutMessage.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : aboutMessage.type === 'error' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'text-muted-foreground'}`}>
+                  {aboutMessage.text}
+                </div>
+              )}
+              <form onSubmit={handleAboutSubmit} className="flex flex-col gap-4">
+                <div>
+                  <label htmlFor="aboutContent" className="block text-sm font-medium mb-1">About Me Text (Supports **bold**)</label>
+                  <textarea id="aboutContent" rows={5} value={aboutContent} onChange={(e) => setAboutContent(e.target.value)} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary resize-none" />
+                </div>
+                <button type="submit" className="bg-foreground text-background font-medium px-4 py-2 rounded hover:bg-foreground/90 transition-colors self-start">
+                  Save Changes
+                </button>
+              </form>
+            </div>
           </div>
         </div>
 
@@ -357,6 +416,15 @@ export default function AdminPage() {
                   <option value="Data Science">Data Science</option>
                   <option value="Machine Learning">Machine Learning</option>
                   <option value="AI">AI</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="projectType" className="block text-sm font-medium mb-1">Project Type *</label>
+                <select required id="projectType" name="projectType" value={formData.projectType} onChange={handleInputChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary">
+                  <option value="Professional">Professional (Featured)</option>
+                  <option value="Hackathon">Hackathon</option>
+                  <option value="Client Website">Client Website</option>
                 </select>
               </div>
 
@@ -415,6 +483,7 @@ export default function AdminPage() {
                       <h3 className="font-bold text-foreground">{project.title}</h3>
                       <p className="text-sm text-muted-foreground truncate max-w-md">{project.description}</p>
                       <div className="flex gap-2 mt-2">
+                        <span className="text-[10px] uppercase bg-muted px-2 py-0.5 rounded text-muted-foreground">{project.projectType || 'Professional'}</span>
                         <span className="text-[10px] uppercase bg-muted px-2 py-0.5 rounded text-muted-foreground">{project.filterCategory}</span>
                       </div>
                     </div>
