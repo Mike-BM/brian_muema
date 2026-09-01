@@ -16,11 +16,11 @@ export function ExperienceAndSkillsSection() {
     },
     {
       title: "Machine Learning",
-      skills: ["Supervised Learning", "Unsupervised Learning", "Regression", "Classification", "Model Evaluation", "TensorFlow", "Keras", "LightGBM"]
+      skills: ["Supervised Learning", "Unsupervised Learning", "Regression", "Classification", "Model Evaluation"]
     },
     {
       title: "Data & Development",
-      skills: ["SQL", "PostgreSQL", "FastAPI", "Streamlit", "Git", "GitHub"]
+      skills: ["SQL", "PostgreSQL", "Streamlit", "Git", "GitHub"]
     }
   ];
 
