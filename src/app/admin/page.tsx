@@ -9,6 +9,9 @@ interface Project {
   id: string;
   title: string;
   description: string;
+  fullDescription?: string;
+  dateCompleted?: string;
+  featured?: boolean;
   category: string;
   filterCategory: string;
   technologies: string[];
@@ -62,9 +65,28 @@ export default function AdminPage() {
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [aboutContent, setAboutContent] = useState("");
   
+  const dataTypes = ["Data Analysis", "Data Science", "Machine Learning", "AI", "Hackathon"];
+  
+  const sortByDate = (a: Project, b: Project) => {
+    const dateA = a.dateCompleted ? new Date(a.dateCompleted).getTime() : parseInt(a.id);
+    const dateB = b.dateCompleted ? new Date(b.dateCompleted).getTime() : parseInt(b.id);
+    return dateB - dateA;
+  };
+
+  const dataProjects = projects
+    .filter(p => dataTypes.includes(p.filterCategory) || dataTypes.includes(p.projectType || ''))
+    .sort(sortByDate);
+
+  const otherProjects = projects
+    .filter(p => !dataTypes.includes(p.filterCategory) && !dataTypes.includes(p.projectType || ''))
+    .sort(sortByDate);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    fullDescription: "",
+    dateCompleted: new Date().toISOString().split('T')[0],
+    featured: false,
     category: "",
     filterCategory: "Data Analysis",
     technologies: "",
@@ -236,8 +258,13 @@ export default function AdminPage() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleCertInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -272,6 +299,9 @@ export default function AdminPage() {
     setFormData({
       title: project.title,
       description: project.description,
+      fullDescription: project.fullDescription || "",
+      dateCompleted: project.dateCompleted || new Date().toISOString().split('T')[0],
+      featured: project.featured || false,
       category: project.category,
       filterCategory: project.filterCategory,
       technologies: project.technologies.join(', '),
@@ -526,7 +556,7 @@ export default function AdminPage() {
     if (editingProjectId) data.append('id', editingProjectId);
     
     Object.entries(formData).forEach(([key, value]) => {
-      data.append(key, value);
+      data.append(key, typeof value === 'boolean' ? String(value) : value);
     });
     
     if (imageFile) {
@@ -544,6 +574,9 @@ export default function AdminPage() {
         setFormData({
           title: "",
           description: "",
+          fullDescription: "",
+          dateCompleted: new Date().toISOString().split('T')[0],
+          featured: false,
           category: "",
           filterCategory: "Data Analysis",
           technologies: "",
@@ -763,35 +796,62 @@ export default function AdminPage() {
                 </div>
                 
                 <div>
-                  <label htmlFor="description" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Description <span className="text-red-500">*</span></label>
-                  <textarea required id="description" name="description" value={formData.description} onChange={handleInputChange} rows={3} placeholder="Briefly describe what this project does..." className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                  <label htmlFor="description" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Short Description <span className="text-red-500">*</span></label>
+                  <textarea required id="description" name="description" value={formData.description} onChange={handleInputChange} rows={2} placeholder="Brief summary (shown on card)..." className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
                 </div>
                 
                 <div>
-                  <label htmlFor="category" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Category Label <span className="text-red-500">*</span></label>
-                  <input required type="text" id="category" name="category" value={formData.category} onChange={handleInputChange} placeholder="e.g. Data Science / AI" className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                  <label htmlFor="fullDescription" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Description</label>
+                  <textarea id="fullDescription" name="fullDescription" value={formData.fullDescription} onChange={handleInputChange} rows={4} placeholder="Detailed project description..." className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="category" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Category Label <span className="text-red-500">*</span></label>
+                    <input required type="text" id="category" name="category" value={formData.category} onChange={handleInputChange} placeholder="e.g. Data Science / AI" className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                  </div>
+                  <div>
+                    <label htmlFor="dateCompleted" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Date Completed</label>
+                    <input type="date" id="dateCompleted" name="dateCompleted" value={formData.dateCompleted} onChange={handleInputChange} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="filterCategory" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Filter <span className="text-red-500">*</span></label>
                     <select required id="filterCategory" name="filterCategory" value={formData.filterCategory} onChange={handleInputChange} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow">
-                      <option value="All">All</option>
-                      <option value="Data Analysis">Data Analysis</option>
-                      <option value="Data Science">Data Science</option>
-                      <option value="Machine Learning">Machine Learning</option>
-                      <option value="AI">AI</option>
+                      <optgroup label="Data Projects">
+                        <option value="Data Analysis">Data Analysis</option>
+                        <option value="Data Science">Data Science</option>
+                        <option value="Machine Learning">Machine Learning</option>
+                        <option value="AI">AI</option>
+                        <option value="Hackathon">Hackathon</option>
+                      </optgroup>
+                      <optgroup label="Other Works">
+                        <option value="Client Website">Client Website</option>
+                        <option value="Graphic Design">Graphic Design</option>
+                        <option value="Social Media Management">Social Media Management</option>
+                        <option value="Side Project">Side Project</option>
+                      </optgroup>
                     </select>
                   </div>
                   <div>
                     <label htmlFor="projectType" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Type <span className="text-red-500">*</span></label>
                     <select required id="projectType" name="projectType" value={formData.projectType} onChange={handleInputChange} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow">
-                      <option value="Professional">Professional (Featured)</option>
+                      <option value="Professional">Professional</option>
                       <option value="Hackathon">Hackathon</option>
                       <option value="Client Website">Client Website</option>
+                      <option value="Side Project">Side Project</option>
                     </select>
                   </div>
                 </div>
+                
+                {["Data Analysis", "Data Science", "Machine Learning", "AI", "Hackathon"].includes(formData.filterCategory) && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <input type="checkbox" id="featured" name="featured" checked={formData.featured} onChange={handleInputChange} className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 rounded" />
+                    <label htmlFor="featured" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Featured Data Project</label>
+                  </div>
+                )}
 
                 <div>
                   <label htmlFor="technologies" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Tech Stack (comma separated)</label>
@@ -827,7 +887,7 @@ export default function AdminPage() {
                   {editingProjectId && (
                     <button type="button" onClick={() => {
                       setEditingProjectId(null);
-                      setFormData({ title: "", description: "", category: "", filterCategory: "Data Analysis", technologies: "", link: "", github: "", liveUrl: "", projectType: "Professional" });
+                      setFormData({ title: "", description: "", fullDescription: "", dateCompleted: new Date().toISOString().split('T')[0], featured: false, category: "", filterCategory: "Data Analysis", technologies: "", link: "", github: "", liveUrl: "", projectType: "Professional" });
                       setProjectImagePreview(null);
                     }} className="flex-1 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium py-2 rounded-md hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
                       Cancel
@@ -855,38 +915,102 @@ export default function AdminPage() {
                   <p className="text-slate-500 dark:text-slate-400">Add your first project using the form to get started.</p>
                 </div>
               ) : (
-                projects.map((project) => (
-                  <div key={project.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex gap-5 items-center group transition-all hover:shadow-md">
-                    <div className="h-20 w-32 bg-slate-100 dark:bg-slate-800 flex-shrink-0 rounded-lg overflow-hidden relative border border-slate-200 dark:border-slate-700">
-                      {project.image ? (
-                        <Image fill src={project.image} alt={project.title} className="object-cover" />
+                <>
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">Data Projects (Primary)</h3>
+                    <div className="space-y-4">
+                      {dataProjects.length === 0 ? (
+                        <p className="text-slate-500 dark:text-slate-400 italic">No data projects yet.</p>
                       ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400">
-                          <FileText className="h-5 w-5 mb-1 opacity-50" />
-                          No image
-                        </div>
+                        dataProjects.map((project) => (
+                          <div key={project.id} className={`bg-white dark:bg-slate-900 border ${project.featured ? 'border-indigo-500 shadow-md ring-1 ring-indigo-500/30' : 'border-slate-200 dark:border-slate-800'} rounded-xl p-5 flex gap-5 items-center group transition-all hover:shadow-md relative`}>
+                            {project.featured && (
+                              <div className="absolute top-2 left-2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow z-10">
+                                FEATURED
+                              </div>
+                            )}
+                            <div className="h-20 w-32 bg-slate-100 dark:bg-slate-800 flex-shrink-0 rounded-lg overflow-hidden relative border border-slate-200 dark:border-slate-700">
+                              {project.image ? (
+                                <Image fill src={project.image} alt={project.title} className="object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400">
+                                  <FileText className="h-5 w-5 mb-1 opacity-50" />
+                                  No image
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="flex-grow">
+                              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight">{project.title}</h3>
+                              <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mt-1 mb-2">{project.description}</p>
+                              <div className="flex gap-2">
+                                {project.dateCompleted && (
+                                  <span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">{project.dateCompleted}</span>
+                                )}
+                                <span className="text-[10px] font-semibold uppercase bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded">{project.projectType || 'Professional'}</span>
+                                <span className="text-[10px] font-semibold uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">{project.filterCategory}</span>
+                              </div>
+                            </div>
+                            
+                            <div className="flex flex-col gap-2">
+                              <button onClick={() => handleEditProject(project)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Edit Project">
+                                <Edit className="h-5 w-5" />
+                              </button>
+                              <button onClick={() => confirmDelete('project', project.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete Project">
+                                <Trash2 className="h-5 w-5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))
                       )}
                     </div>
-                    
-                    <div className="flex-grow">
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight">{project.title}</h3>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mt-1 mb-2">{project.description}</p>
-                      <div className="flex gap-2">
-                        <span className="text-[10px] font-semibold uppercase bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded">{project.projectType || 'Professional'}</span>
-                        <span className="text-[10px] font-semibold uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">{project.filterCategory}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-col gap-2">
-                      <button onClick={() => handleEditProject(project)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Edit Project">
-                        <Edit className="h-5 w-5" />
-                      </button>
-                      <button onClick={() => confirmDelete('project', project.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete Project">
-                        <Trash2 className="h-5 w-5" />
-                      </button>
+                  </div>
+
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">Other Works (Freelance & Secondary)</h3>
+                    <div className="space-y-4">
+                      {otherProjects.length === 0 ? (
+                        <p className="text-slate-500 dark:text-slate-400 italic">No other works yet.</p>
+                      ) : (
+                        otherProjects.map((project) => (
+                          <div key={project.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex gap-5 items-center group transition-all hover:shadow-md">
+                            <div className="h-20 w-32 bg-slate-100 dark:bg-slate-800 flex-shrink-0 rounded-lg overflow-hidden relative border border-slate-200 dark:border-slate-700">
+                              {project.image ? (
+                                <Image fill src={project.image} alt={project.title} className="object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400">
+                                  <FileText className="h-5 w-5 mb-1 opacity-50" />
+                                  No image
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="flex-grow">
+                              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight">{project.title}</h3>
+                              <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mt-1 mb-2">{project.description}</p>
+                              <div className="flex gap-2">
+                                {project.dateCompleted && (
+                                  <span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">{project.dateCompleted}</span>
+                                )}
+                                <span className="text-[10px] font-semibold uppercase bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded">{project.projectType || 'Professional'}</span>
+                                <span className="text-[10px] font-semibold uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">{project.filterCategory}</span>
+                              </div>
+                            </div>
+                            
+                            <div className="flex flex-col gap-2">
+                              <button onClick={() => handleEditProject(project)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Edit Project">
+                                <Edit className="h-5 w-5" />
+                              </button>
+                              <button onClick={() => confirmDelete('project', project.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete Project">
+                                <Trash2 className="h-5 w-5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </div>
-                ))
+                </>
               )}
             </div>
           </div>

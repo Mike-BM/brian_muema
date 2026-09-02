@@ -24,6 +24,9 @@ export async function POST(request: Request) {
     
     const title = formData.get('title') as string;
     const description = formData.get('description') as string;
+    const fullDescription = formData.get('fullDescription') as string;
+    const dateCompleted = formData.get('dateCompleted') as string;
+    const featured = formData.get('featured') === 'true';
     const category = formData.get('category') as string;
     const filterCategory = formData.get('filterCategory') as string;
     const projectType = (formData.get('projectType') as string) || 'Professional';
@@ -59,6 +62,9 @@ export async function POST(request: Request) {
       id: Date.now().toString(),
       title,
       description,
+      fullDescription: fullDescription || '',
+      dateCompleted: dateCompleted || new Date().toISOString().split('T')[0],
+      featured,
       category,
       filterCategory,
       projectType,
@@ -93,6 +99,9 @@ export async function PUT(request: Request) {
 
     const title = formData.get('title') as string;
     const description = formData.get('description') as string;
+    const fullDescription = formData.get('fullDescription') as string;
+    const dateCompleted = formData.get('dateCompleted') as string;
+    const featured = formData.get('featured') === 'true';
     const category = formData.get('category') as string;
     const filterCategory = formData.get('filterCategory') as string;
     const projectType = (formData.get('projectType') as string) || 'Professional';
@@ -135,6 +144,9 @@ export async function PUT(request: Request) {
       ...projects[index],
       title,
       description,
+      fullDescription: fullDescription || projects[index].fullDescription || '',
+      dateCompleted: dateCompleted || projects[index].dateCompleted || new Date().toISOString().split('T')[0],
+      featured,
       category,
       filterCategory,
       projectType,
