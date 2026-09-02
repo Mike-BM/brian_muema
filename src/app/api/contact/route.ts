@@ -36,7 +36,7 @@ export async function POST(request: Request) {
       from: 'Portfolio Contact <onboarding@resend.dev>',
       to: contactEmail,
       subject: `New Contact Form Submission: ${subject || 'No Subject'}`,
-      reply_to: email,
+      replyTo: email,
       text: `
 Name: ${name}
 Email: ${email}
