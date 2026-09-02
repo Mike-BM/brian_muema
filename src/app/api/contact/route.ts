@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import fs from 'fs/promises';
+import path from 'path';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const credentialsPath = path.join(process.cwd(), 'data', 'credentials.json');
 
 export async function POST(request: Request) {
   try {
@@ -18,9 +21,20 @@ export async function POST(request: Request) {
       );
     }
 
+    let contactEmail = 'brianmuema928@gmail.com';
+    try {
+      const fileContents = await fs.readFile(credentialsPath, 'utf8');
+      const credentials = JSON.parse(fileContents);
+      if (credentials.email) {
+        contactEmail = credentials.email;
+      }
+    } catch {
+      // Use fallback
+    }
+
     const { data, error } = await resend.emails.send({
       from: 'Portfolio Contact <onboarding@resend.dev>',
-      to: 'brianmuema928@gmail.com', // Using the email found in footer
+      to: contactEmail,
       subject: `New Contact Form Submission: ${subject || 'No Subject'}`,
       reply_to: email,
       text: `

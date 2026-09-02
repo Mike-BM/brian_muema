@@ -28,6 +28,7 @@ interface Certification {
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
@@ -40,6 +41,9 @@ export default function AdminPage() {
   const [cvMessage, setCvMessage] = useState({ text: "", type: "" });
   const [aboutMessage, setAboutMessage] = useState({ text: "", type: "" });
   
+  const [credentialsData, setCredentialsData] = useState({ username: "", password: "", email: "" });
+  const [credentialsMessage, setCredentialsMessage] = useState({ text: "", type: "" });
+
   const [maintenance, setMaintenance] = useState(false);
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [aboutContent, setAboutContent] = useState("");
@@ -114,6 +118,18 @@ export default function AdminPage() {
     }
   };
 
+  const fetchCredentials = async () => {
+    try {
+      const res = await fetch('/api/credentials');
+      if (res.ok) {
+        const data = await res.json();
+        setCredentialsData(prev => ({ ...prev, email: data.email || "", username: data.username || "" }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch credentials', error);
+    }
+  };
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjects();
@@ -123,17 +139,47 @@ export default function AdminPage() {
     fetchSettings();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAbout();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (isAuthenticated) fetchCredentials();
   }, [isAuthenticated]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Use an environment variable for production, fallback for development
-    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "admin123";
-    if (password === adminPassword) {
-      setIsAuthenticated(true);
-      setLoginError("");
-    } else {
-      setLoginError("Invalid password");
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      if (res.ok) {
+        setIsAuthenticated(true);
+        setLoginError("");
+      } else {
+        const errData = await res.json();
+        setLoginError(errData.error || "Invalid username or password");
+      }
+    } catch {
+      setLoginError("An error occurred");
+    }
+  };
+
+  const handleCredentialsSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCredentialsMessage({ text: "Saving...", type: "" });
+    try {
+      const res = await fetch('/api/credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentialsData),
+      });
+      if (res.ok) {
+        setCredentialsMessage({ text: "Settings updated successfully!", type: "success" });
+        setCredentialsData(prev => ({ ...prev, password: "" })); // clear password field
+      } else {
+        setCredentialsMessage({ text: "Failed to update settings", type: "error" });
+      }
+    } catch {
+      setCredentialsMessage({ text: "An error occurred", type: "error" });
     }
   };
 
@@ -320,6 +366,13 @@ export default function AdminPage() {
           {loginError && <p className="text-red-500 text-sm mb-4">{loginError}</p>}
           <form onSubmit={handleLogin} className="space-y-4">
             <input 
+              type="text" 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter admin username"
+              className="w-full p-3 bg-background border border-border rounded focus:outline-none focus:border-primary"
+            />
+            <input 
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -419,6 +472,37 @@ export default function AdminPage() {
                 </div>
                 <button type="submit" className="bg-foreground text-background font-medium px-4 py-2 rounded hover:bg-foreground/90 transition-colors self-start">
                   Save Changes
+                </button>
+              </form>
+            </div>
+
+            {/* Credentials Update */}
+            <div className="bg-card border border-border p-6 rounded-lg md:col-span-2">
+              <h2 className="text-xl font-bold flex items-center mb-4">
+                <Settings className="mr-2 h-5 w-5" /> Admin Settings
+              </h2>
+              {credentialsMessage.text && (
+                <div className={`p-3 mb-4 rounded text-xs ${credentialsMessage.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : credentialsMessage.type === 'error' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'text-muted-foreground'}`}>
+                  {credentialsMessage.text}
+                </div>
+              )}
+              <form onSubmit={handleCredentialsSubmit} className="flex flex-col gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="adminUsername" className="block text-sm font-medium mb-1">Admin Username</label>
+                    <input type="text" id="adminUsername" value={credentialsData.username} onChange={(e) => setCredentialsData(prev => ({ ...prev, username: e.target.value }))} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="Enter new username" />
+                  </div>
+                  <div>
+                    <label htmlFor="adminEmail" className="block text-sm font-medium mb-1">Contact Email</label>
+                    <input type="email" id="adminEmail" value={credentialsData.email} onChange={(e) => setCredentialsData(prev => ({ ...prev, email: e.target.value }))} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="email@example.com" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label htmlFor="adminPassword" className="block text-sm font-medium mb-1">New Password (leave blank to keep current)</label>
+                    <input type="password" id="adminPassword" value={credentialsData.password} onChange={(e) => setCredentialsData(prev => ({ ...prev, password: e.target.value }))} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="Enter new password" />
+                  </div>
+                </div>
+                <button type="submit" className="bg-foreground text-background font-medium px-4 py-2 rounded hover:bg-foreground/90 transition-colors self-start">
+                  Save Settings
                 </button>
               </form>
             </div>
