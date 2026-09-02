@@ -26,6 +26,15 @@ interface Certification {
   certificateUrl: string;
 }
 
+interface Experience {
+  id: string;
+  role: string;
+  organization: string;
+  description: string;
+  dateJoined: string;
+  refereeNumber: string;
+}
+
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
@@ -41,7 +50,7 @@ export default function AdminPage() {
   const [cvMessage, setCvMessage] = useState({ text: "", type: "" });
   const [aboutMessage, setAboutMessage] = useState({ text: "", type: "" });
   
-  const [experiences, setExperiences] = useState<any[]>([]);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
   const [submittingExp, setSubmittingExp] = useState(false);
   const [expMessage, setExpMessage] = useState({ text: "", type: "" });
   
@@ -156,15 +165,15 @@ export default function AdminPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjects();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     fetchCertifications();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     fetchSettings();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     fetchAbout();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     fetchExperiences();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     if (isAuthenticated) fetchCredentials();
   }, [isAuthenticated]);
 
