@@ -1,17 +1,18 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { getGithubFile, updateGithubFile } from '@/lib/github';
 
-const settingsFilePath = path.join(process.cwd(), 'public', 'data', 'settings.json');
+const SETTINGS_PATH = 'public/data/settings.json';
 
 export async function GET() {
   try {
-    const fileContents = await fs.readFile(settingsFilePath, 'utf8');
-    const settings = JSON.parse(fileContents);
+    const file = await getGithubFile(SETTINGS_PATH);
+    if (!file) {
+      return NextResponse.json({ maintenance: false });
+    }
+    const settings = JSON.parse(file.content);
     return NextResponse.json(settings);
   } catch (error) {
-    console.error('Error reading settings:', error);
-    // Return default if not found
+    console.error('Error reading settings from GitHub:', error);
     return NextResponse.json({ maintenance: false });
   }
 }
@@ -20,13 +21,16 @@ export async function POST(request: Request) {
   try {
     const data = await request.json();
     
-    // Read current settings to merge
+    const file = await getGithubFile(SETTINGS_PATH);
     let currentSettings = { maintenance: false };
-    try {
-      const fileContents = await fs.readFile(settingsFilePath, 'utf8');
-      currentSettings = JSON.parse(fileContents);
-    } catch {
-      // It's okay if it fails, we use defaults
+    const currentSha = file ? file.sha : undefined;
+
+    if (file) {
+      try {
+        currentSettings = JSON.parse(file.content);
+      } catch (e) {
+        // use defaults
+      }
     }
 
     const newSettings = {
@@ -34,7 +38,8 @@ export async function POST(request: Request) {
       ...data
     };
 
-    await fs.writeFile(settingsFilePath, JSON.stringify(newSettings, null, 2));
+    const newContent = Buffer.from(JSON.stringify(newSettings, null, 2)).toString('base64');
+    await updateGithubFile(SETTINGS_PATH, newContent, `Update settings`, currentSha);
 
     return NextResponse.json({ success: true, settings: newSettings }, { status: 200 });
   } catch (error) {

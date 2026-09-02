@@ -1,17 +1,18 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { getGithubFile, updateGithubFile } from '@/lib/github';
 
-const dataFilePath = path.join(process.cwd(), 'public', 'data', 'experiences.json');
+const EXP_PATH = 'public/data/experiences.json';
 
 export async function GET() {
   try {
-    const fileContents = await fs.readFile(dataFilePath, 'utf8');
-    const experiences = JSON.parse(fileContents);
+    const file = await getGithubFile(EXP_PATH);
+    if (!file) {
+      return NextResponse.json([]);
+    }
+    const experiences = JSON.parse(file.content);
     return NextResponse.json(experiences);
   } catch (error) {
-    console.error('Error reading experiences:', error);
-    // Return empty array if file doesn't exist
+    console.error('Error reading experiences from GitHub:', error);
     return NextResponse.json([]);
   }
 }
@@ -20,15 +21,6 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     
-    // Read current experiences
-    let experiences: any[] = [];
-    try {
-      const fileContents = await fs.readFile(dataFilePath, 'utf8');
-      experiences = JSON.parse(fileContents);
-    } catch {
-      // Ignored if file doesn't exist
-    }
-
     const role = formData.get('role') as string;
     const organization = formData.get('organization') as string;
     const description = formData.get('description') as string;
@@ -38,6 +30,10 @@ export async function POST(request: Request) {
     if (!role || !organization) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
+
+    const file = await getGithubFile(EXP_PATH);
+    const experiences = file ? JSON.parse(file.content) : [];
+    const currentSha = file ? file.sha : undefined;
 
     const newExperience = {
       id: Date.now().toString(),
@@ -50,7 +46,8 @@ export async function POST(request: Request) {
 
     experiences.push(newExperience);
 
-    await fs.writeFile(dataFilePath, JSON.stringify(experiences, null, 2));
+    const newContent = Buffer.from(JSON.stringify(experiences, null, 2)).toString('base64');
+    await updateGithubFile(EXP_PATH, newContent, `Add experience: ${role}`, currentSha);
 
     return NextResponse.json({ success: true, experience: newExperience }, { status: 201 });
   } catch (error) {
@@ -78,8 +75,12 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const fileContents = await fs.readFile(dataFilePath, 'utf8');
-    const experiences = JSON.parse(fileContents);
+    const file = await getGithubFile(EXP_PATH);
+    if (!file) {
+      return NextResponse.json({ error: 'Experiences file not found' }, { status: 404 });
+    }
+    const experiences = JSON.parse(file.content);
+    const currentSha = file.sha;
     
     const index = experiences.findIndex((e: any) => e.id === id);
     if (index === -1) {
@@ -95,7 +96,8 @@ export async function PUT(request: Request) {
       refereeNumber
     };
 
-    await fs.writeFile(dataFilePath, JSON.stringify(experiences, null, 2));
+    const newContent = Buffer.from(JSON.stringify(experiences, null, 2)).toString('base64');
+    await updateGithubFile(EXP_PATH, newContent, `Update experience: ${role}`, currentSha);
 
     return NextResponse.json({ success: true, experience: experiences[index] }, { status: 200 });
   } catch (error) {
@@ -109,11 +111,17 @@ export async function DELETE(request: Request) {
     const { id } = await request.json();
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
 
-    const fileContents = await fs.readFile(dataFilePath, 'utf8');
-    let experiences = JSON.parse(fileContents);
+    const file = await getGithubFile(EXP_PATH);
+    if (!file) {
+      return NextResponse.json({ error: 'Experiences file not found' }, { status: 404 });
+    }
+    let experiences = JSON.parse(file.content);
+    const currentSha = file.sha;
     
     experiences = experiences.filter((e: any) => e.id !== id);
-    await fs.writeFile(dataFilePath, JSON.stringify(experiences, null, 2));
+    
+    const newContent = Buffer.from(JSON.stringify(experiences, null, 2)).toString('base64');
+    await updateGithubFile(EXP_PATH, newContent, `Delete experience ${id}`, currentSha);
     
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

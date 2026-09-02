@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { getGithubFile, updateGithubFile } from '@/lib/github';
 
-const dataFilePath = path.join(process.cwd(), 'public', 'data', 'about.json');
+const ABOUT_PATH = 'public/data/about.json';
 
 export async function GET() {
   try {
-    const fileContents = await fs.readFile(dataFilePath, 'utf8');
-    const aboutData = JSON.parse(fileContents);
+    const file = await getGithubFile(ABOUT_PATH);
+    if (!file) {
+      return NextResponse.json({ content: "" });
+    }
+    const aboutData = JSON.parse(file.content);
     return NextResponse.json(aboutData);
   } catch (error) {
-    console.error('Error reading about.json:', error);
+    console.error('Error reading about.json from GitHub:', error);
     return NextResponse.json({ error: 'Failed to load about section data' }, { status: 500 });
   }
 }
@@ -23,7 +25,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing content field' }, { status: 400 });
     }
 
-    await fs.writeFile(dataFilePath, JSON.stringify(data, null, 2));
+    const file = await getGithubFile(ABOUT_PATH);
+    const currentSha = file ? file.sha : undefined;
+
+    const newContent = Buffer.from(JSON.stringify(data, null, 2)).toString('base64');
+    await updateGithubFile(ABOUT_PATH, newContent, `Update about section`, currentSha);
 
     return NextResponse.json({ success: true, about: data }, { status: 201 });
   } catch (error) {

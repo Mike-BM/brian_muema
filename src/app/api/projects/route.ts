@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { getGithubFile, updateGithubFile } from '@/lib/github';
 
-const dataFilePath = path.join(process.cwd(), 'public', 'data', 'projects.json');
-const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'projects');
+const PROJECTS_PATH = 'public/data/projects.json';
 
 export async function GET() {
   try {
-    const fileContents = await fs.readFile(dataFilePath, 'utf8');
-    const projects = JSON.parse(fileContents);
+    // We fetch directly from GitHub to ensure the admin panel sees latest data
+    const file = await getGithubFile(PROJECTS_PATH);
+    if (!file) {
+      return NextResponse.json([]);
+    }
+    const projects = JSON.parse(file.content);
     return NextResponse.json(projects);
   } catch (error) {
-    console.error('Error reading projects:', error);
+    console.error('Error reading projects from GitHub:', error);
     return NextResponse.json({ error: 'Failed to load projects' }, { status: 500 });
   }
 }
@@ -38,25 +40,20 @@ export async function POST(request: Request) {
     let imagePath = null;
     if (imageFile && imageFile.name) {
       const bytes = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+      const base64Content = Buffer.from(bytes).toString('base64');
       
       const fileName = `${Date.now()}-${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-      const filePath = path.join(uploadDir, fileName);
+      const uploadPath = `public/uploads/projects/${fileName}`;
       
-      // Ensure upload directory exists
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir, { recursive: true });
-      }
-      
-      await fs.writeFile(filePath, buffer);
+      // Upload to GitHub
+      await updateGithubFile(uploadPath, base64Content, `Upload project image ${fileName}`);
       imagePath = `/uploads/projects/${fileName}`;
     }
 
-    // Read current projects
-    const fileContents = await fs.readFile(dataFilePath, 'utf8');
-    const projects = JSON.parse(fileContents);
+    // Read current projects from GitHub
+    const file = await getGithubFile(PROJECTS_PATH);
+    const projects = file ? JSON.parse(file.content) : [];
+    const currentSha = file ? file.sha : undefined;
 
     const newProject = {
       id: Date.now().toString(),
@@ -74,7 +71,9 @@ export async function POST(request: Request) {
 
     projects.push(newProject);
 
-    await fs.writeFile(dataFilePath, JSON.stringify(projects, null, 2));
+    // Write back to GitHub
+    const newContent = Buffer.from(JSON.stringify(projects, null, 2)).toString('base64');
+    await updateGithubFile(PROJECTS_PATH, newContent, `Add project: ${title}`, currentSha);
 
     return NextResponse.json({ success: true, project: newProject }, { status: 201 });
   } catch (error) {
@@ -111,23 +110,21 @@ export async function PUT(request: Request) {
     let imagePath = existingImage || null;
     if (imageFile && imageFile.name) {
       const bytes = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+      const base64Content = Buffer.from(bytes).toString('base64');
       
       const fileName = `${Date.now()}-${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-      const filePath = path.join(uploadDir, fileName);
+      const uploadPath = `public/uploads/projects/${fileName}`;
       
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir, { recursive: true });
-      }
-      
-      await fs.writeFile(filePath, buffer);
+      await updateGithubFile(uploadPath, base64Content, `Upload project image ${fileName}`);
       imagePath = `/uploads/projects/${fileName}`;
     }
 
-    const fileContents = await fs.readFile(dataFilePath, 'utf8');
-    const projects = JSON.parse(fileContents);
+    const file = await getGithubFile(PROJECTS_PATH);
+    if (!file) {
+      return NextResponse.json({ error: 'Projects file not found' }, { status: 404 });
+    }
+    const projects = JSON.parse(file.content);
+    const currentSha = file.sha;
     
     const index = projects.findIndex((p: any) => p.id === id);
     if (index === -1) {
@@ -148,7 +145,8 @@ export async function PUT(request: Request) {
       image: imagePath
     };
 
-    await fs.writeFile(dataFilePath, JSON.stringify(projects, null, 2));
+    const newContent = Buffer.from(JSON.stringify(projects, null, 2)).toString('base64');
+    await updateGithubFile(PROJECTS_PATH, newContent, `Update project: ${title}`, currentSha);
 
     return NextResponse.json({ success: true, project: projects[index] }, { status: 200 });
   } catch (error) {
@@ -162,11 +160,17 @@ export async function DELETE(request: Request) {
     const { id } = await request.json();
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
 
-    const fileContents = await fs.readFile(dataFilePath, 'utf8');
-    let projects = JSON.parse(fileContents);
+    const file = await getGithubFile(PROJECTS_PATH);
+    if (!file) {
+      return NextResponse.json({ error: 'Projects file not found' }, { status: 404 });
+    }
+    let projects = JSON.parse(file.content);
+    const currentSha = file.sha;
     
     projects = projects.filter((p: any) => p.id !== id);
-    await fs.writeFile(dataFilePath, JSON.stringify(projects, null, 2));
+    
+    const newContent = Buffer.from(JSON.stringify(projects, null, 2)).toString('base64');
+    await updateGithubFile(PROJECTS_PATH, newContent, `Delete project ${id}`, currentSha);
     
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

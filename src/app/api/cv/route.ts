@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { getGithubFile, updateGithubFile } from '@/lib/github';
 
-const uploadDir = path.join(process.cwd(), 'public');
+const CV_PATH = 'public/cv.pdf';
 
 export async function POST(request: Request) {
   try {
@@ -14,12 +13,12 @@ export async function POST(request: Request) {
     }
 
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const base64Content = Buffer.from(bytes).toString('base64');
     
-    // We intentionally overwrite the same file name so the static links keep working
-    const filePath = path.join(uploadDir, 'cv.pdf');
+    const existingFile = await getGithubFile(CV_PATH);
+    const currentSha = existingFile ? existingFile.sha : undefined;
     
-    await fs.writeFile(filePath, buffer);
+    await updateGithubFile(CV_PATH, base64Content, `Update CV document`, currentSha);
 
     return NextResponse.json({ success: true, message: 'CV updated successfully' }, { status: 200 });
   } catch (error) {

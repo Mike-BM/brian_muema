@@ -1,17 +1,18 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { getGithubFile, updateGithubFile } from '@/lib/github';
 
-const dataFilePath = path.join(process.cwd(), 'public', 'data', 'certifications.json');
-const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'certifications');
+const CERTS_PATH = 'public/data/certifications.json';
 
 export async function GET() {
   try {
-    const fileContents = await fs.readFile(dataFilePath, 'utf8');
-    const certifications = JSON.parse(fileContents);
+    const file = await getGithubFile(CERTS_PATH);
+    if (!file) {
+      return NextResponse.json([]);
+    }
+    const certifications = JSON.parse(file.content);
     return NextResponse.json(certifications);
   } catch (error) {
-    console.error('Error reading certifications:', error);
+    console.error('Error reading certifications from GitHub:', error);
     return NextResponse.json({ error: 'Failed to load certifications' }, { status: 500 });
   }
 }
@@ -33,25 +34,18 @@ export async function POST(request: Request) {
     let imagePath = certificateUrl || '#';
     if (imageFile && imageFile.name) {
       const bytes = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+      const base64Content = Buffer.from(bytes).toString('base64');
       
       const fileName = `${Date.now()}-${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-      const filePath = path.join(uploadDir, fileName);
+      const uploadPath = `public/uploads/certifications/${fileName}`;
       
-      // Ensure upload directory exists
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir, { recursive: true });
-      }
-      
-      await fs.writeFile(filePath, buffer);
+      await updateGithubFile(uploadPath, base64Content, `Upload certification image ${fileName}`);
       imagePath = `/uploads/certifications/${fileName}`;
     }
 
-    // Read current certifications
-    const fileContents = await fs.readFile(dataFilePath, 'utf8');
-    const certifications = JSON.parse(fileContents);
+    const file = await getGithubFile(CERTS_PATH);
+    const certifications = file ? JSON.parse(file.content) : [];
+    const currentSha = file ? file.sha : undefined;
 
     const newCertification = {
       id: Date.now().toString(),
@@ -63,7 +57,8 @@ export async function POST(request: Request) {
 
     certifications.push(newCertification);
 
-    await fs.writeFile(dataFilePath, JSON.stringify(certifications, null, 2));
+    const newContent = Buffer.from(JSON.stringify(certifications, null, 2)).toString('base64');
+    await updateGithubFile(CERTS_PATH, newContent, `Add certification: ${course}`, currentSha);
 
     return NextResponse.json({ success: true, certification: newCertification }, { status: 201 });
   } catch (error) {
@@ -95,23 +90,21 @@ export async function PUT(request: Request) {
     let imagePath = existingImage || certificateUrl || '#';
     if (imageFile && imageFile.name) {
       const bytes = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+      const base64Content = Buffer.from(bytes).toString('base64');
       
       const fileName = `${Date.now()}-${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-      const filePath = path.join(uploadDir, fileName);
+      const uploadPath = `public/uploads/certifications/${fileName}`;
       
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir, { recursive: true });
-      }
-      
-      await fs.writeFile(filePath, buffer);
+      await updateGithubFile(uploadPath, base64Content, `Upload certification image ${fileName}`);
       imagePath = `/uploads/certifications/${fileName}`;
     }
 
-    const fileContents = await fs.readFile(dataFilePath, 'utf8');
-    const certifications = JSON.parse(fileContents);
+    const file = await getGithubFile(CERTS_PATH);
+    if (!file) {
+      return NextResponse.json({ error: 'Certifications file not found' }, { status: 404 });
+    }
+    const certifications = JSON.parse(file.content);
+    const currentSha = file.sha;
     
     const index = certifications.findIndex((c: any) => c.id === id);
     if (index === -1) {
@@ -126,7 +119,8 @@ export async function PUT(request: Request) {
       certificateUrl: imagePath
     };
 
-    await fs.writeFile(dataFilePath, JSON.stringify(certifications, null, 2));
+    const newContent = Buffer.from(JSON.stringify(certifications, null, 2)).toString('base64');
+    await updateGithubFile(CERTS_PATH, newContent, `Update certification: ${course}`, currentSha);
 
     return NextResponse.json({ success: true, certification: certifications[index] }, { status: 200 });
   } catch (error) {
@@ -140,11 +134,17 @@ export async function DELETE(request: Request) {
     const { id } = await request.json();
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
 
-    const fileContents = await fs.readFile(dataFilePath, 'utf8');
-    let certifications = JSON.parse(fileContents);
+    const file = await getGithubFile(CERTS_PATH);
+    if (!file) {
+      return NextResponse.json({ error: 'Certifications file not found' }, { status: 404 });
+    }
+    let certifications = JSON.parse(file.content);
+    const currentSha = file.sha;
     
     certifications = certifications.filter((c: any) => c.id !== id);
-    await fs.writeFile(dataFilePath, JSON.stringify(certifications, null, 2));
+    
+    const newContent = Buffer.from(JSON.stringify(certifications, null, 2)).toString('base64');
+    await updateGithubFile(CERTS_PATH, newContent, `Delete certification ${id}`, currentSha);
     
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
