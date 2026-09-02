@@ -41,6 +41,10 @@ export default function AdminPage() {
   const [cvMessage, setCvMessage] = useState({ text: "", type: "" });
   const [aboutMessage, setAboutMessage] = useState({ text: "", type: "" });
   
+  const [experiences, setExperiences] = useState<any[]>([]);
+  const [submittingExp, setSubmittingExp] = useState(false);
+  const [expMessage, setExpMessage] = useState({ text: "", type: "" });
+  
   const [credentialsData, setCredentialsData] = useState({ username: "", password: "", email: "" });
   const [credentialsMessage, setCredentialsMessage] = useState({ text: "", type: "" });
 
@@ -64,6 +68,13 @@ export default function AdminPage() {
     course: "",
     year: "",
     certificateUrl: ""
+  });
+  const [expFormData, setExpFormData] = useState({
+    role: "",
+    organization: "",
+    description: "",
+    dateJoined: "",
+    refereeNumber: ""
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [certImageFile, setCertImageFile] = useState<File | null>(null);
@@ -89,6 +100,18 @@ export default function AdminPage() {
       }
     } catch (error) {
       console.error('Failed to fetch certifications', error);
+    }
+  };
+
+  const fetchExperiences = async () => {
+    try {
+      const res = await fetch('/api/experiences');
+      if (res.ok) {
+        const data = await res.json();
+        setExperiences(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch experiences', error);
     }
   };
 
@@ -139,6 +162,8 @@ export default function AdminPage() {
     fetchSettings();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAbout();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchExperiences();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (isAuthenticated) fetchCredentials();
   }, [isAuthenticated]);
@@ -191,6 +216,11 @@ export default function AdminPage() {
   const handleCertInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setCertFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleExpInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setExpFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -305,6 +335,56 @@ export default function AdminPage() {
       setCertMessage({ text: "An error occurred", type: "error" });
     } finally {
       setSubmittingCert(false);
+    }
+  };
+
+  const handleExpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmittingExp(true);
+    setExpMessage({ text: "", type: "" });
+
+    const data = new FormData();
+    Object.entries(expFormData).forEach(([key, value]) => {
+      data.append(key, value);
+    });
+    
+    try {
+      const res = await fetch('/api/experiences', {
+        method: 'POST',
+        body: data,
+      });
+
+      if (res.ok) {
+        setExpMessage({ text: "Experience added successfully!", type: "success" });
+        setExpFormData({
+          role: "",
+          organization: "",
+          description: "",
+          dateJoined: "",
+          refereeNumber: ""
+        });
+        fetchExperiences();
+      } else {
+        const errData = await res.json();
+        setExpMessage({ text: errData.error || "Failed to add experience", type: "error" });
+      }
+    } catch {
+      setExpMessage({ text: "An error occurred", type: "error" });
+    } finally {
+      setSubmittingExp(false);
+    }
+  };
+
+  const handleDeleteExperience = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this experience?')) return;
+    const data = new FormData();
+    data.append('action', 'delete');
+    data.append('id', id);
+    try {
+      const res = await fetch('/api/experiences', { method: 'POST', body: data });
+      if (res.ok) fetchExperiences();
+    } catch (error) {
+      console.error('Failed to delete experience', error);
     }
   };
 
@@ -706,6 +786,88 @@ export default function AdminPage() {
                     </div>
                     
                     <button className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded transition-colors" title="Delete Certification (Not implemented)">
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Experiences Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12 pt-12 border-t border-border">
+          {/* Add Experience Form */}
+          <div className="lg:col-span-1 bg-card border border-border p-6 rounded-lg">
+            <h2 className="text-xl font-bold mb-6 flex items-center">
+              <Plus className="mr-2 h-5 w-5" /> Add Experience
+            </h2>
+            
+            {expMessage.text && (
+              <div className={`p-4 mb-6 rounded text-sm ${expMessage.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
+                {expMessage.text}
+              </div>
+            )}
+
+            <form onSubmit={handleExpSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="role" className="block text-sm font-medium mb-1">Role (e.g., Ambassador, Graphic Designer) *</label>
+                <input required type="text" id="role" name="role" value={expFormData.role} onChange={handleExpInputChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
+              </div>
+              
+              <div>
+                <label htmlFor="organization" className="block text-sm font-medium mb-1">Organization *</label>
+                <input required type="text" id="organization" name="organization" value={expFormData.organization} onChange={handleExpInputChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
+              </div>
+
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium mb-1">Description</label>
+                <textarea id="description" name="description" value={expFormData.description} onChange={handleExpInputChange} rows={3} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
+              </div>
+              
+              <div>
+                <label htmlFor="dateJoined" className="block text-sm font-medium mb-1">Date Joined</label>
+                <input type="text" id="dateJoined" name="dateJoined" value={expFormData.dateJoined} onChange={handleExpInputChange} placeholder="e.g. Jan 2024" className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
+              </div>
+
+              <div>
+                <label htmlFor="refereeNumber" className="block text-sm font-medium mb-1">Referee Number</label>
+                <input type="text" id="refereeNumber" name="refereeNumber" value={expFormData.refereeNumber} onChange={handleExpInputChange} placeholder="e.g. +1234567890" className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
+              </div>
+
+              <button disabled={submittingExp} type="submit" className="w-full bg-foreground text-background font-medium py-2 rounded hover:bg-foreground/90 transition-colors disabled:opacity-50 mt-4">
+                {submittingExp ? "Saving..." : "Add Experience"}
+              </button>
+            </form>
+          </div>
+
+          {/* Existing Experiences List */}
+          <div className="lg:col-span-2">
+            <h2 className="text-xl font-bold mb-6">Existing Experiences</h2>
+            
+            {loading ? (
+              <div className="flex justify-center p-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : experiences.length === 0 ? (
+              <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground">
+                No experiences found. Add one to get started!
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {experiences.map((exp) => (
+                  <div key={exp.id} className="bg-card border border-border rounded-lg p-4 flex gap-4 items-center group">
+                    <div className="flex-grow">
+                      <h3 className="font-bold text-foreground">{exp.role}</h3>
+                      <p className="text-sm font-semibold text-primary">{exp.organization}</p>
+                      {exp.description && <p className="text-sm text-muted-foreground mt-1">{exp.description}</p>}
+                      <div className="flex flex-wrap gap-2 mt-2 items-center">
+                        {exp.dateJoined && <span className="text-[10px] uppercase bg-muted px-2 py-0.5 rounded text-muted-foreground">Joined: {exp.dateJoined}</span>}
+                        {exp.refereeNumber && <span className="text-[10px] uppercase bg-muted px-2 py-0.5 rounded text-muted-foreground">Ref: {exp.refereeNumber}</span>}
+                      </div>
+                    </div>
+                    
+                    <button onClick={() => handleDeleteExperience(exp.id)} className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded transition-colors" title="Delete Experience">
                       <Trash2 className="h-5 w-5" />
                     </button>
                   </div>
