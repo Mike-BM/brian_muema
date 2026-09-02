@@ -23,14 +23,12 @@ interface Project {
 }
 
 export function ProjectsSection() {
-  const [activeTab, setActiveTab] = useState<"Data Projects" | "Other Works">("Data Projects");
   const [filter, setFilter] = useState("All");
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const dataCategories = ["All", "Data Analysis", "Data Science", "Machine Learning", "AI", "Hackathon"];
-  const otherCategories = ["All", "Client Website", "Graphic Design", "Social Media Management", "Side Project"];
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -62,14 +60,7 @@ export function ProjectsSection() {
     .filter(p => dataTypes.includes(p.filterCategory) || dataTypes.includes(p.projectType || ''))
     .sort(sortByDate);
 
-  const otherProjects = projects
-    .filter(p => !dataTypes.includes(p.filterCategory) && !dataTypes.includes(p.projectType || ''))
-    .sort(sortByDate);
-
-  const currentCategories = activeTab === "Data Projects" ? dataCategories : otherCategories;
-  const currentProjects = activeTab === "Data Projects" ? dataProjects : otherProjects;
-
-  const filteredProjects = currentProjects
+  const filteredProjects = dataProjects
     .filter(p => filter === "All" || p.filterCategory.includes(filter) || p.category.includes(filter) || p.projectType === filter);
 
   return (
@@ -85,33 +76,9 @@ export function ProjectsSection() {
           </p>
         </div>
 
-        {/* Section Tabs */}
-        <div className="flex border-b border-border mb-8">
-          <button
-            onClick={() => { setActiveTab("Data Projects"); setFilter("All"); setExpandedId(null); }}
-            className={`px-6 py-3 font-semibold text-lg transition-colors border-b-2 ${
-              activeTab === "Data Projects" 
-                ? "border-primary text-primary" 
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            Data Projects
-          </button>
-          <button
-            onClick={() => { setActiveTab("Other Works"); setFilter("All"); setExpandedId(null); }}
-            className={`px-6 py-3 font-semibold text-lg transition-colors border-b-2 ${
-              activeTab === "Other Works" 
-                ? "border-primary text-primary" 
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            Other Works
-          </button>
-        </div>
-
         {/* Category Filters */}
         <div className="flex flex-wrap gap-2 mb-12">
-          {currentCategories.map((cat, index) => (
+          {dataCategories.map((cat, index) => (
             <button
               key={index}
               onClick={() => setFilter(cat)}
@@ -141,13 +108,13 @@ export function ProjectsSection() {
               <div
                 key={project.id}
                 className={`group flex flex-col border transition-all ${
-                  project.featured && activeTab === "Data Projects"
+                  project.featured
                     ? "border-primary bg-card/50 shadow-md ring-1 ring-primary/20" 
                     : "border-border bg-card hover:border-foreground"
                 }`}
               >
                 <div className="h-48 bg-muted flex items-center justify-center border-b border-border overflow-hidden relative">
-                  {project.featured && activeTab === "Data Projects" && (
+                  {project.featured && (
                     <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded shadow z-10">
                       FEATURED
                     </div>

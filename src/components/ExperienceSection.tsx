@@ -13,11 +13,16 @@ interface Certification {
 
 interface Experience {
   id: string;
+  type?: 'Formal' | 'Freelance';
   role: string;
   organization: string;
   description: string;
-  dateJoined: string;
-  refereeNumber: string;
+  dateJoined?: string;
+  refereeNumber?: string;
+  startDate?: string;
+  endDate?: string;
+  current?: boolean;
+  link?: string;
 }
 
 export function ExperienceSection() {
@@ -111,32 +116,84 @@ export function ExperienceSection() {
             No experiences listed yet.
           </div>
         ) : (
-          <div className="space-y-8 max-w-4xl mb-20">
-            {experiences.map((exp) => (
-              <div key={exp.id} className="bg-card border border-border p-6 rounded-lg relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-1 h-full bg-primary/50 group-hover:bg-primary transition-colors"></div>
-                <div className="flex items-start justify-between flex-wrap gap-4">
-                  <div>
-                    <h3 className="text-2xl font-bold text-foreground">
-                      {exp.role}
-                    </h3>
-                    <p className="text-lg font-semibold text-primary mt-1">{exp.organization}</p>
-                    <p className="text-sm font-medium text-muted-foreground mt-1">
-                      Joined: {exp.dateJoined}
-                    </p>
-                    {exp.refereeNumber && (
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Ref: {exp.refereeNumber}
-                      </p>
-                    )}
+          <>
+            <div className="space-y-8 max-w-4xl mb-16">
+              {experiences.filter(e => e.type !== 'Freelance').map((exp) => (
+                <div key={exp.id} className="bg-card border border-border p-6 rounded-lg relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-primary/50 group-hover:bg-primary transition-colors"></div>
+                  <div className="flex items-start justify-between flex-wrap gap-4">
+                    <div>
+                      <h3 className="text-2xl font-bold text-foreground">
+                        {exp.role}
+                      </h3>
+                      <p className="text-lg font-semibold text-primary mt-1">{exp.organization}</p>
+                      {exp.dateJoined && (
+                        <p className="text-sm font-medium text-muted-foreground mt-1">
+                          Joined: {exp.dateJoined}
+                        </p>
+                      )}
+                      {exp.refereeNumber && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Ref: {exp.refereeNumber}
+                        </p>
+                      )}
+                    </div>
                   </div>
+                  {exp.description && (
+                    <div className="mt-4 pt-4 border-t border-border/50 text-muted-foreground whitespace-pre-line">
+                      {exp.description}
+                    </div>
+                  )}
                 </div>
-                <div className="mt-4 pt-4 border-t border-border/50 text-muted-foreground whitespace-pre-line">
-                  {exp.description}
+              ))}
+            </div>
+
+            {/* Freelance & Volunteer Experience Section */}
+            {experiences.filter(e => e.type === 'Freelance').length > 0 && (
+              <>
+                <div className="max-w-4xl mb-12">
+                  <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center gap-2">
+                    <Briefcase className="h-8 w-8 text-primary" /> Freelance & Volunteer Experience
+                  </h2>
+                  <div className="h-1 w-20 bg-primary rounded" />
                 </div>
-              </div>
-            ))}
-          </div>
+                
+                <div className="space-y-8 max-w-4xl mb-20">
+                  {experiences
+                    .filter(e => e.type === 'Freelance')
+                    .sort((a, b) => new Date(b.startDate || 0).getTime() - new Date(a.startDate || 0).getTime())
+                    .map((exp) => (
+                    <div key={exp.id} className="bg-card border border-border p-6 rounded-lg relative overflow-hidden group">
+                      <div className="absolute top-0 left-0 w-1 h-full bg-primary/50 group-hover:bg-primary transition-colors"></div>
+                      <div className="flex items-start justify-between flex-wrap gap-4">
+                        <div>
+                          <h3 className="text-2xl font-bold text-foreground">
+                            {exp.role}
+                          </h3>
+                          <p className="text-lg font-semibold text-primary mt-1">{exp.organization}</p>
+                          {exp.startDate && (
+                            <p className="text-sm font-medium text-muted-foreground mt-1">
+                              {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
+                            </p>
+                          )}
+                          {exp.link && (
+                            <a href={exp.link} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-blue-500 hover:underline mt-1 inline-block">
+                              View Project
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                      {exp.description && (
+                        <div className="mt-4 pt-4 border-t border-border/50 text-muted-foreground whitespace-pre-line">
+                          {exp.description}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         )}
 
         {/* Skills Section */}

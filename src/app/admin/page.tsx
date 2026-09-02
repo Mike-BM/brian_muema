@@ -32,11 +32,16 @@ interface Certification {
 
 interface Experience {
   id: string;
+  type?: 'Formal' | 'Freelance';
   role: string;
   organization: string;
   description: string;
-  dateJoined: string;
-  refereeNumber: string;
+  dateJoined?: string;
+  refereeNumber?: string;
+  startDate?: string;
+  endDate?: string;
+  current?: boolean;
+  link?: string;
 }
 
 export default function AdminPage() {
@@ -77,9 +82,10 @@ export default function AdminPage() {
     .filter(p => dataTypes.includes(p.filterCategory) || dataTypes.includes(p.projectType || ''))
     .sort(sortByDate);
 
-  const otherProjects = projects
-    .filter(p => !dataTypes.includes(p.filterCategory) && !dataTypes.includes(p.projectType || ''))
-    .sort(sortByDate);
+  const formalExperiences = experiences.filter(e => e.type !== 'Freelance');
+  const freelanceExperiences = experiences
+    .filter(e => e.type === 'Freelance')
+    .sort((a, b) => new Date(b.startDate || 0).getTime() - new Date(a.startDate || 0).getTime());
 
   const [formData, setFormData] = useState({
     title: "",
@@ -102,11 +108,16 @@ export default function AdminPage() {
     certificateUrl: ""
   });
   const [expFormData, setExpFormData] = useState({
+    type: "Formal" as "Formal" | "Freelance",
     role: "",
     organization: "",
     description: "",
     dateJoined: "",
-    refereeNumber: ""
+    refereeNumber: "",
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: "",
+    current: false,
+    link: ""
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [certImageFile, setCertImageFile] = useState<File | null>(null);
@@ -272,9 +283,14 @@ export default function AdminPage() {
     setCertFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleExpInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setExpFormData(prev => ({ ...prev, [name]: value }));
+  const handleExpInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setExpFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setExpFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -330,11 +346,16 @@ export default function AdminPage() {
   const handleEditExp = (exp: Experience) => {
     setEditingExpId(exp.id);
     setExpFormData({
+      type: exp.type || "Formal",
       role: exp.role,
       organization: exp.organization,
       description: exp.description || "",
       dateJoined: exp.dateJoined || "",
-      refereeNumber: exp.refereeNumber || ""
+      refereeNumber: exp.refereeNumber || "",
+      startDate: exp.startDate || new Date().toISOString().split('T')[0],
+      endDate: exp.endDate || "",
+      current: exp.current || false,
+      link: exp.link || ""
     });
     document.getElementById('experiences-section')?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -509,7 +530,7 @@ export default function AdminPage() {
     if (editingExpId) data.append('id', editingExpId);
     
     Object.entries(expFormData).forEach(([key, value]) => {
-      data.append(key, value);
+      data.append(key, typeof value === 'boolean' ? String(value) : value);
     });
     
     try {
@@ -521,11 +542,16 @@ export default function AdminPage() {
       if (res.ok) {
         showToast(editingExpId ? "Experience updated successfully!" : "Experience added successfully!", 'success');
         setExpFormData({
+          type: "Formal",
           role: "",
           organization: "",
           description: "",
           dateJoined: "",
-          refereeNumber: ""
+          refereeNumber: "",
+          startDate: new Date().toISOString().split('T')[0],
+          endDate: "",
+          current: false,
+          link: ""
         });
         setEditingExpId(null);
         fetchExperiences();
@@ -820,19 +846,11 @@ export default function AdminPage() {
                   <div>
                     <label htmlFor="filterCategory" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Filter <span className="text-red-500">*</span></label>
                     <select required id="filterCategory" name="filterCategory" value={formData.filterCategory} onChange={handleInputChange} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow">
-                      <optgroup label="Data Projects">
-                        <option value="Data Analysis">Data Analysis</option>
-                        <option value="Data Science">Data Science</option>
-                        <option value="Machine Learning">Machine Learning</option>
-                        <option value="AI">AI</option>
-                        <option value="Hackathon">Hackathon</option>
-                      </optgroup>
-                      <optgroup label="Other Works">
-                        <option value="Client Website">Client Website</option>
-                        <option value="Graphic Design">Graphic Design</option>
-                        <option value="Social Media Management">Social Media Management</option>
-                        <option value="Side Project">Side Project</option>
-                      </optgroup>
+                      <option value="Data Analysis">Data Analysis</option>
+                      <option value="Data Science">Data Science</option>
+                      <option value="Machine Learning">Machine Learning</option>
+                      <option value="AI">AI</option>
+                      <option value="Hackathon">Hackathon</option>
                     </select>
                   </div>
                   <div>
@@ -840,18 +858,14 @@ export default function AdminPage() {
                     <select required id="projectType" name="projectType" value={formData.projectType} onChange={handleInputChange} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow">
                       <option value="Professional">Professional</option>
                       <option value="Hackathon">Hackathon</option>
-                      <option value="Client Website">Client Website</option>
-                      <option value="Side Project">Side Project</option>
                     </select>
                   </div>
                 </div>
                 
-                {["Data Analysis", "Data Science", "Machine Learning", "AI", "Hackathon"].includes(formData.filterCategory) && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <input type="checkbox" id="featured" name="featured" checked={formData.featured} onChange={handleInputChange} className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 rounded" />
-                    <label htmlFor="featured" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Featured Data Project</label>
-                  </div>
-                )}
+                <div className="flex items-center gap-2 mt-2">
+                  <input type="checkbox" id="featured" name="featured" checked={formData.featured} onChange={handleInputChange} className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 rounded" />
+                  <label htmlFor="featured" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Featured Data Project</label>
+                </div>
 
                 <div>
                   <label htmlFor="technologies" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Tech Stack (comma separated)</label>
@@ -915,102 +929,48 @@ export default function AdminPage() {
                   <p className="text-slate-500 dark:text-slate-400">Add your first project using the form to get started.</p>
                 </div>
               ) : (
-                <>
-                  <div className="mb-6">
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">Data Projects (Primary)</h3>
-                    <div className="space-y-4">
-                      {dataProjects.length === 0 ? (
-                        <p className="text-slate-500 dark:text-slate-400 italic">No data projects yet.</p>
-                      ) : (
-                        dataProjects.map((project) => (
-                          <div key={project.id} className={`bg-white dark:bg-slate-900 border ${project.featured ? 'border-indigo-500 shadow-md ring-1 ring-indigo-500/30' : 'border-slate-200 dark:border-slate-800'} rounded-xl p-5 flex gap-5 items-center group transition-all hover:shadow-md relative`}>
-                            {project.featured && (
-                              <div className="absolute top-2 left-2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow z-10">
-                                FEATURED
-                              </div>
-                            )}
-                            <div className="h-20 w-32 bg-slate-100 dark:bg-slate-800 flex-shrink-0 rounded-lg overflow-hidden relative border border-slate-200 dark:border-slate-700">
-                              {project.image ? (
-                                <Image fill src={project.image} alt={project.title} className="object-cover" />
-                              ) : (
-                                <div className="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400">
-                                  <FileText className="h-5 w-5 mb-1 opacity-50" />
-                                  No image
-                                </div>
-                              )}
-                            </div>
-                            
-                            <div className="flex-grow">
-                              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight">{project.title}</h3>
-                              <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mt-1 mb-2">{project.description}</p>
-                              <div className="flex gap-2">
-                                {project.dateCompleted && (
-                                  <span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">{project.dateCompleted}</span>
-                                )}
-                                <span className="text-[10px] font-semibold uppercase bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded">{project.projectType || 'Professional'}</span>
-                                <span className="text-[10px] font-semibold uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">{project.filterCategory}</span>
-                              </div>
-                            </div>
-                            
-                            <div className="flex flex-col gap-2">
-                              <button onClick={() => handleEditProject(project)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Edit Project">
-                                <Edit className="h-5 w-5" />
-                              </button>
-                              <button onClick={() => confirmDelete('project', project.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete Project">
-                                <Trash2 className="h-5 w-5" />
-                              </button>
-                            </div>
-                          </div>
-                        ))
+                <div className="space-y-4">
+                  {dataProjects.map((project) => (
+                    <div key={project.id} className={`bg-white dark:bg-slate-900 border ${project.featured ? 'border-indigo-500 shadow-md ring-1 ring-indigo-500/30' : 'border-slate-200 dark:border-slate-800'} rounded-xl p-5 flex gap-5 items-center group transition-all hover:shadow-md relative`}>
+                      {project.featured && (
+                        <div className="absolute top-2 left-2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow z-10">
+                          FEATURED
+                        </div>
                       )}
-                    </div>
-                  </div>
-
-                  <div className="mb-6">
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">Other Works (Freelance & Secondary)</h3>
-                    <div className="space-y-4">
-                      {otherProjects.length === 0 ? (
-                        <p className="text-slate-500 dark:text-slate-400 italic">No other works yet.</p>
-                      ) : (
-                        otherProjects.map((project) => (
-                          <div key={project.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex gap-5 items-center group transition-all hover:shadow-md">
-                            <div className="h-20 w-32 bg-slate-100 dark:bg-slate-800 flex-shrink-0 rounded-lg overflow-hidden relative border border-slate-200 dark:border-slate-700">
-                              {project.image ? (
-                                <Image fill src={project.image} alt={project.title} className="object-cover" />
-                              ) : (
-                                <div className="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400">
-                                  <FileText className="h-5 w-5 mb-1 opacity-50" />
-                                  No image
-                                </div>
-                              )}
-                            </div>
-                            
-                            <div className="flex-grow">
-                              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight">{project.title}</h3>
-                              <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mt-1 mb-2">{project.description}</p>
-                              <div className="flex gap-2">
-                                {project.dateCompleted && (
-                                  <span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">{project.dateCompleted}</span>
-                                )}
-                                <span className="text-[10px] font-semibold uppercase bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded">{project.projectType || 'Professional'}</span>
-                                <span className="text-[10px] font-semibold uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">{project.filterCategory}</span>
-                              </div>
-                            </div>
-                            
-                            <div className="flex flex-col gap-2">
-                              <button onClick={() => handleEditProject(project)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Edit Project">
-                                <Edit className="h-5 w-5" />
-                              </button>
-                              <button onClick={() => confirmDelete('project', project.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete Project">
-                                <Trash2 className="h-5 w-5" />
-                              </button>
-                            </div>
+                      <div className="h-20 w-32 bg-slate-100 dark:bg-slate-800 flex-shrink-0 rounded-lg overflow-hidden relative border border-slate-200 dark:border-slate-700">
+                        {project.image ? (
+                          <Image fill src={project.image} alt={project.title} className="object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400">
+                            <FileText className="h-5 w-5 mb-1 opacity-50" />
+                            No image
                           </div>
-                        ))
-                      )}
+                        )}
+                      </div>
+                      
+                      <div className="flex-grow">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight">{project.title}</h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mt-1 mb-2">{project.description}</p>
+                        <div className="flex gap-2">
+                          {project.dateCompleted && (
+                            <span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">{project.dateCompleted}</span>
+                          )}
+                          <span className="text-[10px] font-semibold uppercase bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded">{project.projectType || 'Professional'}</span>
+                          <span className="text-[10px] font-semibold uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">{project.filterCategory}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col gap-2">
+                        <button onClick={() => handleEditProject(project)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Edit Project">
+                          <Edit className="h-5 w-5" />
+                        </button>
+                        <button onClick={() => confirmDelete('project', project.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete Project">
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </>
+                  ))}
+                </div>
               )}
             </div>
           </div>
@@ -1154,8 +1114,16 @@ export default function AdminPage() {
 
               <form onSubmit={handleExpSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="role" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Role <span className="text-red-500">*</span></label>
-                  <input required type="text" id="role" name="role" value={expFormData.role} onChange={handleExpInputChange} placeholder="e.g. Graphic Designer" className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                  <label htmlFor="type" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Experience Type <span className="text-red-500">*</span></label>
+                  <select required id="type" name="type" value={expFormData.type} onChange={handleExpInputChange} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow">
+                    <option value="Formal">Formal Experience</option>
+                    <option value="Freelance">Freelance & Volunteer Experience</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="role" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Role / Title <span className="text-red-500">*</span></label>
+                  <input required type="text" id="role" name="role" value={expFormData.role} onChange={handleExpInputChange} placeholder={expFormData.type === 'Formal' ? "e.g. Data Analyst" : "e.g. Freelance Graphic Designer"} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
                 </div>
                 
                 <div>
@@ -1168,15 +1136,42 @@ export default function AdminPage() {
                   <textarea id="description" name="description" value={expFormData.description} onChange={handleExpInputChange} rows={3} placeholder="Key responsibilities..." className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
                 </div>
                 
-                <div>
-                  <label htmlFor="dateJoined" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Date Joined</label>
-                  <input type="text" id="dateJoined" name="dateJoined" value={expFormData.dateJoined} onChange={handleExpInputChange} placeholder="e.g. Jan 2024 - Present" className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
-                </div>
+                {expFormData.type === 'Formal' ? (
+                  <>
+                    <div>
+                      <label htmlFor="dateJoined" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Date Joined</label>
+                      <input type="text" id="dateJoined" name="dateJoined" value={expFormData.dateJoined} onChange={handleExpInputChange} placeholder="e.g. Jan 2024 - Present" className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                    </div>
 
-                <div>
-                  <label htmlFor="refereeNumber" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Referee Contact</label>
-                  <input type="text" id="refereeNumber" name="refereeNumber" value={expFormData.refereeNumber} onChange={handleExpInputChange} placeholder="e.g. +1234567890" className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
-                </div>
+                    <div>
+                      <label htmlFor="refereeNumber" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Referee Contact</label>
+                      <input type="text" id="refereeNumber" name="refereeNumber" value={expFormData.refereeNumber} onChange={handleExpInputChange} placeholder="e.g. +1234567890" className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="startDate" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Start Date</label>
+                        <input type="date" id="startDate" name="startDate" value={expFormData.startDate} onChange={handleExpInputChange} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                      </div>
+                      <div>
+                        <label htmlFor="endDate" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">End Date</label>
+                        <input type="date" id="endDate" name="endDate" value={expFormData.endDate} onChange={handleExpInputChange} disabled={expFormData.current} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow disabled:opacity-50" />
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <input type="checkbox" id="current" name="current" checked={expFormData.current} onChange={handleExpInputChange} className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 rounded" />
+                      <label htmlFor="current" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Currently ongoing (Present)</label>
+                    </div>
+
+                    <div>
+                      <label htmlFor="link" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Optional Link</label>
+                      <input type="text" id="link" name="link" value={expFormData.link} onChange={handleExpInputChange} placeholder="https://..." className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                    </div>
+                  </>
+                )}
 
                 <div className="flex gap-3 pt-2">
                   {editingExpId && (
@@ -1209,28 +1204,71 @@ export default function AdminPage() {
                   <p className="text-slate-500 dark:text-slate-400">Add your first experience using the form to get started.</p>
                 </div>
               ) : (
-                experiences.map((exp) => (
-                  <div key={exp.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex gap-4 items-center group transition-all hover:shadow-md">
-                    <div className="flex-grow">
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{exp.role}</h3>
-                      <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{exp.organization}</p>
-                      {exp.description && <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 line-clamp-2">{exp.description}</p>}
-                      <div className="flex flex-wrap gap-2 mt-3 items-center">
-                        {exp.dateJoined && <span className="text-[10px] font-semibold uppercase bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded">Joined: {exp.dateJoined}</span>}
-                        {exp.refereeNumber && <span className="text-[10px] font-semibold uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">Ref: {exp.refereeNumber}</span>}
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-col gap-2">
-                      <button onClick={() => handleEditExp(exp)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Edit Experience">
-                        <Edit className="h-5 w-5" />
-                      </button>
-                      <button onClick={() => confirmDelete('exp', exp.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete Experience">
-                        <Trash2 className="h-5 w-5" />
-                      </button>
+                <>
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">Formal Experience</h3>
+                    <div className="space-y-4">
+                      {formalExperiences.length === 0 ? (
+                        <p className="text-slate-500 dark:text-slate-400 italic">No formal experiences yet.</p>
+                      ) : (
+                        formalExperiences.map((exp) => (
+                          <div key={exp.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex gap-4 items-center group transition-all hover:shadow-md">
+                            <div className="flex-grow">
+                              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{exp.role}</h3>
+                              <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{exp.organization}</p>
+                              {exp.description && <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 line-clamp-2">{exp.description}</p>}
+                              <div className="flex flex-wrap gap-2 mt-3 items-center">
+                                {exp.dateJoined && <span className="text-[10px] font-semibold uppercase bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded">Joined: {exp.dateJoined}</span>}
+                                {exp.refereeNumber && <span className="text-[10px] font-semibold uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded">Ref: {exp.refereeNumber}</span>}
+                              </div>
+                            </div>
+                            
+                            <div className="flex flex-col gap-2">
+                              <button onClick={() => handleEditExp(exp)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Edit Experience">
+                                <Edit className="h-5 w-5" />
+                              </button>
+                              <button onClick={() => confirmDelete('exp', exp.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete Experience">
+                                <Trash2 className="h-5 w-5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </div>
-                ))
+
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">Freelance & Volunteer Experience</h3>
+                    <div className="space-y-4">
+                      {freelanceExperiences.length === 0 ? (
+                        <p className="text-slate-500 dark:text-slate-400 italic">No freelance experiences yet.</p>
+                      ) : (
+                        freelanceExperiences.map((exp) => (
+                          <div key={exp.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex gap-4 items-center group transition-all hover:shadow-md">
+                            <div className="flex-grow">
+                              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{exp.role}</h3>
+                              <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{exp.organization}</p>
+                              {exp.description && <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 line-clamp-2">{exp.description}</p>}
+                              <div className="flex flex-wrap gap-2 mt-3 items-center">
+                                {exp.startDate && <span className="text-[10px] font-semibold uppercase bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded">{exp.startDate} - {exp.current ? 'Present' : exp.endDate}</span>}
+                                {exp.link && <a href={exp.link} target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold text-blue-600 hover:underline">Link</a>}
+                              </div>
+                            </div>
+                            
+                            <div className="flex flex-col gap-2">
+                              <button onClick={() => handleEditExp(exp)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Edit Experience">
+                                <Edit className="h-5 w-5" />
+                              </button>
+                              <button onClick={() => confirmDelete('exp', exp.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete Experience">
+                                <Trash2 className="h-5 w-5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </>
               )}
             </div>
           </div>

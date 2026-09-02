@@ -26,6 +26,13 @@ export async function POST(request: Request) {
     const description = formData.get('description') as string;
     const dateJoined = formData.get('dateJoined') as string;
     const refereeNumber = formData.get('refereeNumber') as string;
+    
+    // Freelance fields
+    const type = formData.get('type') as string || 'Formal';
+    const startDate = formData.get('startDate') as string;
+    const endDate = formData.get('endDate') as string;
+    const current = formData.get('current') === 'true';
+    const link = formData.get('link') as string;
 
     if (!role || !organization) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -37,11 +44,16 @@ export async function POST(request: Request) {
 
     const newExperience = {
       id: Date.now().toString(),
+      type,
       role,
       organization,
       description,
       dateJoined,
-      refereeNumber
+      refereeNumber,
+      startDate,
+      endDate,
+      current,
+      link
     };
 
     experiences.push(newExperience);
@@ -71,6 +83,12 @@ export async function PUT(request: Request) {
     const dateJoined = formData.get('dateJoined') as string;
     const refereeNumber = formData.get('refereeNumber') as string;
 
+    const type = formData.get('type') as string || 'Formal';
+    const startDate = formData.get('startDate') as string;
+    const endDate = formData.get('endDate') as string;
+    const current = formData.get('current') === 'true';
+    const link = formData.get('link') as string;
+
     if (!role || !organization) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
@@ -89,11 +107,16 @@ export async function PUT(request: Request) {
 
     experiences[index] = {
       ...experiences[index],
+      type,
       role,
       organization,
       description,
       dateJoined,
-      refereeNumber
+      refereeNumber,
+      startDate,
+      endDate,
+      current,
+      link
     };
 
     const newContent = Buffer.from(JSON.stringify(experiences, null, 2)).toString('base64');
