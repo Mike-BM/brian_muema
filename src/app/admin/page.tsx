@@ -484,23 +484,33 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Portfolio
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Dashboard Topbar */}
+      <header className="bg-slate-900 text-slate-50 sticky top-0 z-10 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/" className="p-2 hover:bg-slate-800 rounded-full transition-colors" title="Back to Portfolio">
+              <ArrowLeft className="h-5 w-5" />
             </Link>
-            <h1 className="text-3xl font-bold text-foreground">Admin Portal</h1>
-            <p className="text-muted-foreground">Manage your portfolio projects</p>
+            <h1 className="text-xl font-bold tracking-tight">Admin Dashboard</h1>
           </div>
+          <div className="text-sm font-medium text-slate-400">
+            Logged in as Admin
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Overview</h2>
+          <p className="text-slate-500 dark:text-slate-400">Manage your portfolio projects, experiences, and settings.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Site Settings & CV */}
           <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Maintenance Mode */}
-            <div className="bg-card border border-border p-6 rounded-lg flex items-center justify-between">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold flex items-center mb-1">
                   <Settings className="mr-2 h-5 w-5" /> Maintenance Mode
@@ -524,7 +534,7 @@ export default function AdminPage() {
             </div>
 
             {/* CV Upload */}
-            <div className="bg-card border border-border p-6 rounded-lg">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl">
               <h2 className="text-xl font-bold flex items-center mb-4">
                 <FileText className="mr-2 h-5 w-5" /> Update CV / Resume
               </h2>
@@ -538,14 +548,14 @@ export default function AdminPage() {
                   <label htmlFor="cv" className="block text-sm font-medium mb-1">Upload PDF</label>
                   <input type="file" id="cv" name="cv" accept=".pdf" onChange={handleFileChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
                 </div>
-                <button type="submit" disabled={!cvFile} className="bg-foreground text-background font-medium px-4 py-2 rounded hover:bg-foreground/90 transition-colors disabled:opacity-50">
+                <button type="submit" disabled={!cvFile} className="bg-indigo-600 text-white font-medium px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50">
                   Upload
                 </button>
               </form>
             </div>
             
             {/* About Section Editor */}
-            <div className="bg-card border border-border p-6 rounded-lg md:col-span-2">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl md:col-span-2">
               <h2 className="text-xl font-bold flex items-center mb-4">
                 <FileText className="mr-2 h-5 w-5" /> Edit About Section
               </h2>
@@ -559,14 +569,14 @@ export default function AdminPage() {
                   <label htmlFor="aboutContent" className="block text-sm font-medium mb-1">About Me Text (Supports **bold**)</label>
                   <textarea id="aboutContent" rows={5} value={aboutContent} onChange={(e) => setAboutContent(e.target.value)} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary resize-none" />
                 </div>
-                <button type="submit" className="bg-foreground text-background font-medium px-4 py-2 rounded hover:bg-foreground/90 transition-colors self-start">
+                <button type="submit" className="bg-indigo-600 text-white font-medium px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors self-start">
                   Save Changes
                 </button>
               </form>
             </div>
 
             {/* Credentials Update */}
-            <div className="bg-card border border-border p-6 rounded-lg md:col-span-2">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl md:col-span-2">
               <h2 className="text-xl font-bold flex items-center mb-4">
                 <Settings className="mr-2 h-5 w-5" /> Admin Settings
               </h2>
@@ -590,7 +600,7 @@ export default function AdminPage() {
                     <input type="password" id="adminPassword" value={credentialsData.password} onChange={(e) => setCredentialsData(prev => ({ ...prev, password: e.target.value }))} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="Enter new password" />
                   </div>
                 </div>
-                <button type="submit" className="bg-foreground text-background font-medium px-4 py-2 rounded hover:bg-foreground/90 transition-colors self-start">
+                <button type="submit" className="bg-indigo-600 text-white font-medium px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors self-start">
                   Save Settings
                 </button>
               </form>
@@ -600,7 +610,7 @@ export default function AdminPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Add Project Form */}
-          <div className="lg:col-span-1 bg-card border border-border p-6 rounded-lg">
+          <div className="lg:col-span-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl">
             <h2 className="text-xl font-bold mb-6 flex items-center">
               <Plus className="mr-2 h-5 w-5" /> Add New Project
             </h2>
@@ -672,7 +682,7 @@ export default function AdminPage() {
                 <input type="file" id="image" name="image" accept="image/*" onChange={handleFileChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
               </div>
 
-              <button disabled={submitting} type="submit" className="w-full bg-foreground text-background font-medium py-2 rounded hover:bg-foreground/90 transition-colors disabled:opacity-50 mt-4">
+              <button disabled={submitting} type="submit" className="w-full bg-indigo-600 text-white font-medium py-2 rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50 mt-4">
                 {submitting ? "Saving..." : "Add Project"}
               </button>
             </form>
@@ -693,7 +703,7 @@ export default function AdminPage() {
             ) : (
               <div className="space-y-4">
                 {projects.map((project) => (
-                  <div key={project.id} className="bg-card border border-border rounded-lg p-4 flex gap-4 items-center group">
+                  <div key={project.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex gap-4 items-center group">
                     <div className="h-16 w-24 bg-muted flex-shrink-0 rounded overflow-hidden relative">
                       {project.image ? (
                         <Image fill src={project.image} alt={project.title} className="object-cover" />
@@ -724,7 +734,7 @@ export default function AdminPage() {
         {/* Certifications Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12 pt-12 border-t border-border">
           {/* Add Certification Form */}
-          <div className="lg:col-span-1 bg-card border border-border p-6 rounded-lg">
+          <div className="lg:col-span-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl">
             <h2 className="text-xl font-bold mb-6 flex items-center">
               <Plus className="mr-2 h-5 w-5" /> Add Certification
             </h2>
@@ -761,7 +771,7 @@ export default function AdminPage() {
                 <input type="file" id="certImage" name="certImage" accept="image/*,.pdf" onChange={handleFileChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
               </div>
 
-              <button disabled={submittingCert} type="submit" className="w-full bg-foreground text-background font-medium py-2 rounded hover:bg-foreground/90 transition-colors disabled:opacity-50 mt-4">
+              <button disabled={submittingCert} type="submit" className="w-full bg-indigo-600 text-white font-medium py-2 rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50 mt-4">
                 {submittingCert ? "Saving..." : "Add Certification"}
               </button>
             </form>
@@ -782,7 +792,7 @@ export default function AdminPage() {
             ) : (
               <div className="space-y-4">
                 {certifications.map((cert) => (
-                  <div key={cert.id} className="bg-card border border-border rounded-lg p-4 flex gap-4 items-center group">
+                  <div key={cert.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex gap-4 items-center group">
                     <div className="flex-grow">
                       <h3 className="font-bold text-foreground">{cert.course}</h3>
                       <p className="text-sm text-muted-foreground">{cert.institution}</p>
@@ -807,7 +817,7 @@ export default function AdminPage() {
         {/* Experiences Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12 pt-12 border-t border-border">
           {/* Add Experience Form */}
-          <div className="lg:col-span-1 bg-card border border-border p-6 rounded-lg">
+          <div className="lg:col-span-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl">
             <h2 className="text-xl font-bold mb-6 flex items-center">
               <Plus className="mr-2 h-5 w-5" /> Add Experience
             </h2>
@@ -844,7 +854,7 @@ export default function AdminPage() {
                 <input type="text" id="refereeNumber" name="refereeNumber" value={expFormData.refereeNumber} onChange={handleExpInputChange} placeholder="e.g. +1234567890" className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
               </div>
 
-              <button disabled={submittingExp} type="submit" className="w-full bg-foreground text-background font-medium py-2 rounded hover:bg-foreground/90 transition-colors disabled:opacity-50 mt-4">
+              <button disabled={submittingExp} type="submit" className="w-full bg-indigo-600 text-white font-medium py-2 rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50 mt-4">
                 {submittingExp ? "Saving..." : "Add Experience"}
               </button>
             </form>
@@ -865,7 +875,7 @@ export default function AdminPage() {
             ) : (
               <div className="space-y-4">
                 {experiences.map((exp) => (
-                  <div key={exp.id} className="bg-card border border-border rounded-lg p-4 flex gap-4 items-center group">
+                  <div key={exp.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex gap-4 items-center group">
                     <div className="flex-grow">
                       <h3 className="font-bold text-foreground">{exp.role}</h3>
                       <p className="text-sm font-semibold text-primary">{exp.organization}</p>

@@ -3,10 +3,16 @@
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
 
   const navLinks = [
     { name: "Home", href: "/" },
