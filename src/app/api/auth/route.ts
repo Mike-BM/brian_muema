@@ -27,7 +27,15 @@ export async function POST(request: Request) {
     const isValidUsername = savedUsername ? username === savedUsername : username === envUsername;
 
     if (isValidPassword && isValidUsername) {
-      return NextResponse.json({ success: true });
+      const response = NextResponse.json({ success: true });
+      response.cookies.set('admin_token', 'authenticated', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/',
+        maxAge: 60 * 60 * 24 // 1 day
+      });
+      return response;
     } else {
       return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });
     }
