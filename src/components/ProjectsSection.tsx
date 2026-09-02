@@ -24,7 +24,7 @@ export function ProjectsSection() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const categories = ["All", "Data Analysis", "Data Science", "Machine Learning", "AI"];
+  const categories = ["All", "Data Analysis", "Data Science", "Machine Learning", "AI", "Hackathon", "Client Website", "Side Project"];
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -44,19 +44,18 @@ export function ProjectsSection() {
   }, []);
 
   const filteredProjects = projects
-    .filter(p => !p.projectType || p.projectType === 'Professional')
-    .filter(p => filter === "All" || p.filterCategory.includes(filter) || p.category.includes(filter));
+    .filter(p => filter === "All" || p.filterCategory.includes(filter) || p.category.includes(filter) || p.projectType === filter);
 
   return (
     <section id="projects" className="py-16 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">
-            Featured Projects
+            Projects
           </h2>
           <div className="h-1 w-20 bg-primary rounded mb-6" />
           <p className="text-lg text-muted-foreground">
-            Real-world problems explored through data, analysis, and technology.
+            Explore my featured professional work, side projects, and experiments.
           </p>
         </div>
 

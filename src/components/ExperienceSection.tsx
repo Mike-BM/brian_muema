@@ -11,9 +11,21 @@ interface Certification {
   certificateUrl: string;
 }
 
-export function ExperienceAndSkillsSection() {
+interface Experience {
+  id: string;
+  role: string;
+  organization: string;
+  description: string;
+  dateJoined: string;
+  refereeNumber: string;
+}
+
+export function ExperienceSection() {
   const [certifications, setCertifications] = useState<Certification[]>([]);
   const [loadingCerts, setLoadingCerts] = useState(true);
+  
+  const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [loadingExps, setLoadingExps] = useState(true);
 
   useEffect(() => {
     const fetchCertifications = async () => {
@@ -29,7 +41,23 @@ export function ExperienceAndSkillsSection() {
         setLoadingCerts(false);
       }
     };
+
+    const fetchExperiences = async () => {
+      try {
+        const res = await fetch('/api/experiences');
+        if (res.ok) {
+          const data = await res.json();
+          setExperiences(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch experiences', error);
+      } finally {
+        setLoadingExps(false);
+      }
+    };
+
     fetchCertifications();
+    fetchExperiences();
   }, []);
   const skillCategories = [
     {
@@ -62,12 +90,55 @@ export function ExperienceAndSkillsSection() {
     }
   ];
 
-
-
   return (
-    <section id="experience-skills" className="py-16 bg-muted/30">
+    <section id="experience" className="py-16 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         
+        {/* Work History Section */}
+        <div className="max-w-4xl mb-12">
+          <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center gap-2">
+            <Briefcase className="h-8 w-8 text-primary" /> Work History
+          </h2>
+          <div className="h-1 w-20 bg-primary rounded" />
+        </div>
+
+        {loadingExps ? (
+          <div className="flex justify-center p-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : experiences.length === 0 ? (
+          <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground">
+            No experiences listed yet.
+          </div>
+        ) : (
+          <div className="space-y-8 max-w-4xl mb-20">
+            {experiences.map((exp) => (
+              <div key={exp.id} className="bg-card border border-border p-6 rounded-lg relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-1 h-full bg-primary/50 group-hover:bg-primary transition-colors"></div>
+                <div className="flex items-start justify-between flex-wrap gap-4">
+                  <div>
+                    <h3 className="text-2xl font-bold text-foreground">
+                      {exp.role}
+                    </h3>
+                    <p className="text-lg font-semibold text-primary mt-1">{exp.organization}</p>
+                    <p className="text-sm font-medium text-muted-foreground mt-1">
+                      Joined: {exp.dateJoined}
+                    </p>
+                    {exp.refereeNumber && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Ref: {exp.refereeNumber}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-border/50 text-muted-foreground whitespace-pre-line">
+                  {exp.description}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Skills Section */}
         <div className="max-w-4xl mt-20 mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">
