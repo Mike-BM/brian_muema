@@ -68,6 +68,7 @@ export default function AdminPage() {
 
   const [maintenance, setMaintenance] = useState(false);
   const [cvFile, setCvFile] = useState<File | null>(null);
+  const [aboutTitle, setAboutTitle] = useState("About Me");
   const [aboutContent, setAboutContent] = useState("");
   
   const dataTypes = ["Data Analysis", "Data Science", "Machine Learning", "AI", "Hackathon"];
@@ -194,6 +195,7 @@ export default function AdminPage() {
       const res = await fetch('/api/about');
       if (res.ok) {
         const data = await res.json();
+        setAboutTitle(data.title || "About Me");
         setAboutContent(data.content || "");
       }
     } catch (error) {
@@ -446,7 +448,7 @@ export default function AdminPage() {
       const res = await fetch('/api/about', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: aboutContent }),
+        body: JSON.stringify({ title: aboutTitle, content: aboutContent }),
       });
       if (res.ok) {
         setAboutMessage({ text: "About section updated!", type: "success" });
@@ -748,6 +750,10 @@ export default function AdminPage() {
                 </div>
               )}
               <form onSubmit={handleAboutSubmit} className="flex flex-col gap-4">
+                <div>
+                  <label htmlFor="aboutTitle" className="block text-sm font-medium mb-1">Section Title</label>
+                  <input type="text" id="aboutTitle" value={aboutTitle} onChange={(e) => setAboutTitle(e.target.value)} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="e.g. About Me" />
+                </div>
                 <div>
                   <label htmlFor="aboutContent" className="block text-sm font-medium mb-1">About Me Text (Supports **bold**)</label>
                   <textarea id="aboutContent" rows={5} value={aboutContent} onChange={(e) => setAboutContent(e.target.value)} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary resize-none" />

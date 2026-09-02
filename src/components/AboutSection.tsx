@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export function AboutSection() {
+  const [aboutTitle, setAboutTitle] = useState("About Me");
   const [aboutContent, setAboutContent] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -13,7 +14,8 @@ export function AboutSection() {
         const res = await fetch('/api/about');
         if (res.ok) {
           const data = await res.json();
-          setAboutContent(data.content);
+          setAboutTitle(data.title || "About Me");
+          setAboutContent(data.content || "");
         }
       } catch (error) {
         console.error('Failed to fetch about data', error);
@@ -29,7 +31,7 @@ export function AboutSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl">
           <div>
-            <h2 className="text-3xl font-bold text-foreground mb-6">About Me</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-6">{aboutTitle}</h2>
             <div className="prose prose-lg dark:prose-invert text-muted-foreground leading-relaxed max-w-none">
               {loading ? (
                 <div className="animate-pulse space-y-4">

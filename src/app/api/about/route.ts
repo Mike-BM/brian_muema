@@ -21,8 +21,8 @@ export async function POST(request: Request) {
   try {
     const data = await request.json();
     
-    if (!data.content) {
-      return NextResponse.json({ error: 'Missing content field' }, { status: 400 });
+    if (typeof data.content !== 'string') {
+      return NextResponse.json({ error: 'Invalid content field' }, { status: 400 });
     }
 
     const file = await getGithubFile(ABOUT_PATH);
