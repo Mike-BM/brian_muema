@@ -53,22 +53,6 @@
     "image": null
   },
   {
-    "id": "4",
-    "title": "Data Analysis Projects",
-    "description": "A collection of smaller analytical projects covering EDA, Sales, Customer, and Economic analysis.",
-    "category": "Data Analysis / EDA",
-    "filterCategory": "Data Analysis",
-    "technologies": [
-      "Exploratory Data Analysis",
-      "Predictive Modeling",
-      "Data visualization",
-      "Statistics"
-    ],
-    "link": "#",
-    "github": "#",
-    "image": null
-  },
-  {
     "id": "1788407604839",
     "title": "Data Analysis",
     "description": "An exploratory data analysis project examining COVID-19 trends across Kenya, India, the United States, and China. The project involved data cleaning, transformation, statistical analysis, and visualization to identify patterns in COVID-19 cases, death rates, and vaccination trends. Interactive and geographic visualizations were also developed to communicate key findings and support data-driven interpretation.",
