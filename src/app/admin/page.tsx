@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Plus, Trash2, Settings, FileText, FolderGit2, Award, Briefcase, Edit, X, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Settings, FileText, FolderGit2, Award, Briefcase, Edit, X, AlertCircle, CheckCircle2, LogOut } from "lucide-react";
 
 interface Project {
   id: string;
@@ -216,6 +216,23 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.authenticated) {
+            setIsAuthenticated(true);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to check auth', e);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjects();
      
@@ -229,6 +246,15 @@ export default function AdminPage() {
      
     if (isAuthenticated) fetchCredentials();
   }, [isAuthenticated]);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth', { method: 'DELETE' });
+    } catch (e) {
+      console.error('Logout error', e);
+    }
+    setIsAuthenticated(false);
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -679,8 +705,16 @@ export default function AdminPage() {
             </Link>
             <h1 className="text-xl font-bold tracking-tight">Admin Dashboard</h1>
           </div>
-          <div className="text-sm font-medium text-slate-400">
-            Logged in as Admin
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-slate-400 hidden sm:inline">Logged in as Admin</span>
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors"
+              title="Log out of admin session"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span>Logout</span>
+            </button>
           </div>
         </div>
       </header>
@@ -1183,7 +1217,18 @@ export default function AdminPage() {
                   {editingExpId && (
                     <button type="button" onClick={() => {
                       setEditingExpId(null);
-                      setExpFormData({ role: "", organization: "", description: "", dateJoined: "", refereeNumber: "" });
+                      setExpFormData({
+                        type: "Formal",
+                        role: "",
+                        organization: "",
+                        description: "",
+                        dateJoined: "",
+                        refereeNumber: "",
+                        startDate: new Date().toISOString().split('T')[0],
+                        endDate: "",
+                        current: false,
+                        link: ""
+                      });
                     }} className="flex-1 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium py-2 rounded-md hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
                       Cancel
                     </button>

@@ -6,14 +6,19 @@ const ABOUT_PATH = 'public/data/about.json';
 export async function GET() {
   try {
     const file = await getGithubFile(ABOUT_PATH);
-    if (!file) {
+    if (!file || !file.content) {
       return NextResponse.json({ content: "" });
     }
-    const aboutData = JSON.parse(file.content);
-    return NextResponse.json(aboutData);
-  } catch (error) {
-    console.error('Error reading about.json from GitHub:', error);
-    return NextResponse.json({ error: 'Failed to load about section data' }, { status: 500 });
+    try {
+      const aboutData = JSON.parse(file.content);
+      return NextResponse.json(aboutData);
+    } catch (err) {
+      console.error('JSON parse error for about.json:', err);
+      return NextResponse.json({ content: file.content });
+    }
+  } catch (error: any) {
+    console.error('Error reading about.json:', error);
+    return NextResponse.json({ error: error?.message || 'Failed to load about section data' }, { status: 500 });
   }
 }
 
@@ -32,8 +37,8 @@ export async function POST(request: Request) {
     await updateGithubFile(ABOUT_PATH, newContent, `Update about section`, currentSha);
 
     return NextResponse.json({ success: true, about: data }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error saving about data:', error);
-    return NextResponse.json({ error: 'Failed to save about section data' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to save about section data' }, { status: 500 });
   }
 }

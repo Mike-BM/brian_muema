@@ -3,18 +3,28 @@ import { getGithubFile, updateGithubFile } from '@/lib/github';
 
 const PROJECTS_PATH = 'public/data/projects.json';
 
+function safeParseProjects(content?: string): any[] {
+  if (!content) return [];
+  try {
+    const data = JSON.parse(content);
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.error('Failed to parse projects JSON:', e);
+    return [];
+  }
+}
+
 export async function GET() {
   try {
-    // We fetch directly from GitHub to ensure the admin panel sees latest data
     const file = await getGithubFile(PROJECTS_PATH);
     if (!file) {
       return NextResponse.json([]);
     }
-    const projects = JSON.parse(file.content);
+    const projects = safeParseProjects(file.content);
     return NextResponse.json(projects);
-  } catch (error) {
-    console.error('Error reading projects from GitHub:', error);
-    return NextResponse.json({ error: 'Failed to load projects' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error reading projects:', error);
+    return NextResponse.json({ error: error?.message || 'Failed to load projects' }, { status: 500 });
   }
 }
 
@@ -30,7 +40,7 @@ export async function POST(request: Request) {
     const category = formData.get('category') as string;
     const filterCategory = formData.get('filterCategory') as string;
     const projectType = (formData.get('projectType') as string) || 'Professional';
-    const technologies = (formData.get('technologies') as string)?.split(',').map(t => t.trim()) || [];
+    const technologies = (formData.get('technologies') as string)?.split(',').map(t => t.trim()).filter(Boolean) || [];
     const link = formData.get('link') as string;
     const github = formData.get('github') as string;
     const liveUrl = formData.get('liveUrl') as string;
@@ -48,14 +58,12 @@ export async function POST(request: Request) {
       const fileName = `${Date.now()}-${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
       const uploadPath = `public/uploads/projects/${fileName}`;
       
-      // Upload to GitHub
       await updateGithubFile(uploadPath, base64Content, `Upload project image ${fileName}`);
       imagePath = `/uploads/projects/${fileName}`;
     }
 
-    // Read current projects from GitHub
     const file = await getGithubFile(PROJECTS_PATH);
-    const projects = file ? JSON.parse(file.content) : [];
+    const projects = safeParseProjects(file?.content);
     const currentSha = file ? file.sha : undefined;
 
     const newProject = {
@@ -77,14 +85,13 @@ export async function POST(request: Request) {
 
     projects.push(newProject);
 
-    // Write back to GitHub
     const newContent = Buffer.from(JSON.stringify(projects, null, 2)).toString('base64');
     await updateGithubFile(PROJECTS_PATH, newContent, `Add project: ${title}`, currentSha);
 
     return NextResponse.json({ success: true, project: newProject }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error saving project:', error);
-    return NextResponse.json({ error: 'Failed to save project' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to save project' }, { status: 500 });
   }
 }
 
@@ -105,7 +112,7 @@ export async function PUT(request: Request) {
     const category = formData.get('category') as string;
     const filterCategory = formData.get('filterCategory') as string;
     const projectType = (formData.get('projectType') as string) || 'Professional';
-    const technologies = (formData.get('technologies') as string)?.split(',').map(t => t.trim()) || [];
+    const technologies = (formData.get('technologies') as string)?.split(',').map(t => t.trim()).filter(Boolean) || [];
     const link = formData.get('link') as string;
     const github = formData.get('github') as string;
     const liveUrl = formData.get('liveUrl') as string;
@@ -129,11 +136,8 @@ export async function PUT(request: Request) {
     }
 
     const file = await getGithubFile(PROJECTS_PATH);
-    if (!file) {
-      return NextResponse.json({ error: 'Projects file not found' }, { status: 404 });
-    }
-    const projects = JSON.parse(file.content);
-    const currentSha = file.sha;
+    const projects = safeParseProjects(file?.content);
+    const currentSha = file ? file.sha : undefined;
     
     const index = projects.findIndex((p: any) => p.id === id);
     if (index === -1) {
@@ -161,9 +165,9 @@ export async function PUT(request: Request) {
     await updateGithubFile(PROJECTS_PATH, newContent, `Update project: ${title}`, currentSha);
 
     return NextResponse.json({ success: true, project: projects[index] }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating project:', error);
-    return NextResponse.json({ error: 'Failed to update project' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to update project' }, { status: 500 });
   }
 }
 
@@ -173,11 +177,8 @@ export async function DELETE(request: Request) {
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
 
     const file = await getGithubFile(PROJECTS_PATH);
-    if (!file) {
-      return NextResponse.json({ error: 'Projects file not found' }, { status: 404 });
-    }
-    let projects = JSON.parse(file.content);
-    const currentSha = file.sha;
+    let projects = safeParseProjects(file?.content);
+    const currentSha = file ? file.sha : undefined;
     
     projects = projects.filter((p: any) => p.id !== id);
     
@@ -185,8 +186,8 @@ export async function DELETE(request: Request) {
     await updateGithubFile(PROJECTS_PATH, newContent, `Delete project ${id}`, currentSha);
     
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting project:', error);
-    return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to delete project' }, { status: 500 });
   }
 }

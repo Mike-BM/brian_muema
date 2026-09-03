@@ -44,3 +44,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function GET(request: Request) {
+  const cookie = request.headers.get('cookie') || '';
+  const authenticated = cookie.includes('admin_token=authenticated');
+  return NextResponse.json({ authenticated });
+}
+
+export async function DELETE() {
+  const response = NextResponse.json({ success: true });
+  response.cookies.set('admin_token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    path: '/',
+    maxAge: 0,
+  });
+  return response;
+}
+

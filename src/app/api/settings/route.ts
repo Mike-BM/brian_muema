@@ -42,8 +42,8 @@ export async function POST(request: Request) {
     await updateGithubFile(SETTINGS_PATH, newContent, `Update settings`, currentSha);
 
     return NextResponse.json({ success: true, settings: newSettings }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error saving settings:', error);
-    return NextResponse.json({ error: 'Failed to save settings' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to save settings' }, { status: 500 });
   }
 }

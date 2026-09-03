@@ -3,17 +3,28 @@ import { getGithubFile, updateGithubFile } from '@/lib/github';
 
 const CERTS_PATH = 'public/data/certifications.json';
 
+function safeParseCertifications(content?: string): any[] {
+  if (!content) return [];
+  try {
+    const data = JSON.parse(content);
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.error('Failed to parse certifications JSON:', e);
+    return [];
+  }
+}
+
 export async function GET() {
   try {
     const file = await getGithubFile(CERTS_PATH);
     if (!file) {
       return NextResponse.json([]);
     }
-    const certifications = JSON.parse(file.content);
+    const certifications = safeParseCertifications(file.content);
     return NextResponse.json(certifications);
-  } catch (error) {
-    console.error('Error reading certifications from GitHub:', error);
-    return NextResponse.json({ error: 'Failed to load certifications' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error reading certifications:', error);
+    return NextResponse.json({ error: error?.message || 'Failed to load certifications' }, { status: 500 });
   }
 }
 
@@ -44,7 +55,7 @@ export async function POST(request: Request) {
     }
 
     const file = await getGithubFile(CERTS_PATH);
-    const certifications = file ? JSON.parse(file.content) : [];
+    const certifications = safeParseCertifications(file?.content);
     const currentSha = file ? file.sha : undefined;
 
     const newCertification = {
@@ -61,9 +72,9 @@ export async function POST(request: Request) {
     await updateGithubFile(CERTS_PATH, newContent, `Add certification: ${course}`, currentSha);
 
     return NextResponse.json({ success: true, certification: newCertification }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error saving certification:', error);
-    return NextResponse.json({ error: 'Failed to save certification' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to save certification' }, { status: 500 });
   }
 }
 
@@ -100,11 +111,8 @@ export async function PUT(request: Request) {
     }
 
     const file = await getGithubFile(CERTS_PATH);
-    if (!file) {
-      return NextResponse.json({ error: 'Certifications file not found' }, { status: 404 });
-    }
-    const certifications = JSON.parse(file.content);
-    const currentSha = file.sha;
+    const certifications = safeParseCertifications(file?.content);
+    const currentSha = file ? file.sha : undefined;
     
     const index = certifications.findIndex((c: any) => c.id === id);
     if (index === -1) {
@@ -123,9 +131,9 @@ export async function PUT(request: Request) {
     await updateGithubFile(CERTS_PATH, newContent, `Update certification: ${course}`, currentSha);
 
     return NextResponse.json({ success: true, certification: certifications[index] }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating certification:', error);
-    return NextResponse.json({ error: 'Failed to update certification' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to update certification' }, { status: 500 });
   }
 }
 
@@ -135,11 +143,8 @@ export async function DELETE(request: Request) {
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
 
     const file = await getGithubFile(CERTS_PATH);
-    if (!file) {
-      return NextResponse.json({ error: 'Certifications file not found' }, { status: 404 });
-    }
-    let certifications = JSON.parse(file.content);
-    const currentSha = file.sha;
+    let certifications = safeParseCertifications(file?.content);
+    const currentSha = file ? file.sha : undefined;
     
     certifications = certifications.filter((c: any) => c.id !== id);
     
@@ -147,8 +152,8 @@ export async function DELETE(request: Request) {
     await updateGithubFile(CERTS_PATH, newContent, `Delete certification ${id}`, currentSha);
     
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting certification:', error);
-    return NextResponse.json({ error: 'Failed to delete certification' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to delete certification' }, { status: 500 });
   }
 }
