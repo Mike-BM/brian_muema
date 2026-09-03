@@ -5,7 +5,15 @@
     "description": "An agriculture intelligence platform combining climate, soil, and land data to generate insights for agricultural decision-making.",
     "category": "Data Science / AI / Agriculture",
     "filterCategory": "AI",
-    "technologies": ["Python", "Pandas", "Machine Learning", "NASA POWER", "SoilGrids", "CHIRPS", "Mapbox"],
+    "technologies": [
+      "Python",
+      "Pandas",
+      "Machine Learning",
+      "NASA POWER",
+      "SoilGrids",
+      "CHIRPS",
+      "Mapbox"
+    ],
     "link": "#",
     "github": "#",
     "image": null
@@ -16,7 +24,13 @@
     "description": "A financial intelligence concept designed to help African SMEs understand financial data and support better decision-making.",
     "category": "Data Science / Financial Analytics",
     "filterCategory": "Data Science",
-    "technologies": ["Python", "Data Analysis", "AI", "Machine Learning", "Data Visualization"],
+    "technologies": [
+      "Python",
+      "Data Analysis",
+      "AI",
+      "Machine Learning",
+      "Data Visualization"
+    ],
     "link": "#",
     "github": "#",
     "image": null
@@ -27,7 +41,13 @@
     "description": "A digital maternal health platform concept integrating healthcare services, appointments, digital support, and intelligent technology.",
     "category": "Data / AI / Healthcare Technology",
     "filterCategory": "AI",
-    "technologies": ["React", "FastAPI", "AI", "PostgreSQL", "APIs"],
+    "technologies": [
+      "React",
+      "FastAPI",
+      "AI",
+      "PostgreSQL",
+      "APIs"
+    ],
     "link": "#",
     "github": "#",
     "image": null
@@ -38,9 +58,32 @@
     "description": "A collection of smaller analytical projects covering EDA, Sales, Customer, and Economic analysis.",
     "category": "Data Analysis / EDA",
     "filterCategory": "Data Analysis",
-    "technologies": ["Exploratory Data Analysis", "Predictive Modeling", "Data visualization", "Statistics"],
+    "technologies": [
+      "Exploratory Data Analysis",
+      "Predictive Modeling",
+      "Data visualization",
+      "Statistics"
+    ],
     "link": "#",
     "github": "#",
     "image": null
+  },
+  {
+    "id": "1788407604839",
+    "title": "Data Analysis",
+    "description": "An exploratory data analysis project examining COVID-19 trends across Kenya, India, the United States, and China. The project involved data cleaning, transformation, statistical analysis, and visualization to identify patterns in COVID-19 cases, death rates, and vaccination trends. Interactive and geographic visualizations were also developed to communicate key findings and support data-driven interpretation.",
+    "fullDescription": "",
+    "dateCompleted": "2026-09-03",
+    "featured": true,
+    "category": "Data Analysis",
+    "filterCategory": "Data Analysis",
+    "projectType": "Professional",
+    "technologies": [
+      "Python · Pandas · NumPy · Matplotlib · Seaborn · Plotly · Jupyter Notebook"
+    ],
+    "link": "https://app.notion.com/p/Covid-19-Analysis-Case-Study-3d0dbc2e564d80d68f01c570f9b778ea?source=copy_link",
+    "github": "https://github.com/Mike-BM/Covid-19-Global-Data-Tracker.git",
+    "liveUrl": "",
+    "image": "/uploads/projects/1788407603802-Screenshot_2026-09-03_065042.png"
   }
 ]
