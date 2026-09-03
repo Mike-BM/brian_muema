@@ -1,6 +1,10 @@
-import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
+import { jsonNoCache } from '@/lib/github';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 const credentialsPath = path.join(process.cwd(), 'data', 'credentials.json');
 
@@ -8,11 +12,10 @@ export async function GET() {
   try {
     const fileContents = await fs.readFile(credentialsPath, 'utf8');
     const credentials = JSON.parse(fileContents);
-    // Return email and username, not password
-    return NextResponse.json({ email: credentials.email, username: credentials.username });
+    return jsonNoCache({ email: credentials.email, username: credentials.username });
   } catch (error) {
     console.error('Error reading credentials:', error);
-    return NextResponse.json({ email: 'brianmuema928@gmail.com', username: 'brian' });
+    return jsonNoCache({ email: 'brianmuema928@gmail.com', username: 'brian' });
   }
 }
 
@@ -48,9 +51,9 @@ export async function POST(request: Request) {
 
     await fs.writeFile(credentialsPath, JSON.stringify(newCredentials, null, 2));
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    return jsonNoCache({ success: true }, 200);
   } catch (error) {
     console.error('Error saving credentials:', error);
-    return NextResponse.json({ error: 'Failed to save credentials' }, { status: 500 });
+    return jsonNoCache({ error: 'Failed to save credentials' }, 500);
   }
 }

@@ -35,7 +35,7 @@ export function ExperienceSection() {
   useEffect(() => {
     const fetchCertifications = async () => {
       try {
-        const res = await fetch('/api/certifications');
+        const res = await fetch(`/api/certifications?t=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setCertifications(data);
@@ -49,7 +49,7 @@ export function ExperienceSection() {
 
     const fetchExperiences = async () => {
       try {
-        const res = await fetch('/api/experiences');
+        const res = await fetch(`/api/experiences?t=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setExperiences(data);

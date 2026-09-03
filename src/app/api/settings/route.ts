@@ -1,5 +1,8 @@
-import { NextResponse } from 'next/server';
-import { getGithubFile, updateGithubFile } from '@/lib/github';
+import { getGithubFile, updateGithubFile, jsonNoCache } from '@/lib/github';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 const SETTINGS_PATH = 'public/data/settings.json';
 
@@ -7,13 +10,13 @@ export async function GET() {
   try {
     const file = await getGithubFile(SETTINGS_PATH);
     if (!file) {
-      return NextResponse.json({ maintenance: false });
+      return jsonNoCache({ maintenance: false });
     }
     const settings = JSON.parse(file.content);
-    return NextResponse.json(settings);
+    return jsonNoCache(settings);
   } catch (error) {
     console.error('Error reading settings from GitHub:', error);
-    return NextResponse.json({ maintenance: false });
+    return jsonNoCache({ maintenance: false });
   }
 }
 
@@ -41,9 +44,9 @@ export async function POST(request: Request) {
     const newContent = Buffer.from(JSON.stringify(newSettings, null, 2)).toString('base64');
     await updateGithubFile(SETTINGS_PATH, newContent, `Update settings`, currentSha);
 
-    return NextResponse.json({ success: true, settings: newSettings }, { status: 200 });
+    return jsonNoCache({ success: true, settings: newSettings }, 200);
   } catch (error: any) {
     console.error('Error saving settings:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to save settings' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to save settings' }, 500);
   }
 }

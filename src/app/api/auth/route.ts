@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
+import { NO_CACHE_HEADERS, jsonNoCache } from '@/lib/github';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 const credentialsPath = path.join(process.cwd(), 'data', 'credentials.json');
 
@@ -27,7 +32,7 @@ export async function POST(request: Request) {
     const isValidUsername = savedUsername ? username === savedUsername : username === envUsername;
 
     if (isValidPassword && isValidUsername) {
-      const response = NextResponse.json({ success: true });
+      const response = NextResponse.json({ success: true }, { headers: NO_CACHE_HEADERS });
       response.cookies.set('admin_token', 'authenticated', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -37,22 +42,22 @@ export async function POST(request: Request) {
       });
       return response;
     } else {
-      return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });
+      return jsonNoCache({ error: 'Invalid username or password' }, 401);
     }
   } catch (error) {
     console.error('Login error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return jsonNoCache({ error: 'Internal server error' }, 500);
   }
 }
 
 export async function GET(request: Request) {
   const cookie = request.headers.get('cookie') || '';
   const authenticated = cookie.includes('admin_token=authenticated');
-  return NextResponse.json({ authenticated });
+  return jsonNoCache({ authenticated });
 }
 
 export async function DELETE() {
-  const response = NextResponse.json({ success: true });
+  const response = NextResponse.json({ success: true }, { headers: NO_CACHE_HEADERS });
   response.cookies.set('admin_token', '', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -62,4 +67,3 @@ export async function DELETE() {
   });
   return response;
 }
-

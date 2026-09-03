@@ -1,5 +1,8 @@
-import { NextResponse } from 'next/server';
-import { getGithubFile, updateGithubFile } from '@/lib/github';
+import { getGithubFile, updateGithubFile, jsonNoCache } from '@/lib/github';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 const PROJECTS_PATH = 'public/data/projects.json';
 
@@ -18,13 +21,13 @@ export async function GET() {
   try {
     const file = await getGithubFile(PROJECTS_PATH);
     if (!file) {
-      return NextResponse.json([]);
+      return jsonNoCache([]);
     }
     const projects = safeParseProjects(file.content);
-    return NextResponse.json(projects);
+    return jsonNoCache(projects);
   } catch (error: any) {
     console.error('Error reading projects:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to load projects' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to load projects' }, 500);
   }
 }
 
@@ -47,7 +50,7 @@ export async function POST(request: Request) {
     const imageFile = formData.get('image') as File | null;
 
     if (!title || !description || !category || !filterCategory) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return jsonNoCache({ error: 'Missing required fields' }, 400);
     }
 
     let imagePath = null;
@@ -88,10 +91,10 @@ export async function POST(request: Request) {
     const newContent = Buffer.from(JSON.stringify(projects, null, 2)).toString('base64');
     await updateGithubFile(PROJECTS_PATH, newContent, `Add project: ${title}`, currentSha);
 
-    return NextResponse.json({ success: true, project: newProject }, { status: 201 });
+    return jsonNoCache({ success: true, project: newProject }, 201);
   } catch (error: any) {
     console.error('Error saving project:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to save project' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to save project' }, 500);
   }
 }
 
@@ -101,7 +104,7 @@ export async function PUT(request: Request) {
     const id = formData.get('id') as string;
     
     if (!id) {
-      return NextResponse.json({ error: 'Missing project ID' }, { status: 400 });
+      return jsonNoCache({ error: 'Missing project ID' }, 400);
     }
 
     const title = formData.get('title') as string;
@@ -120,7 +123,7 @@ export async function PUT(request: Request) {
     const existingImage = formData.get('existingImage') as string | null;
 
     if (!title || !description || !category || !filterCategory) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return jsonNoCache({ error: 'Missing required fields' }, 400);
     }
 
     let imagePath = existingImage || null;
@@ -141,7 +144,7 @@ export async function PUT(request: Request) {
     
     const index = projects.findIndex((p: any) => p.id === id);
     if (index === -1) {
-      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+      return jsonNoCache({ error: 'Project not found' }, 404);
     }
 
     projects[index] = {
@@ -164,17 +167,17 @@ export async function PUT(request: Request) {
     const newContent = Buffer.from(JSON.stringify(projects, null, 2)).toString('base64');
     await updateGithubFile(PROJECTS_PATH, newContent, `Update project: ${title}`, currentSha);
 
-    return NextResponse.json({ success: true, project: projects[index] }, { status: 200 });
+    return jsonNoCache({ success: true, project: projects[index] }, 200);
   } catch (error: any) {
     console.error('Error updating project:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to update project' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to update project' }, 500);
   }
 }
 
 export async function DELETE(request: Request) {
   try {
     const { id } = await request.json();
-    if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    if (!id) return jsonNoCache({ error: 'Missing id' }, 400);
 
     const file = await getGithubFile(PROJECTS_PATH);
     let projects = safeParseProjects(file?.content);
@@ -185,9 +188,9 @@ export async function DELETE(request: Request) {
     const newContent = Buffer.from(JSON.stringify(projects, null, 2)).toString('base64');
     await updateGithubFile(PROJECTS_PATH, newContent, `Delete project ${id}`, currentSha);
     
-    return NextResponse.json({ success: true }, { status: 200 });
+    return jsonNoCache({ success: true }, 200);
   } catch (error: any) {
     console.error('Error deleting project:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to delete project' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to delete project' }, 500);
   }
 }

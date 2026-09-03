@@ -1,10 +1,37 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { NextResponse } from 'next/server';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO_OWNER = process.env.GITHUB_REPO_OWNER || 'Mike-BM';
 const GITHUB_REPO_NAME = process.env.GITHUB_REPO_NAME || 'brian_muema';
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
+
+export const NO_CACHE_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+  'CDN-Cache-Control': 'no-store',
+  'Vercel-CDN-Cache-Control': 'no-store',
+  'Pragma': 'no-cache',
+  'Expires': '0',
+};
+
+export function jsonNoCache(data: any, status = 200) {
+  return NextResponse.json(data, {
+    status,
+    headers: NO_CACHE_HEADERS,
+  });
+}
+
+/**
+ * In-memory cache to guarantee instantaneous read-after-write on the server,
+ * bypassing GitHub API CDN propagation delay.
+ */
+interface CacheEntry {
+  sha: string;
+  content: string;
+  timestamp: number;
+}
+const memCache = new Map<string, CacheEntry>();
 
 /**
  * Normalizes string by removing UTF-8 or UTF-16 Byte Order Mark (BOM) if present
@@ -55,19 +82,21 @@ async function writeLocalFile(relPath: string, base64Content: string): Promise<b
 }
 
 /**
- * Fetches file metadata directly from GitHub API
+ * Fetches file metadata directly from GitHub API with cache-busting
  */
 async function fetchGithubRaw(relPath: string) {
   if (!GITHUB_TOKEN) return null;
 
   const normalized = relPath.replace(/^[/\\]+/, '');
-  const url = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${normalized}?ref=${GITHUB_BRANCH}`;
+  // Cache-busting timestamp parameter ensures GitHub's CDN returns the real HEAD commit
+  const url = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${normalized}?ref=${GITHUB_BRANCH}&_t=${Date.now()}`;
   
   const response = await fetch(url, {
     headers: {
       'Authorization': `Bearer ${GITHUB_TOKEN}`,
       'Accept': 'application/vnd.github.v3+json',
-      'Cache-Control': 'no-cache',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
     },
     cache: 'no-store',
   });
@@ -82,18 +111,37 @@ async function fetchGithubRaw(relPath: string) {
   }
 
   const data = await response.json();
+  const content = cleanContent(Buffer.from(data.content, 'base64').toString('utf8'));
+  const entry: CacheEntry = {
+    sha: data.sha,
+    content,
+    timestamp: Date.now(),
+  };
+  memCache.set(normalized, entry);
+
   return {
     sha: data.sha,
-    content: cleanContent(Buffer.from(data.content, 'base64').toString('utf8')),
+    content,
   };
 }
 
 /**
- * Gets a file from GitHub API or falls back to local filesystem
+ * Gets a file from memory cache, GitHub API, or falls back to local filesystem
  * @param filePath Path to file from repo root, e.g. "public/data/projects.json"
  */
 export async function getGithubFile(filePath: string): Promise<{ sha: string; content: string } | null> {
-  // If GITHUB_TOKEN is available, try GitHub first
+  const normalized = filePath.replace(/^[/\\]+/, '');
+
+  // 1. Check in-memory cache if freshly updated (within last 60 seconds)
+  const cached = memCache.get(normalized);
+  if (cached && Date.now() - cached.timestamp < 60000) {
+    return {
+      sha: cached.sha,
+      content: cached.content,
+    };
+  }
+
+  // 2. If GITHUB_TOKEN is available, try GitHub fresh
   if (GITHUB_TOKEN) {
     try {
       const ghFile = await fetchGithubRaw(filePath);
@@ -105,8 +153,26 @@ export async function getGithubFile(filePath: string): Promise<{ sha: string; co
     }
   }
 
-  // Fallback to local filesystem
-  return await getLocalFile(filePath);
+  // 3. Fallback to local filesystem
+  const localFile = await getLocalFile(filePath);
+  if (localFile) {
+    memCache.set(normalized, {
+      sha: localFile.sha,
+      content: localFile.content,
+      timestamp: Date.now(),
+    });
+    return localFile;
+  }
+
+  // 4. If local file doesn't exist, return expired cache if we had one
+  if (cached) {
+    return {
+      sha: cached.sha,
+      content: cached.content,
+    };
+  }
+
+  return null;
 }
 
 /**
@@ -122,10 +188,20 @@ export async function updateGithubFile(
   message: string,
   sha?: string
 ) {
-  // 1. Always attempt local write first
+  const normalized = filePath.replace(/^[/\\]+/, '');
+
+  // 1. Update in-memory cache immediately so any immediate read gets this data
+  const decodedText = cleanContent(Buffer.from(content, 'base64').toString('utf8'));
+  memCache.set(normalized, {
+    sha: sha || 'pending',
+    content: decodedText,
+    timestamp: Date.now(),
+  });
+
+  // 2. Always attempt local write
   const localSaved = await writeLocalFile(filePath, content);
 
-  // 2. If GITHUB_TOKEN is not configured
+  // 3. If GITHUB_TOKEN is not configured
   if (!GITHUB_TOKEN) {
     if (localSaved) {
       return { success: true, localOnly: true };
@@ -135,9 +211,8 @@ export async function updateGithubFile(
     );
   }
 
-  // 3. Update file on GitHub repository
-  const normalized = filePath.replace(/^[/\\]+/, '');
-  let currentSha = (sha && sha !== 'local') ? sha : undefined;
+  // 4. Update file on GitHub repository
+  let currentSha = (sha && sha !== 'local' && sha !== 'pending') ? sha : undefined;
   if (!currentSha) {
     try {
       const existing = await fetchGithubRaw(normalized);
@@ -184,5 +259,56 @@ export async function updateGithubFile(
     throw new Error(`Failed to update file on GitHub: ${errorData.message || response.statusText}`);
   }
 
-  return await response.json();
+  const result = await response.json();
+  if (result?.content?.sha) {
+    memCache.set(normalized, {
+      sha: result.content.sha,
+      content: decodedText,
+      timestamp: Date.now(),
+    });
+  }
+
+  return result;
+}
+
+/**
+ * Retrieves a raw binary file (e.g. image or PDF) from GitHub or local storage
+ */
+export async function getGithubBinary(relPath: string): Promise<Buffer | null> {
+  const normalized = relPath.replace(/^[/\\]+/, '');
+
+  // 1. Check local file first
+  try {
+    const fullPath = path.join(/*turbopackIgnore: true*/ process.cwd(), normalized);
+    const buffer = await fs.readFile(fullPath);
+    return buffer;
+  } catch {
+    // Proceed to GitHub
+  }
+
+  // 2. Fetch from GitHub Contents API
+  if (GITHUB_TOKEN) {
+    try {
+      const url = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${normalized}?ref=${GITHUB_BRANCH}&_t=${Date.now()}`;
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${GITHUB_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Cache-Control': 'no-cache, no-store',
+        },
+        cache: 'no-store',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.content) {
+          return Buffer.from(data.content, 'base64');
+        }
+      }
+    } catch (e) {
+      console.warn(`Failed fetching binary ${relPath} from GitHub:`, e);
+    }
+  }
+
+  return null;
 }

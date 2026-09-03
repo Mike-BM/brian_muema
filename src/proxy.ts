@@ -34,7 +34,7 @@ export async function proxy(request: NextRequest) {
   try {
     // We can fetch the static settings file from the origin.
     // In Edge runtime, we need the full URL to fetch.
-    const settingsUrl = new URL('/data/settings.json', request.url);
+    const settingsUrl = new URL(`/api/settings?t=${Date.now()}`, request.url);
     const res = await fetch(settingsUrl.toString(), { cache: 'no-store' });
     
     if (res.ok) {

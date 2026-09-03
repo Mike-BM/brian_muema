@@ -142,7 +142,7 @@ export default function AdminPage() {
 
   const fetchProjects = async () => {
     try {
-      const res = await fetch('/api/projects');
+      const res = await fetch(`/api/projects?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setProjects(data);
@@ -154,7 +154,7 @@ export default function AdminPage() {
 
   const fetchCertifications = async () => {
     try {
-      const res = await fetch('/api/certifications');
+      const res = await fetch(`/api/certifications?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setCertifications(data);
@@ -166,7 +166,7 @@ export default function AdminPage() {
 
   const fetchExperiences = async () => {
     try {
-      const res = await fetch('/api/experiences');
+      const res = await fetch(`/api/experiences?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setExperiences(data);
@@ -178,7 +178,7 @@ export default function AdminPage() {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch('/api/settings');
+      const res = await fetch(`/api/settings?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setMaintenance(data.maintenance);
@@ -192,7 +192,7 @@ export default function AdminPage() {
 
   const fetchAbout = async () => {
     try {
-      const res = await fetch('/api/about');
+      const res = await fetch(`/api/about?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setAboutTitle(data.title || "About Me");
@@ -205,7 +205,7 @@ export default function AdminPage() {
 
   const fetchCredentials = async () => {
     try {
-      const res = await fetch('/api/credentials');
+      const res = await fetch(`/api/credentials?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setCredentialsData(prev => ({ ...prev, email: data.email || "", username: data.username || "" }));
@@ -218,7 +218,7 @@ export default function AdminPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch('/api/auth');
+        const res = await fetch(`/api/auth?t=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (data.authenticated) {

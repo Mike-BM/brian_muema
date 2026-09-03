@@ -11,7 +11,7 @@ export function AboutSection() {
   useEffect(() => {
     const fetchAbout = async () => {
       try {
-        const res = await fetch('/api/about');
+        const res = await fetch(`/api/about?t=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setAboutTitle(data.title || "About Me");

@@ -1,5 +1,8 @@
-import { NextResponse } from 'next/server';
-import { getGithubFile, updateGithubFile } from '@/lib/github';
+import { getGithubFile, updateGithubFile, jsonNoCache } from '@/lib/github';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 const CERTS_PATH = 'public/data/certifications.json';
 
@@ -18,13 +21,13 @@ export async function GET() {
   try {
     const file = await getGithubFile(CERTS_PATH);
     if (!file) {
-      return NextResponse.json([]);
+      return jsonNoCache([]);
     }
     const certifications = safeParseCertifications(file.content);
-    return NextResponse.json(certifications);
+    return jsonNoCache(certifications);
   } catch (error: any) {
     console.error('Error reading certifications:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to load certifications' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to load certifications' }, 500);
   }
 }
 
@@ -39,7 +42,7 @@ export async function POST(request: Request) {
     const imageFile = formData.get('image') as File | null;
 
     if (!institution || !course || !year) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return jsonNoCache({ error: 'Missing required fields' }, 400);
     }
 
     let imagePath = certificateUrl || '#';
@@ -71,10 +74,10 @@ export async function POST(request: Request) {
     const newContent = Buffer.from(JSON.stringify(certifications, null, 2)).toString('base64');
     await updateGithubFile(CERTS_PATH, newContent, `Add certification: ${course}`, currentSha);
 
-    return NextResponse.json({ success: true, certification: newCertification }, { status: 201 });
+    return jsonNoCache({ success: true, certification: newCertification }, 201);
   } catch (error: any) {
     console.error('Error saving certification:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to save certification' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to save certification' }, 500);
   }
 }
 
@@ -84,7 +87,7 @@ export async function PUT(request: Request) {
     const id = formData.get('id') as string;
     
     if (!id) {
-      return NextResponse.json({ error: 'Missing certification ID' }, { status: 400 });
+      return jsonNoCache({ error: 'Missing certification ID' }, 400);
     }
 
     const institution = formData.get('institution') as string;
@@ -95,7 +98,7 @@ export async function PUT(request: Request) {
     const existingImage = formData.get('existingImage') as string | null;
 
     if (!institution || !course || !year) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return jsonNoCache({ error: 'Missing required fields' }, 400);
     }
 
     let imagePath = existingImage || certificateUrl || '#';
@@ -116,7 +119,7 @@ export async function PUT(request: Request) {
     
     const index = certifications.findIndex((c: any) => c.id === id);
     if (index === -1) {
-      return NextResponse.json({ error: 'Certification not found' }, { status: 404 });
+      return jsonNoCache({ error: 'Certification not found' }, 404);
     }
 
     certifications[index] = {
@@ -130,17 +133,17 @@ export async function PUT(request: Request) {
     const newContent = Buffer.from(JSON.stringify(certifications, null, 2)).toString('base64');
     await updateGithubFile(CERTS_PATH, newContent, `Update certification: ${course}`, currentSha);
 
-    return NextResponse.json({ success: true, certification: certifications[index] }, { status: 200 });
+    return jsonNoCache({ success: true, certification: certifications[index] }, 200);
   } catch (error: any) {
     console.error('Error updating certification:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to update certification' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to update certification' }, 500);
   }
 }
 
 export async function DELETE(request: Request) {
   try {
     const { id } = await request.json();
-    if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    if (!id) return jsonNoCache({ error: 'Missing id' }, 400);
 
     const file = await getGithubFile(CERTS_PATH);
     let certifications = safeParseCertifications(file?.content);
@@ -151,9 +154,9 @@ export async function DELETE(request: Request) {
     const newContent = Buffer.from(JSON.stringify(certifications, null, 2)).toString('base64');
     await updateGithubFile(CERTS_PATH, newContent, `Delete certification ${id}`, currentSha);
     
-    return NextResponse.json({ success: true }, { status: 200 });
+    return jsonNoCache({ success: true }, 200);
   } catch (error: any) {
     console.error('Error deleting certification:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to delete certification' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to delete certification' }, 500);
   }
 }

@@ -1,5 +1,8 @@
-import { NextResponse } from 'next/server';
-import { getGithubFile, updateGithubFile } from '@/lib/github';
+import { getGithubFile, updateGithubFile, jsonNoCache } from '@/lib/github';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 const EXP_PATH = 'public/data/experiences.json';
 
@@ -18,13 +21,13 @@ export async function GET() {
   try {
     const file = await getGithubFile(EXP_PATH);
     if (!file) {
-      return NextResponse.json([]);
+      return jsonNoCache([]);
     }
     const experiences = safeParseExperiences(file.content);
-    return NextResponse.json(experiences);
+    return jsonNoCache(experiences);
   } catch (error: any) {
     console.error('Error reading experiences:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to load experiences' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to load experiences' }, 500);
   }
 }
 
@@ -46,7 +49,7 @@ export async function POST(request: Request) {
     const link = formData.get('link') as string;
 
     if (!role || !organization) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return jsonNoCache({ error: 'Missing required fields' }, 400);
     }
 
     const file = await getGithubFile(EXP_PATH);
@@ -72,10 +75,10 @@ export async function POST(request: Request) {
     const newContent = Buffer.from(JSON.stringify(experiences, null, 2)).toString('base64');
     await updateGithubFile(EXP_PATH, newContent, `Add experience: ${role}`, currentSha);
 
-    return NextResponse.json({ success: true, experience: newExperience }, { status: 201 });
+    return jsonNoCache({ success: true, experience: newExperience }, 201);
   } catch (error: any) {
     console.error('Error saving experience:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to save experience' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to save experience' }, 500);
   }
 }
 
@@ -85,7 +88,7 @@ export async function PUT(request: Request) {
     const id = formData.get('id') as string;
     
     if (!id) {
-      return NextResponse.json({ error: 'Missing experience ID' }, { status: 400 });
+      return jsonNoCache({ error: 'Missing experience ID' }, 400);
     }
 
     const role = formData.get('role') as string;
@@ -101,7 +104,7 @@ export async function PUT(request: Request) {
     const link = formData.get('link') as string;
 
     if (!role || !organization) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return jsonNoCache({ error: 'Missing required fields' }, 400);
     }
 
     const file = await getGithubFile(EXP_PATH);
@@ -110,7 +113,7 @@ export async function PUT(request: Request) {
     
     const index = experiences.findIndex((e: any) => e.id === id);
     if (index === -1) {
-      return NextResponse.json({ error: 'Experience not found' }, { status: 404 });
+      return jsonNoCache({ error: 'Experience not found' }, 404);
     }
 
     experiences[index] = {
@@ -130,17 +133,17 @@ export async function PUT(request: Request) {
     const newContent = Buffer.from(JSON.stringify(experiences, null, 2)).toString('base64');
     await updateGithubFile(EXP_PATH, newContent, `Update experience: ${role}`, currentSha);
 
-    return NextResponse.json({ success: true, experience: experiences[index] }, { status: 200 });
+    return jsonNoCache({ success: true, experience: experiences[index] }, 200);
   } catch (error: any) {
     console.error('Error updating experience:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to update experience' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to update experience' }, 500);
   }
 }
 
 export async function DELETE(request: Request) {
   try {
     const { id } = await request.json();
-    if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    if (!id) return jsonNoCache({ error: 'Missing id' }, 400);
 
     const file = await getGithubFile(EXP_PATH);
     let experiences = safeParseExperiences(file?.content);
@@ -151,9 +154,9 @@ export async function DELETE(request: Request) {
     const newContent = Buffer.from(JSON.stringify(experiences, null, 2)).toString('base64');
     await updateGithubFile(EXP_PATH, newContent, `Delete experience ${id}`, currentSha);
     
-    return NextResponse.json({ success: true }, { status: 200 });
+    return jsonNoCache({ success: true }, 200);
   } catch (error: any) {
     console.error('Error deleting experience:', error);
-    return NextResponse.json({ error: error?.message || 'Failed to delete experience' }, { status: 500 });
+    return jsonNoCache({ error: error?.message || 'Failed to delete experience' }, 500);
   }
 }
