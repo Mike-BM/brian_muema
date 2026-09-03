@@ -24,5 +24,18 @@
     "endDate": "",
     "current": false,
     "link": ""
+  },
+  {
+    "id": "1788409170074",
+    "type": "Freelance",
+    "role": "Technology & Events Coordinator",
+    "organization": "Insight Circle Palace",
+    "description": "Lead the design, development, and maintenance of organizational websites and digital platforms.\r\nDevelop and improve web interfaces to support the organization’s programs, events, and online presence.\r\nManage website content, functionality, and digital updates.\r\nSupport the planning, coordination, and execution of organizational events and community initiatives.\r\nDevelop digital materials and online platforms that support event promotion and participant engagement.\r\nCollaborate with team members on technology, communications, marketing, and event-related activities.\r\nIdentify and implement digital solutions to improve organizational visibility and engagement.",
+    "dateJoined": "",
+    "refereeNumber": "",
+    "startDate": "2026-05-01",
+    "endDate": "",
+    "current": true,
+    "link": ""
   }
 ]
