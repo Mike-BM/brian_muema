@@ -69,5 +69,25 @@
     "github": "https://github.com/Mike-BM/Covid-19-Global-Data-Tracker.git",
     "liveUrl": "",
     "image": "/uploads/projects/1788407603802-Screenshot_2026-09-03_065042.png"
+  },
+  {
+    "id": "1788411548186",
+    "title": "Stress Detection with AI",
+    "description": "An AI-driven stress detection system built on wearable biosensor data (EDA and skin temperature), exploring how physiological signals can flag stress states in real time. Combines unsupervised clustering with supervised classification to distinguish stress from non-stress states, supporting UN SDG 3 (Good Health and Well-being) through early, non-invasive mental health",
+    "fullDescription": "",
+    "dateCompleted": "2025-11-03",
+    "featured": true,
+    "category": "ALL",
+    "filterCategory": "Machine Learning",
+    "projectType": "Professional",
+    "technologies": [
+      "Python · Jupyter Notebook · pandas · NumPy · scikit-learn (Random Forest",
+      "KMeans",
+      "PCA) · XGBoost · Matplotlib · Seaborn"
+    ],
+    "link": "https://app.notion.com/p/STRESS-DETECTION-WITH-AI-3d0dbc2e564d80148355cc4f505afbbb?source=copy_link",
+    "github": "https://github.com/Mike-BM/Stress-Detection-With-AI-.git",
+    "liveUrl": "",
+    "image": "/uploads/projects/1788411547187-Screenshot_2026-09-03_074951.png"
   }
 ]
