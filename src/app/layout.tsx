@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Brian Muema Michael | Data Analyst",
+    title: "Brian Muema Michael | Data Analyst & Data Scientist",
     description: "Data Analyst turning data into insights, insights into decisions.",
     images: ["/profile.jpg"],
   },

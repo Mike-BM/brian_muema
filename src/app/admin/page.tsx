@@ -1157,18 +1157,18 @@ export default function AdminPage() {
                   <label htmlFor="type" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Experience Type <span className="text-red-500">*</span></label>
                   <select required id="type" name="type" value={expFormData.type} onChange={handleExpInputChange} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow">
                     <option value="Formal">Formal Experience</option>
-                    <option value="Freelance">Freelance & Volunteer Experience</option>
+                    <option value="Freelance">Freelance & Client Works (Websites, Contracts)</option>
                   </select>
                 </div>
 
                 <div>
                   <label htmlFor="role" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Role / Title <span className="text-red-500">*</span></label>
-                  <input required type="text" id="role" name="role" value={expFormData.role} onChange={handleExpInputChange} placeholder={expFormData.type === 'Formal' ? "e.g. Data Analyst" : "e.g. Freelance Graphic Designer"} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                  <input required type="text" id="role" name="role" value={expFormData.role} onChange={handleExpInputChange} placeholder={expFormData.type === 'Formal' ? "e.g. Data Analyst" : "e.g. Website Developer / UI Designer"} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
                 </div>
                 
                 <div>
                   <label htmlFor="organization" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Organization <span className="text-red-500">*</span></label>
-                  <input required type="text" id="organization" name="organization" value={expFormData.organization} onChange={handleExpInputChange} placeholder="e.g. Google" className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                  <input required type="text" id="organization" name="organization" value={expFormData.organization} onChange={handleExpInputChange} placeholder={expFormData.type === 'Formal' ? "e.g. Google" : "e.g. Client Name / Business Name"} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
                 </div>
 
                 <div>
@@ -1207,8 +1207,8 @@ export default function AdminPage() {
                     </div>
 
                     <div>
-                      <label htmlFor="link" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Optional Link</label>
-                      <input type="text" id="link" name="link" value={expFormData.link} onChange={handleExpInputChange} placeholder="https://..." className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                      <label htmlFor="link" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Live Client Website / Project URL</label>
+                      <input type="text" id="link" name="link" value={expFormData.link} onChange={handleExpInputChange} placeholder="https://client-website.com" className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
                     </div>
                   </>
                 )}
@@ -1289,7 +1289,7 @@ export default function AdminPage() {
                   </div>
 
                   <div className="mb-6">
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">Freelance & Volunteer Experience</h3>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">Freelance & Client Works</h3>
                     <div className="space-y-4">
                       {freelanceExperiences.length === 0 ? (
                         <p className="text-slate-500 dark:text-slate-400 italic">No freelance experiences yet.</p>

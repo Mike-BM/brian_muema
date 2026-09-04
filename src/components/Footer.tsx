@@ -15,7 +15,7 @@ export function Footer() {
       <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="text-center md:text-left">
           <p className="font-bold text-lg">Brian Muema Michael</p>
-          <p className="text-sm text-muted-foreground">Data Analyst | Data Science</p>
+          <p className="text-sm text-muted-foreground">Data Analyst | Data Scientist</p>
           <p className="text-sm text-muted-foreground mt-2">
             Turning Data Into Insights, Insights Into Decisions.
           </p>

@@ -57,7 +57,7 @@ export function AboutSection() {
               <span className="font-semibold text-foreground text-center">Data Analytics</span>
               <ArrowRight className="text-muted-foreground hidden sm:block h-5 w-5" />
               <ArrowRight className="text-muted-foreground sm:hidden h-5 w-5 rotate-90" />
-              <span className="font-semibold text-foreground text-center">Data Science</span>
+              <span className="font-semibold text-foreground text-center">Data Scientist</span>
             </div>
           </div>
         </div>

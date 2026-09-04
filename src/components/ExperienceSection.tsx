@@ -1,6 +1,6 @@
 "use client";
 
-import { GraduationCap, Award, Briefcase } from "lucide-react";
+import { GraduationCap, Award, Briefcase, Globe, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface Certification {
@@ -148,14 +148,17 @@ export function ExperienceSection() {
               ))}
             </div>
 
-            {/* Freelance & Volunteer Experience Section */}
+            {/* Freelance & Client Work Section */}
             {experiences.filter(e => e.type === 'Freelance').length > 0 && (
               <>
                 <div className="max-w-4xl mb-12">
                   <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center gap-2">
-                    <Briefcase className="h-8 w-8 text-primary" /> Freelance & Volunteer Experience
+                    <Briefcase className="h-8 w-8 text-primary" /> Freelance & Client Projects
                   </h2>
-                  <div className="h-1 w-20 bg-primary rounded" />
+                  <div className="h-1 w-20 bg-primary rounded mb-3" />
+                  <p className="text-muted-foreground">
+                    Client websites, custom web applications, and contract development engagements.
+                  </p>
                 </div>
                 
                 <div className="space-y-8 max-w-4xl mb-20">
@@ -177,8 +180,15 @@ export function ExperienceSection() {
                             </p>
                           )}
                           {exp.link && (
-                            <a href={exp.link} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-blue-500 hover:underline mt-1 inline-block">
-                              View Project
+                            <a
+                              href={exp.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 mt-3 text-xs font-semibold rounded-md border border-border bg-muted/60 text-foreground hover:bg-foreground hover:text-background transition-all shadow-sm group/btn"
+                            >
+                              <Globe className="h-3.5 w-3.5 text-primary group-hover/btn:text-background transition-colors" />
+                              <span>Visit Client Website / Project</span>
+                              <ExternalLink className="h-3 w-3 opacity-70 group-hover/btn:opacity-100" />
                             </a>
                           )}
                         </div>

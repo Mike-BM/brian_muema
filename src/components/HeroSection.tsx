@@ -10,7 +10,7 @@ export function HeroSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="max-w-4xl">
             <p className="text-sm font-semibold tracking-wider text-primary uppercase mb-4">
-              Brian Muema Michael — Data Analyst | Data Science
+              Brian Muema Michael — Data Analyst | Data Scientist
             </p>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground mb-6 leading-tight">
               Turning Data Into Insights, <br className="hidden md:block" />
