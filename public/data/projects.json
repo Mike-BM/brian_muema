@@ -89,5 +89,21 @@
     "github": "https://github.com/Mike-BM/Stress-Detection-With-AI-.git",
     "liveUrl": "",
     "image": "/uploads/projects/1788411547187-Screenshot_2026-09-03_074951.png"
+  },
+  {
+    "id": "1788494925877",
+    "title": "Client Website",
+    "description": "Designed and developed a responsive client website for ICP, creating a modern digital presence that improves brand visibility, user experience, and accessibility across devices.",
+    "fullDescription": "",
+    "dateCompleted": "2026-09-04",
+    "featured": false,
+    "category": "Client",
+    "filterCategory": "Data Analysis",
+    "projectType": "Professional",
+    "technologies": [],
+    "link": "#",
+    "github": "#",
+    "liveUrl": "",
+    "image": null
   }
 ]
