@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { CheckCircle } from 'lucide-react';
 
 export const metadata = {
-  title: 'Message Sent | Brian Muema',
+  title: 'Message Sent | Brian Muema Michael',
   robots: 'noindex, nofollow',
 };
 

@@ -15,7 +15,7 @@ export async function GET() {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': 'inline; filename="Brian_Muema_CV.pdf"',
+        'Content-Disposition': 'inline; filename="Brian_Muema_Michael_CV.pdf"',
         ...NO_CACHE_HEADERS,
       },
     });

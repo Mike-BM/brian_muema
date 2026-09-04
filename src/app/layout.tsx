@@ -13,19 +13,19 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://brianmuema.com"),
-  title: "Brian Muema | Data Analyst & Data Scientist",
-  description: "Portfolio of Brian Muema, Data Analyst turning data into insights, insights into decisions. Specializing in Python, SQL, and Machine Learning.",
+  title: "Brian Muema Michael | Data Analyst & Data Scientist",
+  description: "Portfolio of Brian Muema Michael, Data Analyst turning data into insights, insights into decisions. Specializing in Python, SQL, and Machine Learning.",
   openGraph: {
-    title: "Brian Muema | Data Analyst & Data Scientist",
-    description: "Portfolio of Brian Muema, Data Analyst turning data into insights, insights into decisions.",
+    title: "Brian Muema Michael | Data Analyst & Data Scientist",
+    description: "Portfolio of Brian Muema Michael, Data Analyst turning data into insights, insights into decisions.",
     url: "https://brianmuema.com",
-    siteName: "Brian Muema Portfolio",
+    siteName: "Brian Muema Michael Portfolio",
     images: [
       {
         url: "/profile.jpg",
         width: 800,
         height: 800,
-        alt: "Brian Muema",
+        alt: "Brian Muema Michael",
       },
     ],
     locale: "en_US",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Brian Muema | Data Analyst",
+    title: "Brian Muema Michael | Data Analyst",
     description: "Data Analyst turning data into insights, insights into decisions.",
     images: ["/profile.jpg"],
   },

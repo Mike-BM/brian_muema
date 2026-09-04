@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Privacy Policy | Brian Muema',
-  description: 'Privacy Policy for Brian Muema\'s portfolio and data consulting services.',
+  title: 'Privacy Policy | Brian Muema Michael',
+  description: 'Privacy Policy for Brian Muema Michael\'s portfolio and data consulting services.',
 };
 
 export default function PrivacyPolicyPage() {
