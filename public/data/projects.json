@@ -22,23 +22,6 @@
     "liveUrl": "https://app-9zl6sbmag1z5.appmedo.com"
   },
   {
-    "id": "3",
-    "title": "MamaCare",
-    "description": "A digital maternal health platform concept integrating healthcare services, appointments, digital support, and intelligent technology.",
-    "category": "Data / AI / Healthcare Technology",
-    "filterCategory": "AI",
-    "technologies": [
-      "React",
-      "FastAPI",
-      "AI",
-      "PostgreSQL",
-      "APIs"
-    ],
-    "link": "#",
-    "github": "#",
-    "image": null
-  },
-  {
     "id": "1788407604839",
     "title": "Data Analysis",
     "description": "An exploratory data analysis project examining COVID-19 trends across Kenya, India, the United States, and China. The project involved data cleaning, transformation, statistical analysis, and visualization to identify patterns in COVID-19 cases, death rates, and vaccination trends. Interactive and geographic visualizations were also developed to communicate key findings and support data-driven interpretation.",
