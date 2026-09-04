@@ -1,24 +1,5 @@
 [
   {
-    "id": "1",
-    "title": "AgriSense Global",
-    "description": "An agriculture intelligence platform combining climate, soil, and land data to generate insights for agricultural decision-making.",
-    "category": "Data Science / AI / Agriculture",
-    "filterCategory": "AI",
-    "technologies": [
-      "Python",
-      "Pandas",
-      "Machine Learning",
-      "NASA POWER",
-      "SoilGrids",
-      "CHIRPS",
-      "Mapbox"
-    ],
-    "link": "#",
-    "github": "#",
-    "image": null
-  },
-  {
     "id": "2",
     "title": "FinSight AI",
     "description": "A financial intelligence concept designed to help African SMEs understand financial data and support better decision-making.",
