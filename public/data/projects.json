@@ -74,5 +74,21 @@
     "github": "#",
     "liveUrl": "https://insight-circle-palace.vercel.app/",
     "image": null
+  },
+  {
+    "id": "1788496832081",
+    "title": "Resilience Capital",
+    "description": "Climate-Adaptive Micro-Lending for Off-Grid Solar Vendors\r\n\r\nResilience Capital is a climate-adaptive micro-lending platform designed to help off-grid solar vendors access financing in drought-prone regions. The platform combines climate data, alternative credit signals, parametric insurance, and dynamic loan pricing to turn climate risk into a tool for building more resilient businesses.",
+    "fullDescription": "",
+    "dateCompleted": "2026-03-04",
+    "featured": true,
+    "category": "Data Science| Machine Learning|AI",
+    "filterCategory": "Machine Learning",
+    "projectType": "Professional",
+    "technologies": [],
+    "link": "https://app.notion.com/p/Resilience-Capital-3d1dbc2e564d80fcb533f511f61b7ade?source=copy_link",
+    "github": "https://github.com/Mike-BM/resilience-capital.git",
+    "liveUrl": "resilience-capital.vercel.app",
+    "image": "/uploads/projects/1788496831045-Screenshot_2026-09-04_074004.png"
   }
 ]
