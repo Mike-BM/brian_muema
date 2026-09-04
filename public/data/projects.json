@@ -60,22 +60,6 @@
     "image": "/uploads/projects/1788411547187-Screenshot_2026-09-03_074951.png"
   },
   {
-    "id": "1788494925877",
-    "title": "Client Website",
-    "description": "Designed and developed a responsive client website for ICP, creating a modern digital presence that improves brand visibility, user experience, and accessibility across devices.",
-    "fullDescription": "",
-    "dateCompleted": "2026-09-04",
-    "featured": false,
-    "category": "Client",
-    "filterCategory": "AI",
-    "projectType": "Professional",
-    "technologies": [],
-    "link": "#",
-    "github": "#",
-    "liveUrl": "https://insight-circle-palace.vercel.app/",
-    "image": null
-  },
-  {
     "id": "1788496832081",
     "title": "Resilience Capital",
     "description": "Climate-Adaptive Micro-Lending for Off-Grid Solar Vendors\r\n\r\nResilience Capital is a climate-adaptive micro-lending platform designed to help off-grid solar vendors access financing in drought-prone regions. The platform combines climate data, alternative credit signals, parametric insurance, and dynamic loan pricing to turn climate risk into a tool for building more resilient businesses.",
