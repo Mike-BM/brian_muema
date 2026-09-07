@@ -63,5 +63,18 @@
     "endDate": "",
     "current": false,
     "link": ""
+  },
+  {
+    "id": "1788494925877",
+    "type": "Freelance",
+    "role": "Client Website & UI Developer",
+    "organization": "Insight Circle Palace (ICP)",
+    "description": "Designed and developed a responsive client website for ICP, creating a modern digital presence that improves brand visibility, user experience, and accessibility across devices.\n\n• Designed modern and clean UI/UX with responsive layouts for mobile, tablet, and desktop\n• Implemented optimized front-end performance and intuitive site navigation\n• Supported digital branding and community engagement initiatives",
+    "dateJoined": "",
+    "refereeNumber": "",
+    "startDate": "2026-05-01",
+    "endDate": "",
+    "current": true,
+    "link": "https://insight-circle-palace.vercel.app/"
   }
 ]
