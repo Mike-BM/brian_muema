@@ -90,7 +90,7 @@ export function ExperienceSection() {
   const education = [
     {
       institution: "Chuka University",
-      degree: "Economics and Statistics",
+      degree: "Economics and Statistics and also IT part time",
       focus: "Foundation in statistical analysis, economic theory, and quantitative methods.",
     }
   ];
