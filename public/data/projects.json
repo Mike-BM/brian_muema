@@ -74,5 +74,21 @@
     "github": "https://github.com/Mike-BM/resilience-capital.git",
     "liveUrl": "resilience-capital.vercel.app",
     "image": "/uploads/projects/1788496831045-Screenshot_2026-09-04_074004.png"
+  },
+  {
+    "id": "1791385126534",
+    "title": "Building Age Classification Using Satellite Data",
+    "description": "A machine learning project using satellite data to classify building age, combining feature engineering, XGBoost, and cross-city transfer learning.  3rd Place at the SEKU Data Science Regional Hackathon.",
+    "fullDescription": "A machine learning project that classifies building age using multi-year satellite data. The project combines data preprocessing, feature engineering, XGBoost, and cross-city transfer learning to train on Madrid data and adapt the model to Amsterdam using limited labeled data. The project earned 3rd place at the SEKU Data Science Regional Hackathon",
+    "dateCompleted": "2026-10-01",
+    "featured": false,
+    "category": "Data Science | Machine Learning",
+    "filterCategory": "Data Science",
+    "projectType": "Hackathon",
+    "technologies": [],
+    "link": "https://app.notion.com/p/BUILDING-AGE-CLASSIFICATION-USING-SATELLITE-DATA-3f2dbc2e564d807b983ff77b3bfeaca5?source=copy_link",
+    "github": "https://github.com/Mike-BM/Building-Age-Classification-Project.git",
+    "liveUrl": "",
+    "image": "/uploads/projects/1791385124409-Screenshot_2026-10-04_212157.png"
   }
 ]
