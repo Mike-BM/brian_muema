@@ -181,3 +181,4 @@ export function ExternalKnowledgeSection({ sites = defaultSites }: ExternalKnowl
     </section>
   );
 }
+

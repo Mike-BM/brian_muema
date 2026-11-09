@@ -3,7 +3,29 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Plus, Trash2, Settings, FileText, FolderGit2, Award, Briefcase, Edit, X, AlertCircle, CheckCircle2, LogOut, BookOpen } from "lucide-react";
+import { 
+  ArrowLeft, 
+  Plus, 
+  Trash2, 
+  Settings, 
+  FileText, 
+  FolderGit2, 
+  Award, 
+  Briefcase, 
+  Edit, 
+  X, 
+  AlertCircle, 
+  CheckCircle2, 
+  LogOut, 
+  BookOpen,
+  GraduationCap,
+  Video,
+  Users,
+  Sparkles,
+  Layers,
+  Search,
+  ExternalLink
+} from "lucide-react";
 import { LearningHubAdmin } from "@/components/admin/LearningHubAdmin";
 
 interface Project {
@@ -66,6 +88,9 @@ export default function AdminPage() {
   
   const [credentialsData, setCredentialsData] = useState({ username: "", password: "", email: "" });
   const [credentialsMessage, setCredentialsMessage] = useState({ text: "", type: "" });
+
+  const [activeSection, setActiveSection] = useState<'learning-hub' | 'projects' | 'certifications' | 'experiences' | 'settings' | 'all'>('learning-hub');
+  const [learningStats, setLearningStats] = useState({ resources: 0, workshops: 0, showcases: 0, projects: 0 });
 
   const [maintenance, setMaintenance] = useState(false);
   const [cvFile, setCvFile] = useState<File | null>(null);
@@ -233,6 +258,23 @@ export default function AdminPage() {
     checkAuth();
   }, []);
 
+  const fetchLearningStats = async () => {
+    try {
+      const res = await fetch(`/api/learning-hub?t=${Date.now()}`, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        setLearningStats({
+          resources: data.resources?.length || 0,
+          workshops: data.workshops?.length || 0,
+          showcases: data.learnerShowcase?.length || 0,
+          projects: data.projects?.length || 0,
+        });
+      }
+    } catch (e) {
+      console.error('Failed to fetch learning hub stats', e);
+    }
+  };
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjects();
@@ -244,6 +286,8 @@ export default function AdminPage() {
     fetchAbout();
      
     fetchExperiences();
+
+    fetchLearningStats();
      
     if (isAuthenticated) fetchCredentials();
   }, [isAuthenticated]);
@@ -340,6 +384,7 @@ export default function AdminPage() {
   };
 
   const handleEditProject = (project: Project) => {
+    setActiveSection('projects');
     setEditingProjectId(project.id);
     setFormData({
       title: project.title,
@@ -361,6 +406,7 @@ export default function AdminPage() {
   };
 
   const handleEditCert = (cert: Certification) => {
+    setActiveSection('certifications');
     setEditingCertId(cert.id);
     setCertFormData({
       institution: cert.institution,
@@ -373,6 +419,7 @@ export default function AdminPage() {
   };
 
   const handleEditExp = (exp: Experience) => {
+    setActiveSection('experiences');
     setEditingExpId(exp.id);
     setExpFormData({
       type: exp.type || "Formal",
@@ -721,132 +768,256 @@ export default function AdminPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header & KPI Summary */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Overview</h2>
-          <p className="text-slate-500 dark:text-slate-400">Manage your portfolio projects, experiences, and settings.</p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                Portfolio & Learning Hub Operations
+              </h2>
+              <p className="text-slate-500 dark:text-slate-400 mt-1">
+                Centralized control for student training materials, Google Meet workshops, coursemate showcases, and portfolio projects.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/learning-hub"
+                target="_blank"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 rounded-lg text-slate-700 dark:text-slate-300 transition-colors shadow-sm"
+              >
+                <GraduationCap className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                <span>Open Learning Hub</span>
+                <ExternalLink className="h-3 w-3 opacity-60" />
+              </Link>
+              <Link
+                href="/"
+                target="_blank"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 rounded-lg text-slate-700 dark:text-slate-300 transition-colors shadow-sm"
+              >
+                <span>View Live Site</span>
+                <ExternalLink className="h-3 w-3 opacity-60" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Quick Metrics KPI Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-6">
+            <button
+              type="button"
+              onClick={() => setActiveSection('learning-hub')}
+              className={`p-4 rounded-xl border text-left transition-all hover:shadow-md ${
+                activeSection === 'learning-hub'
+                  ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-800 ring-2 ring-indigo-500/20'
+                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              <div className="flex items-center justify-between text-indigo-600 dark:text-indigo-400 mb-2">
+                <GraduationCap className="h-5 w-5" />
+                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-indigo-100 dark:bg-indigo-900/50 rounded">Hub</span>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                {learningStats.resources + learningStats.workshops}
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                {learningStats.resources} Notes/PDFs • {learningStats.workshops} Meets
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveSection('projects')}
+              className={`p-4 rounded-xl border text-left transition-all hover:shadow-md ${
+                activeSection === 'projects'
+                  ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-800 ring-2 ring-indigo-500/20'
+                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              <div className="flex items-center justify-between text-blue-600 dark:text-blue-400 mb-2">
+                <FolderGit2 className="h-5 w-5" />
+                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/50 rounded">Projects</span>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                {projects.length}
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                {dataProjects.length} Data & ML Projects
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveSection('certifications')}
+              className={`p-4 rounded-xl border text-left transition-all hover:shadow-md ${
+                activeSection === 'certifications'
+                  ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-800 ring-2 ring-indigo-500/20'
+                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              <div className="flex items-center justify-between text-amber-600 dark:text-amber-400 mb-2">
+                <Award className="h-5 w-5" />
+                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/50 rounded">Certs</span>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                {certifications.length}
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Verified Credentials
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveSection('experiences')}
+              className={`p-4 rounded-xl border text-left transition-all hover:shadow-md ${
+                activeSection === 'experiences'
+                  ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-800 ring-2 ring-indigo-500/20'
+                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400 mb-2">
+                <Briefcase className="h-5 w-5" />
+                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/50 rounded">Roles</span>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                {experiences.length}
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                {formalExperiences.length} Formal • {freelanceExperiences.length} Freelance
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveSection('settings')}
+              className={`p-4 rounded-xl border text-left transition-all hover:shadow-md col-span-2 sm:col-span-1 ${
+                activeSection === 'settings'
+                  ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-800 ring-2 ring-indigo-500/20'
+                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 mb-2">
+                <Settings className="h-5 w-5" />
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                  maintenance ? 'bg-red-100 dark:bg-red-900/50 text-red-600' : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600'
+                }`}>
+                  {maintenance ? 'Maintenance' : 'Live'}
+                </span>
+              </div>
+              <div className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                {maintenance ? 'Maintenance Mode' : 'Website Online'}
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                CV & Site Preferences
+              </div>
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          {/* Site Settings & CV */}
-          <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Maintenance Mode */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold flex items-center mb-1">
-                  <Settings className="mr-2 h-5 w-5" /> Maintenance Mode
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  When enabled, visitors will see a &quot;Site under maintenance&quot; screen.
-                </p>
-              </div>
-              <button
-                onClick={handleMaintenanceToggle}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  maintenance ? 'bg-primary' : 'bg-muted-foreground/30'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
-                    maintenance ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
+        {/* Section Navigation Tabs */}
+        <div className="sticky top-16 z-20 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 mb-8 py-2">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            <button
+              type="button"
+              onClick={() => setActiveSection('learning-hub')}
+              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg flex items-center gap-2 transition-all whitespace-nowrap ${
+                activeSection === 'learning-hub'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-indigo-600'
+              }`}
+            >
+              <GraduationCap className="h-4 w-4" />
+              <span>Learning Hub Studio</span>
+              <span className="px-1.5 py-0.5 bg-indigo-500/30 text-[10px] rounded">
+                {learningStats.resources + learningStats.workshops}
+              </span>
+            </button>
 
-            {/* CV Upload */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl">
-              <h2 className="text-xl font-bold flex items-center mb-4">
-                <FileText className="mr-2 h-5 w-5" /> Update CV / Resume
-              </h2>
-              {cvMessage.text && (
-                <div className={`p-3 mb-4 rounded text-xs ${cvMessage.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : cvMessage.type === 'error' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'text-muted-foreground'}`}>
-                  {cvMessage.text}
-                </div>
-              )}
-              <form onSubmit={handleCvUpload} className="flex gap-4 items-end">
-                <div className="flex-grow">
-                  <label htmlFor="cv" className="block text-sm font-medium mb-1">Upload PDF</label>
-                  <input type="file" id="cv" name="cv" accept=".pdf" onChange={handleFileChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
-                </div>
-                <button type="submit" disabled={!cvFile} className="bg-indigo-600 text-white font-medium px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50">
-                  Upload
-                </button>
-              </form>
-            </div>
-            
-            {/* About Section Editor */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl md:col-span-2">
-              <h2 className="text-xl font-bold flex items-center mb-4">
-                <FileText className="mr-2 h-5 w-5" /> Edit About Section
-              </h2>
-              {aboutMessage.text && (
-                <div className={`p-3 mb-4 rounded text-xs ${aboutMessage.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : aboutMessage.type === 'error' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'text-muted-foreground'}`}>
-                  {aboutMessage.text}
-                </div>
-              )}
-              <form onSubmit={handleAboutSubmit} className="flex flex-col gap-4">
-                <div>
-                  <label htmlFor="aboutTitle" className="block text-sm font-medium mb-1">Section Title</label>
-                  <input type="text" id="aboutTitle" value={aboutTitle} onChange={(e) => setAboutTitle(e.target.value)} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="e.g. About Me" />
-                </div>
-                <div>
-                  <label htmlFor="aboutContent" className="block text-sm font-medium mb-1">About Me Text (Supports **bold**)</label>
-                  <textarea id="aboutContent" rows={5} value={aboutContent} onChange={(e) => setAboutContent(e.target.value)} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary resize-none" />
-                </div>
-                <button type="submit" className="bg-indigo-600 text-white font-medium px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors self-start">
-                  Save Changes
-                </button>
-              </form>
-            </div>
+            <button
+              type="button"
+              onClick={() => setActiveSection('projects')}
+              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg flex items-center gap-2 transition-all whitespace-nowrap ${
+                activeSection === 'projects'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-indigo-600'
+              }`}
+            >
+              <FolderGit2 className="h-4 w-4" />
+              <span>Portfolio Projects ({projects.length})</span>
+            </button>
 
-            {/* Credentials Update */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl md:col-span-2">
-              <h2 className="text-xl font-bold flex items-center mb-4">
-                <Settings className="mr-2 h-5 w-5" /> Admin Settings
-              </h2>
-              {credentialsMessage.text && (
-                <div className={`p-3 mb-4 rounded text-xs ${credentialsMessage.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : credentialsMessage.type === 'error' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'text-muted-foreground'}`}>
-                  {credentialsMessage.text}
-                </div>
-              )}
-              <form onSubmit={handleCredentialsSubmit} className="flex flex-col gap-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="adminUsername" className="block text-sm font-medium mb-1">Admin Username</label>
-                    <input type="text" id="adminUsername" value={credentialsData.username} onChange={(e) => setCredentialsData(prev => ({ ...prev, username: e.target.value }))} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="Enter new username" />
-                  </div>
-                  <div>
-                    <label htmlFor="adminEmail" className="block text-sm font-medium mb-1">Contact Email</label>
-                    <input type="email" id="adminEmail" value={credentialsData.email} onChange={(e) => setCredentialsData(prev => ({ ...prev, email: e.target.value }))} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="email@example.com" />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label htmlFor="adminPassword" className="block text-sm font-medium mb-1">New Password (leave blank to keep current)</label>
-                    <input type="password" id="adminPassword" value={credentialsData.password} onChange={(e) => setCredentialsData(prev => ({ ...prev, password: e.target.value }))} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="Enter new password" />
-                  </div>
-                </div>
-                <button type="submit" className="bg-indigo-600 text-white font-medium px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors self-start">
-                  Save Settings
-                </button>
-              </form>
-            </div>
+            <button
+              type="button"
+              onClick={() => setActiveSection('certifications')}
+              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg flex items-center gap-2 transition-all whitespace-nowrap ${
+                activeSection === 'certifications'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-indigo-600'
+              }`}
+            >
+              <Award className="h-4 w-4" />
+              <span>Certifications ({certifications.length})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveSection('experiences')}
+              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg flex items-center gap-2 transition-all whitespace-nowrap ${
+                activeSection === 'experiences'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-indigo-600'
+              }`}
+            >
+              <Briefcase className="h-4 w-4" />
+              <span>Experiences ({experiences.length})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveSection('settings')}
+              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg flex items-center gap-2 transition-all whitespace-nowrap ${
+                activeSection === 'settings'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-indigo-600'
+              }`}
+            >
+              <Settings className="h-4 w-4" />
+              <span>Settings & CV</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveSection('all')}
+              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg flex items-center gap-2 transition-all whitespace-nowrap ml-auto ${
+                activeSection === 'all'
+                  ? 'bg-slate-800 text-white'
+                  : 'bg-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              <Layers className="h-4 w-4" />
+              <span>View All</span>
+            </button>
           </div>
         </div>
 
         {/* Dedicated Learning Hub Studio */}
-        <div id="learning-hub-admin-section" className="mb-8">
-          <LearningHubAdmin />
-        </div>
-
-        <div id="projects-section" className="mb-8 pt-8 border-t border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
-              <FolderGit2 className="h-6 w-6" />
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Projects</h2>
+        {(activeSection === 'learning-hub' || activeSection === 'all') && (
+          <div id="learning-hub-admin-section" className="mb-12">
+            <LearningHubAdmin />
           </div>
-          <p className="text-slate-500 dark:text-slate-400 mb-8">Manage your portfolio projects. Add new projects, edit existing ones, or remove old entries.</p>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        )}
+
+        {/* Projects Section */}
+        {(activeSection === 'projects' || activeSection === 'all') && (
+          <div id="projects-section" className="mb-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
+                <FolderGit2 className="h-6 w-6" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Projects</h2>
+            </div>
+            <p className="text-slate-500 dark:text-slate-400 mb-8">Manage your portfolio projects. Add new projects, edit existing ones, or remove old entries.</p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Add/Edit Project Form */}
             <div className="lg:col-span-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl self-start">
               <h3 className="text-lg font-bold mb-6 flex items-center">
@@ -1021,18 +1192,20 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
+        )}
 
         {/* Certifications Section */}
-        <div id="certifications-section" className="mb-8 pt-8 border-t border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
-              <Award className="h-6 w-6" />
+        {(activeSection === 'certifications' || activeSection === 'all') && (
+          <div id="certifications-section" className="mb-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
+                <Award className="h-6 w-6" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Certifications</h2>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Certifications</h2>
-          </div>
-          <p className="text-slate-500 dark:text-slate-400 mb-8">Manage your certifications, courses, and educational achievements.</p>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <p className="text-slate-500 dark:text-slate-400 mb-8">Manage your certifications, courses, and educational achievements.</p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Add/Edit Certification Form */}
             <div className="lg:col-span-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl self-start">
               <h3 className="text-lg font-bold mb-6 flex items-center">
@@ -1132,18 +1305,20 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
+        )}
 
         {/* Experiences Section */}
-        <div id="experiences-section" className="mb-8 pt-8 border-t border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
-              <Briefcase className="h-6 w-6" />
+        {(activeSection === 'experiences' || activeSection === 'all') && (
+          <div id="experiences-section" className="mb-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
+                <Briefcase className="h-6 w-6" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Experience</h2>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Experience</h2>
-          </div>
-          <p className="text-slate-500 dark:text-slate-400 mb-8">Manage your work history, ambassador roles, and volunteer experiences.</p>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <p className="text-slate-500 dark:text-slate-400 mb-8">Manage your work history, ambassador roles, and volunteer experiences.</p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Add/Edit Experience Form */}
             <div className="lg:col-span-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl self-start">
               <h3 className="text-lg font-bold mb-6 flex items-center">
@@ -1330,6 +1505,125 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
+        )}
+
+        {/* Site Settings & CV Section */}
+        {(activeSection === 'settings' || activeSection === 'all') && (
+          <div id="settings-section" className="mb-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
+                <Settings className="h-6 w-6" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Site Settings & CV</h2>
+            </div>
+            <p className="text-slate-500 dark:text-slate-400 mb-8">
+              Manage website maintenance mode, upload your latest curriculum vitae, edit the homepage about biography, and update admin credentials.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Maintenance Mode */}
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold flex items-center mb-1">
+                    <Settings className="mr-2 h-5 w-5" /> Maintenance Mode
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    When enabled, visitors will see a &quot;Site under maintenance&quot; screen.
+                  </p>
+                </div>
+                <button
+                  onClick={handleMaintenanceToggle}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    maintenance ? 'bg-primary' : 'bg-muted-foreground/30'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
+                      maintenance ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* CV Upload */}
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl">
+                <h3 className="text-lg font-bold flex items-center mb-4">
+                  <FileText className="mr-2 h-5 w-5" /> Update CV / Resume
+                </h3>
+                {cvMessage.text && (
+                  <div className={`p-3 mb-4 rounded text-xs ${cvMessage.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : cvMessage.type === 'error' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'text-muted-foreground'}`}>
+                    {cvMessage.text}
+                  </div>
+                )}
+                <form onSubmit={handleCvUpload} className="flex gap-4 items-end">
+                  <div className="flex-grow">
+                    <label htmlFor="cv" className="block text-sm font-medium mb-1">Upload PDF</label>
+                    <input type="file" id="cv" name="cv" accept=".pdf" onChange={handleFileChange} className="w-full bg-background border border-border rounded p-2 text-sm focus:outline-none focus:border-primary" />
+                  </div>
+                  <button type="submit" disabled={!cvFile} className="bg-indigo-600 text-white font-medium px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50">
+                    Upload
+                  </button>
+                </form>
+              </div>
+
+              {/* About Section Editor */}
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl md:col-span-2">
+                <h3 className="text-lg font-bold flex items-center mb-4">
+                  <FileText className="mr-2 h-5 w-5" /> Edit About Section
+                </h3>
+                {aboutMessage.text && (
+                  <div className={`p-3 mb-4 rounded text-xs ${aboutMessage.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : aboutMessage.type === 'error' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'text-muted-foreground'}`}>
+                    {aboutMessage.text}
+                  </div>
+                )}
+                <form onSubmit={handleAboutSubmit} className="flex flex-col gap-4">
+                  <div>
+                    <label htmlFor="aboutTitle" className="block text-sm font-medium mb-1">Section Title</label>
+                    <input type="text" id="aboutTitle" value={aboutTitle} onChange={(e) => setAboutTitle(e.target.value)} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="e.g. About Me" />
+                  </div>
+                  <div>
+                    <label htmlFor="aboutContent" className="block text-sm font-medium mb-1">About Me Text (Supports **bold**)</label>
+                    <textarea id="aboutContent" rows={5} value={aboutContent} onChange={(e) => setAboutContent(e.target.value)} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary resize-none" />
+                  </div>
+                  <button type="submit" className="bg-indigo-600 text-white font-medium px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors self-start">
+                    Save Changes
+                  </button>
+                </form>
+              </div>
+
+              {/* Credentials Update */}
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl md:col-span-2">
+                <h3 className="text-lg font-bold flex items-center mb-4">
+                  <Settings className="mr-2 h-5 w-5" /> Admin Security Settings
+                </h3>
+                {credentialsMessage.text && (
+                  <div className={`p-3 mb-4 rounded text-xs ${credentialsMessage.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : credentialsMessage.type === 'error' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'text-muted-foreground'}`}>
+                    {credentialsMessage.text}
+                  </div>
+                )}
+                <form onSubmit={handleCredentialsSubmit} className="flex flex-col gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="adminUsername" className="block text-sm font-medium mb-1">Admin Username</label>
+                      <input type="text" id="adminUsername" value={credentialsData.username} onChange={(e) => setCredentialsData(prev => ({ ...prev, username: e.target.value }))} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="Enter new username" />
+                    </div>
+                    <div>
+                      <label htmlFor="adminEmail" className="block text-sm font-medium mb-1">Contact Email</label>
+                      <input type="email" id="adminEmail" value={credentialsData.email} onChange={(e) => setCredentialsData(prev => ({ ...prev, email: e.target.value }))} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="email@example.com" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label htmlFor="adminPassword" className="block text-sm font-medium mb-1">New Password (leave blank to keep current)</label>
+                      <input type="password" id="adminPassword" value={credentialsData.password} onChange={(e) => setCredentialsData(prev => ({ ...prev, password: e.target.value }))} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary" placeholder="Enter new password" />
+                    </div>
+                  </div>
+                  <button type="submit" className="bg-indigo-600 text-white font-medium px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors self-start">
+                    Save Settings
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Global Toast Notification */}

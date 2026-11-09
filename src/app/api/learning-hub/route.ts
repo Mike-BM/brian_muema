@@ -1,5 +1,5 @@
 import { getGithubFile, updateGithubFile, jsonNoCache } from '@/lib/github';
-import { LearningHubData, LearningResource, Workshop } from '@/lib/learning-hub-types';
+import { LearningHubData, LearningResource, Workshop, LearnerShowcase, PracticalProject } from '@/lib/learning-hub-types';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -181,6 +181,117 @@ export async function POST(request: Request) {
         await updateGithubFile(LEARNING_HUB_PATH, newContent, `Add workshop: ${title}`, currentSha);
 
         return jsonNoCache({ success: true, workshop: newWorkshop }, 201);
+      }
+
+      if (entityType === 'showcase' || entityType === 'learnerShowcase') {
+        const learnerName = formData.get('learnerName') as string;
+        const role = (formData.get('role') as string) || 'Coursemate / Data Trainee';
+        const cohort = (formData.get('cohort') as string) || 'Cohort 2024';
+        const projectTitle = formData.get('projectTitle') as string;
+        const description = formData.get('description') as string;
+        const technologiesRaw = (formData.get('technologies') as string) || '';
+        const technologies = technologiesRaw.split(',').map((t) => t.trim()).filter(Boolean);
+        const githubUrl = (formData.get('githubUrl') as string) || '';
+        const liveUrl = (formData.get('liveUrl') as string) || '';
+        const quote = (formData.get('quote') as string) || '';
+        const publishedWithConsent = formData.get('publishedWithConsent') === 'true' || formData.get('publishedWithConsent') === 'on';
+        const imageFile = formData.get('image') as File | null;
+
+        if (!learnerName || !projectTitle || !description) {
+          return jsonNoCache({ error: 'Learner name, project title, and description are required' }, 400);
+        }
+
+        let imagePath = '/assets/project-placeholder.svg';
+        if (imageFile && imageFile.name) {
+          const bytes = await imageFile.arrayBuffer();
+          const base64Content = Buffer.from(bytes).toString('base64');
+          const cleanName = imageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+          const fileName = `${Date.now()}-${cleanName}`;
+          const uploadPath = `public/uploads/learning-hub/${fileName}`;
+
+          await updateGithubFile(uploadPath, base64Content, `Upload learner showcase image ${fileName}`);
+          imagePath = `/uploads/learning-hub/${fileName}`;
+        }
+
+        const newShowcase: LearnerShowcase = {
+          id: `showcase-${Date.now()}`,
+          learnerName,
+          role,
+          cohort,
+          projectTitle,
+          description,
+          technologies: technologies.length > 0 ? technologies : ['Python', 'Pandas'],
+          githubUrl: githubUrl || undefined,
+          liveUrl: liveUrl || undefined,
+          quote: quote || 'Learned practical data manipulation and problem solving under Brian’s guidance.',
+          publishedWithConsent,
+          image: imagePath,
+        };
+
+        data.learnerShowcase.unshift(newShowcase);
+
+        const newContent = Buffer.from(JSON.stringify(data, null, 2)).toString('base64');
+        await updateGithubFile(LEARNING_HUB_PATH, newContent, `Add learner showcase: ${projectTitle}`, currentSha);
+
+        return jsonNoCache({ success: true, showcase: newShowcase }, 201);
+      }
+
+      if (entityType === 'project' || entityType === 'practicalProject') {
+        const title = formData.get('title') as string;
+        const category = ((formData.get('category') as any) || 'Data Analysis') as 'Data Analysis' | 'Data Science';
+        const difficulty = ((formData.get('difficulty') as any) || 'Beginner') as 'Beginner' | 'Intermediate' | 'Advanced';
+        const access = ((formData.get('access') as any) || 'Free') as any;
+        const problemStatement = formData.get('problemStatement') as string;
+        const datasetName = (formData.get('datasetName') as string) || 'Curated Dataset';
+        const datasetDescription = (formData.get('datasetDescription') as string) || '';
+        const datasetUrl = (formData.get('datasetUrl') as string) || '';
+        const datasetSize = (formData.get('datasetSize') as string) || '';
+        const technologiesRaw = (formData.get('technologies') as string) || '';
+        const technologies = technologiesRaw.split(',').map((t) => t.trim()).filter(Boolean);
+        const instructionsRaw = (formData.get('stepByStepInstructions') as string) || '';
+        const stepByStepInstructions = instructionsRaw.split('\n').map((s) => s.trim()).filter(Boolean);
+        const outputRaw = (formData.get('expectedOutput') as string) || '';
+        const expectedOutput = outputRaw.split('\n').map((o) => o.trim()).filter(Boolean);
+        const githubUrl = (formData.get('githubUrl') as string) || '';
+        const resourceLink = (formData.get('resourceLink') as string) || '';
+
+        if (!title || !problemStatement) {
+          return jsonNoCache({ error: 'Project title and problem statement are required' }, 400);
+        }
+
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+        const newProject: PracticalProject = {
+          id: `proj-${Date.now()}`,
+          slug: slug || `project-${Date.now()}`,
+          title,
+          category,
+          difficulty,
+          access,
+          problemStatement,
+          datasetName,
+          datasetDescription,
+          datasetUrl: datasetUrl || undefined,
+          datasetSize: datasetSize || undefined,
+          technologies: technologies.length > 0 ? technologies : ['Python', 'Pandas'],
+          stepByStepInstructions:
+            stepByStepInstructions.length > 0
+              ? stepByStepInstructions
+              : ['Clone repository starter files', 'Load and clean raw dataset', 'Generate EDA visualizations', 'Produce final markdown findings'],
+          expectedOutput:
+            expectedOutput.length > 0
+              ? expectedOutput
+              : ['Cleaned dataset CSV', 'Jupyter notebook with EDA charts', 'Executive summary insights'],
+          githubUrl: githubUrl || undefined,
+          resourceLink: resourceLink || undefined,
+        };
+
+        data.projects.unshift(newProject);
+
+        const newContent = Buffer.from(JSON.stringify(data, null, 2)).toString('base64');
+        await updateGithubFile(LEARNING_HUB_PATH, newContent, `Add practical project: ${title}`, currentSha);
+
+        return jsonNoCache({ success: true, project: newProject }, 201);
       }
     }
 

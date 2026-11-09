@@ -33,14 +33,19 @@ declare module 'lucide-react' {
   export const Download: Icon;
   export const Edit: Icon;
   export const ExternalLink: Icon;
+  export const Eye: Icon;
+  export const FileCode: Icon;
   export const FileSpreadsheet: Icon;
   export const FileText: Icon;
   export const Filter: Icon;
   export const FolderGit2: Icon;
+  export const FolderPlus: Icon;
   export const Globe: Icon;
   export const GraduationCap: Icon;
   export const HelpCircle: Icon;
+  export const Laptop: Icon;
   export const Layers: Icon;
+  export const LayoutDashboard: Icon;
   export const Loader2: Icon;
   export const Lock: Icon;
   export const LogOut: Icon;
@@ -49,7 +54,9 @@ declare module 'lucide-react' {
   export const Menu: Icon;
   export const MessageSquare: Icon;
   export const Monitor: Icon;
+  export const Moon: Icon;
   export const Plus: Icon;
+  export const Presentation: Icon;
   export const Quote: Icon;
   export const Search: Icon;
   export const Send: Icon;
@@ -57,6 +64,8 @@ declare module 'lucide-react' {
   export const Share2: Icon;
   export const ShieldCheck: Icon;
   export const Sparkles: Icon;
+  export const Star: Icon;
+  export const Sun: Icon;
   export const Target: Icon;
   export const Terminal: Icon;
   export const Trash2: Icon;
