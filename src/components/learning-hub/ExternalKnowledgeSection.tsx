@@ -2,13 +2,10 @@
 
 import { useState } from "react";
 import { 
-  ExternalLink, 
   BookOpen, 
   Code2, 
   Database, 
-  FileText, 
   Globe, 
-  Sparkles, 
   ArrowUpRight, 
   Terminal 
 } from "lucide-react";

@@ -11,16 +11,12 @@ import {
   Code2, 
   Terminal, 
   Download, 
-  ChevronDown, 
-  ChevronUp, 
-  Sparkles, 
   Briefcase, 
   Target, 
   Copy, 
-  Check, 
-  Share2 
+  Check 
 } from "lucide-react";
-import { LearningPath, LearningLesson, PracticalProject, LearningResource } from "@/lib/learning-hub-types";
+import { LearningPath, PracticalProject, LearningResource } from "@/lib/learning-hub-types";
 
 interface PathDetailViewProps {
   path: LearningPath;

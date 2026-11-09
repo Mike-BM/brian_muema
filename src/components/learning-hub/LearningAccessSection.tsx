@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Sparkles, BookOpen, Users, HelpCircle } from "lucide-react";
+import { Check, Sparkles, BookOpen, Users } from "lucide-react";
 
 export function LearningAccessSection() {
   return (

@@ -27,7 +27,7 @@ export function ContactSection() {
       } else {
         alert("Oops! There was a problem submitting your form.");
       }
-    } catch (error) {
+    } catch {
       alert("Oops! There was a problem submitting your form.");
     } finally {
       setIsSubmitting(false);

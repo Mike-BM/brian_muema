@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Mail, MessageSquare, Loader2, CheckCircle2, Send, HelpCircle, Users, BookOpen } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Mail, MessageSquare, Loader2, CheckCircle2, Send, Users } from "lucide-react";
 
 interface LearningContactSectionProps {
   initialInquiryType?: string;
@@ -13,7 +12,6 @@ export function LearningContactSection({
   initialInquiryType = "Join a Learning Program",
   initialWorkshop = "",
 }: LearningContactSectionProps) {
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [inquiryType, setInquiryType] = useState(initialInquiryType);
   const [learningTrack, setLearningTrack] = useState("Data Analysis");

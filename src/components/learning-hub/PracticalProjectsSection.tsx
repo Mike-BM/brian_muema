@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { 
   FolderGit2, 
-  ExternalLink, 
   ChevronDown, 
   ChevronUp, 
   Database, 

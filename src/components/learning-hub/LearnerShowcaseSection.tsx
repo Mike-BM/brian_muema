@@ -1,6 +1,6 @@
 "use client";
 
-import { Award, FolderGit2, Quote, ShieldCheck, UserCheck } from "lucide-react";
+import { FolderGit2, Quote, ShieldCheck, UserCheck } from "lucide-react";
 import { LearnerShowcase } from "@/lib/learning-hub-types";
 
 interface LearnerShowcaseSectionProps {

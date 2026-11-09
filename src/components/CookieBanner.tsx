@@ -9,7 +9,6 @@ export function CookieBanner() {
   useEffect(() => {
     const consent = localStorage.getItem("cookieConsent");
     if (!consent) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShow(true);
     }
   }, []);

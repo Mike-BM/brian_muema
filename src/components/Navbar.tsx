@@ -6,18 +6,18 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
+const navLinks = [
+  { name: "Home", href: "/" },
+  { name: "About", href: "/#about" },
+  { name: "Experience", href: "/#experience" },
+  { name: "Projects", href: "/#projects" },
+  { name: "Learning Hub", href: "/learning-hub" },
+  { name: "Contact", href: "/#contact" },
+];
+
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-
-  const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "/#about" },
-    { name: "Experience", href: "/#experience" },
-    { name: "Projects", href: "/#projects" },
-    { name: "Learning Hub", href: "/learning-hub" },
-    { name: "Contact", href: "/#contact" },
-  ];
 
   const [activeSection, setActiveSection] = useState("");
 

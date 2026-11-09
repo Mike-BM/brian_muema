@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     if (file) {
       try {
         currentSettings = JSON.parse(file.content);
-      } catch (e) {
+      } catch {
         // use defaults
       }
     }

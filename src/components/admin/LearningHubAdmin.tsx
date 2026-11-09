@@ -1,30 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { 
   Upload, 
   FileText, 
   Plus, 
   Trash2, 
   Video, 
-  Calendar, 
   ExternalLink, 
   Sparkles, 
-  BookOpen, 
   Download, 
   CheckCircle2, 
   AlertCircle, 
   Loader2,
-  Clock,
   Layers,
-  MapPin,
   Users,
-  GraduationCap,
   FolderGit2,
   ShieldCheck,
-  Quote,
-  Eye,
   Search
 } from "lucide-react";
 import { 
@@ -44,7 +36,7 @@ export function LearningHubAdmin() {
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [projects, setProjects] = useState<PracticalProject[]>([]);
   const [learnerShowcases, setLearnerShowcases] = useState<LearnerShowcase[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" | "" }>({ text: "", type: "" });
   const [searchTerm, setSearchTerm] = useState("");

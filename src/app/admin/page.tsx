@@ -17,13 +17,8 @@ import {
   AlertCircle, 
   CheckCircle2, 
   LogOut, 
-  BookOpen,
   GraduationCap,
-  Video,
-  Users,
-  Sparkles,
   Layers,
-  Search,
   ExternalLink
 } from "lucide-react";
 import { LearningHubAdmin } from "@/components/admin/LearningHubAdmin";
@@ -276,7 +271,6 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjects();
      
     fetchCertifications();

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowRight, BookOpen, Users, Code2, Database } from "lucide-react";
 
 export function LearningHubHero() {
