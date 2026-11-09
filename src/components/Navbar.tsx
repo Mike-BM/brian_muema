@@ -10,10 +10,6 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
-  if (pathname.startsWith('/admin')) {
-    return null;
-  }
-
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "About", href: "/#about" },
@@ -63,6 +59,10 @@ export function Navbar() {
     if (href === "/") return activeSection === "";
     return activeSection === href.replace("/#", "");
   };
+
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

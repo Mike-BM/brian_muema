@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { 
   Calendar, 
@@ -217,13 +218,13 @@ export function WorkshopsSection({ workshops, onSelectWorkshop }: WorkshopsSecti
                         </button>
                       </div>
                     ) : (
-                      <a
+                      <Link
                         href="/learning-hub/resources"
                         className="w-full inline-flex items-center justify-center gap-2 bg-muted text-foreground hover:bg-muted/80 py-2.5 px-4 text-sm font-medium border border-border transition-colors"
                       >
                         <span>Access Session Materials</span>
                         <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                      </a>
+                      </Link>
                     )}
                   </div>
                 </div>
