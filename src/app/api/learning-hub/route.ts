@@ -1,5 +1,5 @@
 import { getGithubFile, updateGithubFile, jsonNoCache } from '@/lib/github';
-import { LearningHubData } from '@/lib/learning-hub-types';
+import { LearningHubData, LearningResource, Workshop } from '@/lib/learning-hub-types';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -15,6 +15,7 @@ function safeParseData(content?: string): LearningHubData {
       workshops: [],
       projects: [],
       learnerShowcase: [],
+      externalKnowledgeSites: [],
     };
   }
   try {
@@ -25,6 +26,7 @@ function safeParseData(content?: string): LearningHubData {
       workshops: Array.isArray(data.workshops) ? data.workshops : [],
       projects: Array.isArray(data.projects) ? data.projects : [],
       learnerShowcase: Array.isArray(data.learnerShowcase) ? data.learnerShowcase : [],
+      externalKnowledgeSites: Array.isArray(data.externalKnowledgeSites) ? data.externalKnowledgeSites : [],
     };
   } catch (e) {
     console.error('Failed to parse learning hub JSON:', e);
@@ -34,6 +36,7 @@ function safeParseData(content?: string): LearningHubData {
       workshops: [],
       projects: [],
       learnerShowcase: [],
+      externalKnowledgeSites: [],
     };
   }
 }
@@ -48,6 +51,7 @@ export async function GET() {
         workshops: [],
         projects: [],
         learnerShowcase: [],
+        externalKnowledgeSites: [],
       });
     }
     const data = safeParseData(file.content);
@@ -58,18 +62,172 @@ export async function GET() {
   }
 }
 
-export async function PUT(request: Request) {
+export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const contentType = request.headers.get('content-type') || '';
     const file = await getGithubFile(LEARNING_HUB_PATH);
+    const data = safeParseData(file?.content);
     const currentSha = file ? file.sha : undefined;
 
-    const newContent = Buffer.from(JSON.stringify(body, null, 2)).toString('base64');
-    await updateGithubFile(LEARNING_HUB_PATH, newContent, 'Update Learning Hub data', currentSha);
+    // Handle Multipart Form Data (e.g. file uploads for resources)
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await request.formData();
+      const entityType = formData.get('entityType') as string; // 'resource' | 'workshop'
 
-    return jsonNoCache({ success: true, data: body }, 200);
+      if (entityType === 'resource') {
+        const title = formData.get('title') as string;
+        const description = formData.get('description') as string;
+        const category = (formData.get('category') as any) || 'General';
+        const type = (formData.get('type') as any) || 'notes';
+        const access = (formData.get('access') as any) || 'Free';
+        const format = formData.get('format') as string || 'PDF';
+        const topic = formData.get('topic') as string || 'General';
+        const platform = (formData.get('platform') as any) || 'Local Download';
+        const externalUrl = formData.get('externalUrl') as string || '';
+        const tagsRaw = formData.get('tags') as string || '';
+        const tags = tagsRaw.split(',').map((t) => t.trim()).filter(Boolean);
+        const fileUpload = formData.get('file') as File | null;
+
+        if (!title || !description) {
+          return jsonNoCache({ error: 'Title and description are required' }, 400);
+        }
+
+        let fileUrl: string | undefined = undefined;
+        let fileSize: string | undefined = undefined;
+
+        if (fileUpload && fileUpload.name) {
+          const bytes = await fileUpload.arrayBuffer();
+          const base64Content = Buffer.from(bytes).toString('base64');
+          const cleanName = fileUpload.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+          const fileName = `${Date.now()}-${cleanName}`;
+          const uploadPath = `public/uploads/learning-hub/${fileName}`;
+
+          await updateGithubFile(uploadPath, base64Content, `Upload learning resource file ${fileName}`);
+          fileUrl = `/uploads/learning-hub/${fileName}`;
+
+          // Approximate size
+          const sizeKb = Math.round(fileUpload.size / 1024);
+          fileSize = sizeKb > 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${sizeKb} KB`;
+        }
+
+        const newResource: LearningResource = {
+          id: `res-${Date.now()}`,
+          title,
+          description,
+          category,
+          type,
+          access,
+          format,
+          fileSize: fileSize || (externalUrl ? 'Online Link' : 'N/A'),
+          downloadUrl: fileUrl || externalUrl || '#',
+          externalUrl: externalUrl || undefined,
+          fileUrl,
+          platform,
+          topic,
+          tags,
+          dateAdded: new Date().toISOString().split('T')[0],
+        };
+
+        data.resources.unshift(newResource);
+
+        const newContent = Buffer.from(JSON.stringify(data, null, 2)).toString('base64');
+        await updateGithubFile(LEARNING_HUB_PATH, newContent, `Add learning resource: ${title}`, currentSha);
+
+        return jsonNoCache({ success: true, resource: newResource }, 201);
+      }
+
+      if (entityType === 'workshop') {
+        const title = formData.get('title') as string;
+        const description = formData.get('description') as string;
+        const date = formData.get('date') as string || new Date().toISOString().split('T')[0];
+        const time = formData.get('time') as string || '14:00 - 16:00 EAT';
+        const format = (formData.get('format') as 'Online' | 'Physical') || 'Online';
+        const location = formData.get('location') as string || (format === 'Online' ? 'Google Meet' : 'Campus Lab');
+        const meetUrl = formData.get('meetUrl') as string || '';
+        const recordingUrl = formData.get('recordingUrl') as string || '';
+        const status = (formData.get('status') as 'upcoming' | 'completed') || 'upcoming';
+        const access = (formData.get('access') as any) || 'Free';
+        const targetAudience = formData.get('targetAudience') as string || 'Students & Coursemates';
+        const objectivesRaw = formData.get('objectives') as string || '';
+        const objectives = objectivesRaw.split('\n').map((o) => o.trim()).filter(Boolean);
+        const highlightRecap = formData.get('highlightRecap') as string || '';
+
+        if (!title || !description) {
+          return jsonNoCache({ error: 'Workshop title and description are required' }, 400);
+        }
+
+        const newWorkshop: Workshop = {
+          id: `ws-${Date.now()}`,
+          title,
+          description,
+          date,
+          time,
+          format,
+          location,
+          meetUrl: meetUrl || undefined,
+          recordingUrl: recordingUrl || undefined,
+          status,
+          objectives: objectives.length > 0 ? objectives : ['Hands-on practical walkthrough', 'Q&A session with Brian'],
+          targetAudience,
+          registrationOpen: status === 'upcoming',
+          registrationLink: meetUrl || '#register',
+          access,
+          highlightRecap: highlightRecap || undefined,
+        };
+
+        data.workshops.unshift(newWorkshop);
+
+        const newContent = Buffer.from(JSON.stringify(data, null, 2)).toString('base64');
+        await updateGithubFile(LEARNING_HUB_PATH, newContent, `Add workshop: ${title}`, currentSha);
+
+        return jsonNoCache({ success: true, workshop: newWorkshop }, 201);
+      }
+    }
+
+    // Handle direct JSON payload
+    const body = await request.json();
+    const updatedData = {
+      ...data,
+      ...body,
+    };
+
+    const newContent = Buffer.from(JSON.stringify(updatedData, null, 2)).toString('base64');
+    await updateGithubFile(LEARNING_HUB_PATH, newContent, 'Update Learning Hub content', currentSha);
+
+    return jsonNoCache({ success: true, data: updatedData }, 200);
   } catch (error: any) {
-    console.error('Error updating learning hub data:', error);
-    return jsonNoCache({ error: error?.message || 'Failed to update learning hub data' }, 500);
+    console.error('Error in POST /api/learning-hub:', error);
+    return jsonNoCache({ error: error?.message || 'Failed to save learning hub content' }, 500);
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { id, type } = await request.json();
+    if (!id || !type) {
+      return jsonNoCache({ error: 'Missing id or entity type' }, 400);
+    }
+
+    const file = await getGithubFile(LEARNING_HUB_PATH);
+    const data = safeParseData(file?.content);
+    const currentSha = file ? file.sha : undefined;
+
+    if (type === 'resource') {
+      data.resources = data.resources.filter((r) => r.id !== id);
+    } else if (type === 'workshop') {
+      data.workshops = data.workshops.filter((w) => w.id !== id);
+    } else if (type === 'project') {
+      data.projects = data.projects.filter((p) => p.id !== id);
+    } else if (type === 'learnerShowcase') {
+      data.learnerShowcase = data.learnerShowcase.filter((l) => l.id !== id);
+    }
+
+    const newContent = Buffer.from(JSON.stringify(data, null, 2)).toString('base64');
+    await updateGithubFile(LEARNING_HUB_PATH, newContent, `Delete ${type} with id ${id}`, currentSha);
+
+    return jsonNoCache({ success: true }, 200);
+  } catch (error: any) {
+    console.error('Error in DELETE /api/learning-hub:', error);
+    return jsonNoCache({ error: error?.message || 'Failed to delete item' }, 500);
   }
 }

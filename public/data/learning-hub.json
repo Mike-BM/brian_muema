@@ -687,20 +687,23 @@
       "fileSize": "1.2 MB",
       "topic": "NumPy & Pandas",
       "downloadUrl": "#",
+      "platform": "Local Download",
       "tags": ["Pandas", "Python", "Cheatsheet"]
     },
     {
       "id": "res-02",
       "title": "Exploratory Data Analysis (EDA) Starter Notebook",
-      "description": "A structured Jupyter notebook template with pre-built cells for distribution checks, outlier detection, and correlation analysis.",
+      "description": "A structured Jupyter notebook template with pre-built cells for distribution checks, outlier detection, and correlation analysis. Run directly in Google Colab or download locally.",
       "category": "Data Analysis",
       "type": "notebook",
       "access": "Free",
-      "format": "Jupyter (.ipynb)",
+      "format": "Google Colab / .ipynb",
       "fileSize": "850 KB",
       "topic": "EDA",
-      "downloadUrl": "#",
-      "tags": ["EDA", "Jupyter", "Visualization"]
+      "downloadUrl": "https://colab.research.google.com",
+      "externalUrl": "https://colab.research.google.com",
+      "platform": "Google Colab",
+      "tags": ["EDA", "Jupyter", "Visualization", "Colab"]
     },
     {
       "id": "res-03",
@@ -713,20 +716,23 @@
       "fileSize": "2.4 MB",
       "topic": "Statistics",
       "downloadUrl": "#",
+      "platform": "Local Download",
       "tags": ["Statistics", "Hypothesis Testing", "Math"]
     },
     {
       "id": "res-04",
       "title": "Global COVID-19 Historical Trends Dataset",
-      "description": "Cleaned multi-country dataset tracking cases, deaths, vaccination rates, and economic indicators across Kenya, India, US, and China.",
+      "description": "Cleaned multi-country dataset tracking cases, deaths, vaccination rates, and economic indicators across Kenya, India, US, and China. Available on Kaggle and direct download.",
       "category": "Data Analysis",
       "type": "dataset",
       "access": "Free",
-      "format": "CSV",
+      "format": "Kaggle / CSV",
       "fileSize": "4.8 MB",
       "topic": "Public Health",
-      "downloadUrl": "#",
-      "tags": ["Dataset", "EDA", "Healthcare"]
+      "downloadUrl": "https://www.kaggle.com",
+      "externalUrl": "https://www.kaggle.com",
+      "platform": "Kaggle",
+      "tags": ["Dataset", "EDA", "Healthcare", "Kaggle"]
     },
     {
       "id": "res-05",
@@ -739,20 +745,23 @@
       "fileSize": "3.1 MB",
       "topic": "Data Cleaning",
       "downloadUrl": "#",
+      "platform": "Local Download",
       "tags": ["Data Cleaning", "Best Practices"]
     },
     {
       "id": "res-06",
       "title": "Scikit-Learn Machine Learning Pipeline Template",
-      "description": "End-to-end boilerplate for building leakage-free data preprocessing, model training, cross-validation, and metric reporting.",
+      "description": "End-to-end boilerplate for building leakage-free data preprocessing, model training, cross-validation, and metric reporting. Ready to execute on Colab.",
       "category": "Data Science",
       "type": "notebook",
       "access": "Free",
-      "format": "Jupyter (.ipynb)",
+      "format": "Google Colab / .ipynb",
       "fileSize": "1.1 MB",
       "topic": "Machine Learning",
-      "downloadUrl": "#",
-      "tags": ["Scikit-Learn", "Pipelines", "ML"]
+      "downloadUrl": "https://colab.research.google.com",
+      "externalUrl": "https://colab.research.google.com",
+      "platform": "Google Colab",
+      "tags": ["Scikit-Learn", "Pipelines", "ML", "Colab"]
     },
     {
       "id": "res-07",
@@ -765,6 +774,7 @@
       "fileSize": "6.2 MB",
       "topic": "Financial Analytics",
       "downloadUrl": "#",
+      "platform": "Local Download",
       "tags": ["FinTech", "SMEs", "Machine Learning"]
     },
     {
@@ -778,6 +788,7 @@
       "fileSize": "4.5 MB",
       "topic": "Feature Engineering",
       "downloadUrl": "#",
+      "platform": "Local Download",
       "tags": ["Features", "Advanced ML"]
     },
     {
@@ -791,6 +802,7 @@
       "fileSize": "12.4 MB",
       "topic": "AI & Healthcare",
       "downloadUrl": "#",
+      "platform": "Local Download",
       "tags": ["Sensors", "Time Series", "AI"]
     },
     {
@@ -800,11 +812,13 @@
       "category": "Data Analysis",
       "type": "tutorial",
       "access": "Free",
-      "format": "Video Tutorial",
+      "format": "YouTube Tutorial",
       "fileSize": "45 mins",
       "topic": "Visualization",
-      "downloadUrl": "#",
-      "tags": ["Matplotlib", "Seaborn", "Storytelling"]
+      "downloadUrl": "https://www.youtube.com",
+      "externalUrl": "https://www.youtube.com",
+      "platform": "YouTube",
+      "tags": ["Matplotlib", "Seaborn", "Storytelling", "YouTube"]
     },
     {
       "id": "res-11",
@@ -817,20 +831,23 @@
       "fileSize": "2.8 MB",
       "topic": "Model Evaluation",
       "downloadUrl": "#",
+      "platform": "Local Download",
       "tags": ["Assignment", "Classification", "Evaluation"]
     },
     {
       "id": "res-12",
       "title": "SQL for Data Analysts: Querying & Aggregation Guide",
-      "description": "Cheat sheet of essential SQL statements: window functions, CTEs, self-joins, and aggregations for analytical reporting.",
+      "description": "Cheat sheet of essential SQL statements: window functions, CTEs, self-joins, and aggregations for analytical reporting. Synced with GitHub.",
       "category": "Data Analysis",
       "type": "notes",
       "access": "Free",
-      "format": "Markdown / PDF",
+      "format": "GitHub / Markdown",
       "fileSize": "1.8 MB",
       "topic": "SQL",
-      "downloadUrl": "#",
-      "tags": ["SQL", "Databases", "Reporting"]
+      "downloadUrl": "https://github.com/Mike-BM",
+      "externalUrl": "https://github.com/Mike-BM",
+      "platform": "GitHub",
+      "tags": ["SQL", "Databases", "Reporting", "GitHub"]
     }
   ],
   "workshops": [
@@ -851,7 +868,8 @@
       ],
       "targetAudience": "Coursemates, students, and junior analysts seeking hands-on practice",
       "registrationOpen": true,
-      "registrationLink": "#register",
+      "registrationLink": "https://meet.google.com/xyz-data-hub",
+      "meetUrl": "https://meet.google.com/xyz-data-hub",
       "access": "Free"
     },
     {
@@ -1086,5 +1104,62 @@
       "quote": "Working with Brian taught me how to think like a decision-maker. It wasn't just about writing code; it was about communicating what the numbers actually mean for a business.",
       "publishedWithConsent": true
     }
+  ],
+  "externalKnowledgeSites": [
+    {
+      "id": "site-colab",
+      "name": "Google Colab",
+      "description": "Interactive cloud Jupyter notebook environment provided by Google. Execute Python code, train machine learning models, and analyze datasets directly in the browser with free GPU access.",
+      "url": "https://colab.research.google.com",
+      "category": "Interactive Coding & Notebooks",
+      "badge": "Cloud Notebooks",
+      "iconType": "colab"
+    },
+    {
+      "id": "site-kaggle",
+      "name": "Kaggle Datasets & Community",
+      "description": "Explore over 300,000 public datasets, participate in data competitions, and review community Python notebooks and case studies.",
+      "url": "https://www.kaggle.com",
+      "category": "Datasets & Challenges",
+      "badge": "Datasets & ML",
+      "iconType": "kaggle"
+    },
+    {
+      "id": "site-scikit",
+      "name": "Scikit-Learn Official User Guide",
+      "description": "The definitive resource for Python machine learning algorithms, model evaluation metrics, preprocessing pipelines, and practical API documentation.",
+      "url": "https://scikit-learn.org/stable/user_guide.html",
+      "category": "Official Documentation",
+      "badge": "Machine Learning",
+      "iconType": "docs"
+    },
+    {
+      "id": "site-pandas",
+      "name": "Pandas Official Documentation",
+      "description": "Comprehensive reference guide for data structures, DataFrame transformations, indexing, grouped aggregations, and reshaping operations.",
+      "url": "https://pandas.pydata.org/docs/user_guide/index.html",
+      "category": "Official Documentation",
+      "badge": "Data Analysis",
+      "iconType": "docs"
+    },
+    {
+      "id": "site-github",
+      "name": "Brian's GitHub Code Repositories",
+      "description": "Access open-source code repositories, starter templates, notebooks, and scripts referenced throughout the learning paths and workshop sessions.",
+      "url": "https://github.com/Mike-BM",
+      "category": "Interactive Coding & Notebooks",
+      "badge": "Source Code",
+      "iconType": "github"
+    },
+    {
+      "id": "site-towards",
+      "name": "Towards Data Science & Real Python",
+      "description": "Curated industry publications and tutorial archives exploring algorithmic design, data science architecture, and real-world analytics case studies.",
+      "url": "https://towardsdatascience.com",
+      "category": "Articles & Research",
+      "badge": "Industry Insights",
+      "iconType": "web"
+    }
   ]
 }
+

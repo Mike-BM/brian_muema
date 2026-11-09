@@ -140,3 +140,4 @@ export function LearningPathsSection({ paths }: LearningPathsSectionProps) {
     </section>
   );
 }
+

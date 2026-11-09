@@ -60,6 +60,7 @@ declare module 'lucide-react' {
   export const Target: Icon;
   export const Terminal: Icon;
   export const Trash2: Icon;
+  export const Upload: Icon;
   export const UserCheck: Icon;
   export const Users: Icon;
   export const Video: Icon;

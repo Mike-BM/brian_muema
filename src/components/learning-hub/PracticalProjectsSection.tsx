@@ -237,3 +237,4 @@ export function PracticalProjectsSection({ projects }: PracticalProjectsSectionP
     </section>
   );
 }
+

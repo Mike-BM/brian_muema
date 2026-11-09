@@ -121,3 +121,4 @@ export function LearnerShowcaseSection({ learners }: LearnerShowcaseSectionProps
     </section>
   );
 }
+

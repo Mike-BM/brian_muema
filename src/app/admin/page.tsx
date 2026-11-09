@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Plus, Trash2, Settings, FileText, FolderGit2, Award, Briefcase, Edit, X, AlertCircle, CheckCircle2, LogOut } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Settings, FileText, FolderGit2, Award, Briefcase, Edit, X, AlertCircle, CheckCircle2, LogOut, BookOpen } from "lucide-react";
+import { LearningHubAdmin } from "@/components/admin/LearningHubAdmin";
 
 interface Project {
   id: string;
@@ -829,6 +830,11 @@ export default function AdminPage() {
               </form>
             </div>
           </div>
+        </div>
+
+        {/* Dedicated Learning Hub Studio */}
+        <div id="learning-hub-admin-section" className="mb-8">
+          <LearningHubAdmin />
         </div>
 
         <div id="projects-section" className="mb-8 pt-8 border-t border-slate-200 dark:border-slate-800">

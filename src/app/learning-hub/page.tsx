@@ -6,6 +6,7 @@ import { LearningResourcesSection } from "@/components/learning-hub/LearningReso
 import { WorkshopsSection } from "@/components/learning-hub/WorkshopsSection";
 import { PracticalProjectsSection } from "@/components/learning-hub/PracticalProjectsSection";
 import { LearnerShowcaseSection } from "@/components/learning-hub/LearnerShowcaseSection";
+import { ExternalKnowledgeSection } from "@/components/learning-hub/ExternalKnowledgeSection";
 import { LearningAccessSection } from "@/components/learning-hub/LearningAccessSection";
 import { LearningContactSection } from "@/components/learning-hub/LearningContactSection";
 
@@ -37,8 +38,10 @@ export default async function LearningHubPage() {
       <WorkshopsSection workshops={data.workshops} />
       <PracticalProjectsSection projects={data.projects} />
       <LearnerShowcaseSection learners={data.learnerShowcase} />
+      <ExternalKnowledgeSection sites={data.externalKnowledgeSites} />
       <LearningAccessSection />
       <LearningContactSection />
     </div>
   );
 }
+

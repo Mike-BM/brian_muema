@@ -35,3 +35,4 @@ export async function getLearningPathBySlug(slug: string): Promise<LearningPath 
   const data = await getLearningHubData();
   return data.paths.find((p) => p.slug === slug) || null;
 }
+

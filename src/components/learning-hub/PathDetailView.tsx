@@ -547,3 +547,4 @@ export function PathDetailView({ path, relatedProjects, relatedResources }: Path
     </div>
   );
 }
+

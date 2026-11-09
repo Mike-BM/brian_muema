@@ -10,7 +10,8 @@ import {
   CheckCircle2, 
   ArrowRight, 
   Award, 
-  ExternalLink 
+  ExternalLink,
+  Video
 } from "lucide-react";
 import { Workshop } from "@/lib/learning-hub-types";
 
@@ -115,6 +116,12 @@ export function WorkshopsSection({ workshops, onSelectWorkshop }: WorkshopsSecti
                         <span className="text-xs px-2 py-0.5 bg-muted text-muted-foreground border border-border">
                           {workshop.access} Access
                         </span>
+                        {workshop.meetUrl && (
+                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-0.5 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
+                            <Video className="h-3 w-3" />
+                            Google Meet Ready
+                          </span>
+                        )}
                       </div>
 
                       <span
@@ -184,13 +191,31 @@ export function WorkshopsSection({ workshops, onSelectWorkshop }: WorkshopsSecti
                   {/* Actions */}
                   <div className="pt-4 border-t border-border/50 flex flex-col sm:flex-row items-center gap-3">
                     {isUpcoming ? (
-                      <button
-                        onClick={() => handleRegisterClick(workshop)}
-                        className="w-full inline-flex items-center justify-center gap-2 bg-foreground text-background hover:bg-foreground/90 py-2.5 px-4 text-sm font-medium transition-colors"
-                      >
-                        <span>Reserve Your Spot</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </button>
+                      <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full">
+                        {workshop.meetUrl && (
+                          <a
+                            href={workshop.meetUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full sm:w-1/2 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 px-4 text-xs sm:text-sm font-medium transition-colors shadow-sm"
+                          >
+                            <Video className="h-4 w-4" />
+                            <span>Join Google Meet</span>
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </a>
+                        )}
+                        <button
+                          onClick={() => handleRegisterClick(workshop)}
+                          className={`inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs sm:text-sm font-medium transition-colors ${
+                            workshop.meetUrl
+                              ? "w-full sm:w-1/2 border border-border bg-card hover:bg-muted text-foreground"
+                              : "w-full bg-foreground text-background hover:bg-foreground/90"
+                          }`}
+                        >
+                          <span>{workshop.meetUrl ? "Reserve / Add to Calendar" : "Reserve Your Spot"}</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </button>
+                      </div>
                     ) : (
                       <a
                         href="/learning-hub/resources"
@@ -210,3 +235,4 @@ export function WorkshopsSection({ workshops, onSelectWorkshop }: WorkshopsSecti
     </section>
   );
 }
+

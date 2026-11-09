@@ -91,11 +91,14 @@ export function LearningResourcesSection({ resources, onRequestAccess }: Learnin
         onRequestAccess(res);
       }
     } else {
-      // Simulate/trigger free resource download or notebook open
-      if (res.externalUrl && res.externalUrl !== "#") {
+      if (res.fileUrl) {
+        window.open(res.fileUrl, "_blank");
+      } else if (res.externalUrl && res.externalUrl !== "#") {
         window.open(res.externalUrl, "_blank");
+      } else if (res.downloadUrl && res.downloadUrl !== "#") {
+        window.open(res.downloadUrl, "_blank");
       } else {
-        alert(`Opening "${res.title}". In production this opens the repository or downloadable ${res.format} file.`);
+        alert(`Resource: "${res.title}" is ready. View instructions or ask Brian for direct access.`);
       }
     }
   };
@@ -240,8 +243,13 @@ export function LearningResourcesSection({ resources, onRequestAccess }: Learnin
                       {resource.description}
                     </p>
 
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1 mb-4">
+                    {/* Tags & Platform */}
+                    <div className="flex flex-wrap items-center gap-1 mb-4">
+                      {resource.platform && (
+                        <span className="text-[10px] font-semibold px-2 py-0.5 bg-primary/10 text-primary border border-primary/20">
+                          {resource.platform}
+                        </span>
+                      )}
                       {resource.tags.map((tag, i) => (
                         <span key={i} className="text-[10px] px-2 py-0.5 bg-muted/40 text-muted-foreground border border-border/50">
                           #{tag}
@@ -268,10 +276,28 @@ export function LearningResourcesSection({ resources, onRequestAccess }: Learnin
                           <Sparkles className="h-3.5 w-3.5" />
                           <span>Request Access</span>
                         </>
+                      ) : resource.platform === 'Google Colab' ? (
+                        <>
+                          <Code2 className="h-3.5 w-3.5" />
+                          <span>Run in Colab</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </>
+                      ) : resource.platform === 'Kaggle' ? (
+                        <>
+                          <FileSpreadsheet className="h-3.5 w-3.5" />
+                          <span>View on Kaggle</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </>
+                      ) : resource.platform === 'YouTube' ? (
+                        <>
+                          <Video className="h-3.5 w-3.5" />
+                          <span>Watch Tutorial</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </>
                       ) : (
                         <>
                           <Download className="h-3.5 w-3.5" />
-                          <span>Access Free</span>
+                          <span>{resource.fileUrl ? "Download File" : "Access Free"}</span>
                         </>
                       )}
                     </button>
@@ -325,3 +351,4 @@ export function LearningResourcesSection({ resources, onRequestAccess }: Learnin
     </section>
   );
 }
+

@@ -1,5 +1,15 @@
 export type AccessLevel = 'Free' | 'Premium';
 
+export type ResourcePlatform = 
+  | 'Google Colab' 
+  | 'Kaggle' 
+  | 'GitHub' 
+  | 'Official Docs' 
+  | 'YouTube' 
+  | 'Google Drive' 
+  | 'Local Download' 
+  | 'Web Link';
+
 export interface LessonResource {
   name: string;
   type: 'notebook' | 'pdf' | 'dataset' | 'code' | 'link';
@@ -53,14 +63,17 @@ export interface LearningResource {
   title: string;
   description: string;
   category: 'Data Analysis' | 'Data Science' | 'General';
-  type: 'notes' | 'pdf' | 'notebook' | 'dataset' | 'exercise' | 'tutorial';
+  type: 'notes' | 'pdf' | 'notebook' | 'dataset' | 'exercise' | 'tutorial' | 'external_guide';
   access: AccessLevel;
-  format: string; // e.g. "PDF", "Jupyter (.ipynb)", "CSV", "Markdown", "Video"
+  format: string; // e.g. "PDF", "Jupyter (.ipynb)", "CSV", "Markdown", "Video", "Colab"
   fileSize?: string;
   downloadUrl?: string;
   externalUrl?: string;
+  fileUrl?: string; // uploaded file path e.g. /uploads/learning-hub/...
+  platform?: ResourcePlatform;
   topic: string;
   tags: string[];
+  dateAdded?: string;
 }
 
 export interface Workshop {
@@ -77,6 +90,8 @@ export interface Workshop {
   registrationOpen: boolean;
   registrationLink?: string;
   materialsLink?: string;
+  meetUrl?: string; // Direct Google Meet link (e.g. https://meet.google.com/xyz-abcd-efg)
+  recordingUrl?: string;
   access: AccessLevel;
   highlightRecap?: string;
 }
@@ -115,10 +130,21 @@ export interface LearnerShowcase {
   publishedWithConsent: boolean;
 }
 
+export interface ExternalKnowledgeSite {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  category: 'Interactive Coding & Notebooks' | 'Datasets & Challenges' | 'Official Documentation' | 'Articles & Research';
+  badge: string; // e.g. "Google Colab", "Kaggle", "Scikit-Learn Docs", "Pandas"
+  iconType: 'colab' | 'kaggle' | 'github' | 'docs' | 'youtube' | 'web';
+}
+
 export interface LearningHubData {
   paths: LearningPath[];
   resources: LearningResource[];
   workshops: Workshop[];
   projects: PracticalProject[];
   learnerShowcase: LearnerShowcase[];
+  externalKnowledgeSites?: ExternalKnowledgeSite[];
 }
