@@ -3,7 +3,8 @@ import { Resend } from 'resend';
 import fs from 'fs/promises';
 import path from 'path';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resendApiKey = process.env.RESEND_API_KEY;
+const resend = new Resend(resendApiKey || 're_placeholder');
 const credentialsPath = path.join(process.cwd(), 'data', 'credentials.json');
 
 export async function POST(request: Request) {

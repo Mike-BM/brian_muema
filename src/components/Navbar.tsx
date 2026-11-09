@@ -19,6 +19,7 @@ export function Navbar() {
     { name: "About", href: "/#about" },
     { name: "Experience", href: "/#experience" },
     { name: "Projects", href: "/#projects" },
+    { name: "Learning Hub", href: "/learning-hub" },
     { name: "Contact", href: "/#contact" },
   ];
 
@@ -55,6 +56,9 @@ export function Navbar() {
   }, [pathname]);
 
   const isActive = (href: string) => {
+    if (href === "/learning-hub") {
+      return pathname.startsWith("/learning-hub");
+    }
     if (pathname !== "/") return pathname === href;
     if (href === "/") return activeSection === "";
     return activeSection === href.replace("/#", "");

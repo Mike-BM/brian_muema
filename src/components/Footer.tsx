@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export function Footer() {
@@ -22,6 +23,7 @@ export function Footer() {
         </div>
         
         <div className="flex gap-4 flex-wrap justify-center md:justify-end mt-4 md:mt-0">
+          <Link href="/learning-hub" className="text-sm font-medium text-primary hover:underline">Learning Hub</Link>
           <a href="https://github.com/Mike-BM" className="text-sm font-medium text-muted-foreground hover:text-foreground" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a href="https://linkedin.com/in/brian-michael-0386a7335" className="text-sm font-medium text-muted-foreground hover:text-foreground" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           <a href="https://www.facebook.com/share/1HZX6YzmQR/" className="text-sm font-medium text-muted-foreground hover:text-foreground" target="_blank" rel="noopener noreferrer">Facebook</a>

@@ -1,0 +1,1090 @@
+{
+  "paths": [
+    {
+      "id": "path-data-analysis",
+      "slug": "data-analysis",
+      "title": "Data Analysis Learning Path",
+      "shortTitle": "Data Analysis",
+      "headline": "Transform Raw Data into Clear, Actionable Business Insights",
+      "description": "Master the complete analytical workflow from data ingestion, cleaning, and exploratory data analysis (EDA) to compelling visual storytelling using Python, Pandas, and modern visualization libraries.",
+      "detailedOverview": "The Data Analysis path is crafted for beginners, students, and professionals who want to transition from basic spreadsheets to reproducible programmatic data analytics. You will learn how to clean messy real-world datasets, compute meaningful aggregations, discover anomalies, and communicate your findings with clarity and precision.",
+      "level": "Beginner to Intermediate",
+      "duration": "8-10 Weeks",
+      "prerequisites": [
+        "Basic computer literacy",
+        "Foundational arithmetic and spreadsheet familiarity",
+        "No prior coding experience required"
+      ],
+      "targetAudience": [
+        "University students and coursemates seeking hands-on analytics skills",
+        "Junior analysts and researchers working with tabular data",
+        "Professionals looking to automate reports and upgrade from Excel to Python"
+      ],
+      "learningObjectives": [
+        "Write clean, idiomatic Python code for data processing and analysis",
+        "Manipulate complex tabular datasets with NumPy arrays and Pandas DataFrames",
+        "Diagnose, handle, and sanitize missing values, outliers, and corrupted records",
+        "Conduct thorough Exploratory Data Analysis (EDA) to uncover trends and patterns",
+        "Craft production-grade visual charts using Matplotlib, Seaborn, and Plotly",
+        "Deliver complete, reproducible analytical case studies with business recommendations"
+      ],
+      "featuredTechnologies": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "Matplotlib",
+        "Seaborn",
+        "Jupyter Notebook",
+        "SQL"
+      ],
+      "careerOpportunities": [
+        "Data Analyst",
+        "Business Intelligence Analyst",
+        "Operations Analyst",
+        "Research Analyst"
+      ],
+      "lessons": [
+        {
+          "id": "da-01",
+          "lessonNumber": 1,
+          "title": "Introduction to Data Analysis",
+          "slug": "introduction-to-data-analysis",
+          "duration": "45 mins",
+          "difficulty": "Beginner",
+          "access": "Free",
+          "summary": "Understand the end-to-end data lifecycle: how questions turn into data requirements, analysis, and strategic decisions.",
+          "learningObjectives": [
+            "Define the core stages of the data analysis lifecycle",
+            "Distinguish between descriptive, diagnostic, predictive, and prescriptive analytics",
+            "Set up your local analytical environment with VS Code and Jupyter"
+          ],
+          "keyTopics": [
+            "What is Data Analysis in modern industry?",
+            "The Analytical Mindset: Asking the right questions",
+            "Analytical Workflow: Problem formulation → Collection → Ingestion → Cleaning → Insights",
+            "Tooling setup: Python 3, Anaconda, Jupyter Notebooks"
+          ],
+          "practicalExercise": {
+            "title": "Formulate an Analytical Brief",
+            "instructions": "Select an industry domain (Retail, FinTech, Healthcare). Define three core business metrics, draft 5 exploratory hypotheses, and outline required data columns.",
+            "datasetHint": "Use any public business case or your own project concept."
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Verifying your Python & analytical environment setup",
+            "code": "import sys\nimport pandas as pd\nimport numpy as np\n\nprint(f'Python version: {sys.version}')\nprint(f'Pandas version: {pd.__version__}')\nprint(f'NumPy version: {np.__version__}')\nprint('Environment is ready for data exploration!')"
+          },
+          "resources": [
+            {
+              "name": "Analytical Workflow Cheatsheet (PDF)",
+              "type": "pdf",
+              "url": "/learning-hub/resources#workflow-cheatsheet"
+            },
+            {
+              "name": "Environment Setup Guide",
+              "type": "link",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "da-02",
+          "lessonNumber": 2,
+          "title": "Python Fundamentals for Data Analysis",
+          "slug": "python-fundamentals-for-data-analysis",
+          "duration": "1 hr 15 mins",
+          "difficulty": "Beginner",
+          "access": "Free",
+          "summary": "Master the essential Python language constructs specifically tailored for data manipulation without unnecessary software engineering bloat.",
+          "learningObjectives": [
+            "Master data structures: lists, dictionaries, tuples, and sets",
+            "Implement control flow, loops, and list comprehensions efficiently",
+            "Write modular functions and lambda expressions for data transforms"
+          ],
+          "keyTopics": [
+            "Core data types: integers, floats, strings, booleans",
+            "Data structures for analysts: dict of lists vs list of dicts",
+            "List and dictionary comprehensions for rapid transformation",
+            "Writing defensive helper functions with type hints and docstrings"
+          ],
+          "practicalExercise": {
+            "title": "Raw Record Parser & Aggregator",
+            "instructions": "Given a list of raw transaction strings, write a function that parses currency symbols, converts timestamps, and calculates average spend per category.",
+            "datasetHint": "Synthetic transaction list provided in the lesson notebook."
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Filtering and transforming data with list comprehensions",
+            "code": "raw_sales = [120.50, 45.00, 230.10, 89.90, 510.00, 32.50]\n# Calculate tax-adjusted total for transactions exceeding $50\ntax_rate = 0.16\nfiltered_sales = [\n    round(amount * (1 + tax_rate), 2) \n    for amount in raw_sales \n    if amount > 50.0\n]\nprint(f'Qualified adjusted transactions: {filtered_sales}')"
+          },
+          "resources": [
+            {
+              "name": "Python for Data Analysis QuickRef",
+              "type": "notebook",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "da-03",
+          "lessonNumber": 3,
+          "title": "NumPy and Pandas",
+          "slug": "numpy-and-pandas",
+          "duration": "1 hr 45 mins",
+          "difficulty": "Beginner",
+          "access": "Free",
+          "summary": "The backbone of modern data science. Learn vectorized array computations in NumPy and DataFrame indexing, slicing, and grouping in Pandas.",
+          "learningObjectives": [
+            "Harness NumPy arrays for high-performance vectorized operations",
+            "Load, inspect, slice, and query Pandas Series and DataFrames",
+            "Group, aggregate, pivot, and merge disparate tabular datasets"
+          ],
+          "keyTopics": [
+            "NumPy ndarrays, broadcasting, and universal functions",
+            "Pandas Series vs DataFrame architecture",
+            "Reading from CSV, Excel, Parquet, and SQL connections",
+            "Selection with .loc, .iloc, and boolean mask filtering",
+            "Grouping with .groupby() and calculating multi-metric summaries"
+          ],
+          "practicalExercise": {
+            "title": "Store Revenue Segmentation",
+            "instructions": "Load a multi-branch retail dataset. Group by region and quarter to identify the top 3 highest-margin product lines.",
+            "datasetHint": "sample_retail_data.csv available in practice datasets."
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Grouping and aggregations in Pandas",
+            "code": "import pandas as pd\n\ndf = pd.read_csv('sample_retail.csv')\n# Performance metrics by category and region\nsummary = df.groupby(['Region', 'Category']).agg({\n    'Revenue': ['sum', 'mean'],\n    'Quantity': 'sum',\n    'OrderID': 'nunique'\n}).rename(columns={'nunique': 'TransactionCount'})\n\nprint(summary.head(10))"
+          },
+          "resources": [
+            {
+              "name": "Pandas DataFrame Master Cheatsheet",
+              "type": "pdf",
+              "url": "/learning-hub/resources"
+            },
+            {
+              "name": "Hands-on Pandas Lab Notebook",
+              "type": "notebook",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "da-04",
+          "lessonNumber": 4,
+          "title": "Data Cleaning and Preparation",
+          "slug": "data-cleaning-and-preparation",
+          "duration": "2 hrs",
+          "difficulty": "Intermediate",
+          "access": "Premium",
+          "summary": "Real data is messy, incomplete, and inconsistent. Learn systematic pipelines to handle missing data, duplicate rows, data type coercion, and text normalization.",
+          "learningObjectives": [
+            "Detect and impute missing values using statistical and domain-driven methods",
+            "Normalize string columns, strip whitespace, and parse complex dates",
+            "Detect and address outliers using IQR and Z-score methodologies"
+          ],
+          "keyTopics": [
+            "Types of missing data: MCAR, MAR, and MNAR",
+            "Imputation strategies: forward-fill, median vs mode, model imputation",
+            "String manipulation with .str accessor and regular expressions",
+            "Handling datetime columns: timezones, periodicity, and date components",
+            "Identifying duplicates and inconsistent primary keys"
+          ],
+          "practicalExercise": {
+            "title": "Dirty Patient Records Sanitization",
+            "instructions": "Take an intentionally messy healthcare survey with missing ages, corrupted date strings, and inconsistent categorical entries. Output a clean, analysis-ready DataFrame.",
+            "datasetHint": "messy_patient_records.csv"
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Robust data sanitation pipeline",
+            "code": "def clean_dataset(df):\n    # 1. Clean column names to snake_case\n    df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')\n    # 2. Parse dates with error coercion\n    df['transaction_date'] = pd.to_datetime(df['transaction_date'], errors='coerce')\n    # 3. Impute missing numericals with group median\n    df['amount'] = df.groupby('category')['amount'].transform(\n        lambda x: x.fillna(x.median())\n    )\n    # 4. Remove duplicate entries\n    return df.drop_duplicates(subset=['id'], keep='last')"
+          },
+          "resources": [
+            {
+              "name": "Data Cleaning Playbook (PDF)",
+              "type": "pdf",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "da-05",
+          "lessonNumber": 5,
+          "title": "Exploratory Data Analysis (EDA)",
+          "slug": "exploratory-data-analysis",
+          "duration": "2 hrs",
+          "difficulty": "Intermediate",
+          "access": "Free",
+          "summary": "Discover the story behind your dataset. Learn univariate, bivariate, and multivariate analysis techniques to unearth hidden distributions, relationships, and trends.",
+          "learningObjectives": [
+            "Formulate and test analytical hypotheses systematically",
+            "Analyze distributions, skewness, kurtosis, and correlation matrices",
+            "Generate actionable executive summaries backed by quantitative findings"
+          ],
+          "keyTopics": [
+            "Descriptive statistics: central tendency, variance, and quantiles",
+            "Univariate analysis: histograms, KDE plots, and box plots",
+            "Bivariate analysis: scatter plots, cross-tabulations, and correlation",
+            "Simpson's Paradox and confounding variables"
+          ],
+          "practicalExercise": {
+            "title": "Global COVID-19 Trend Exploration",
+            "instructions": "Analyze cross-country COVID-19 vaccination rates vs case fatality rates across Kenya, the US, and India, formulating 3 key policy observations.",
+            "datasetHint": "covid_tracker_subset.csv"
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Correlation matrix & distribution overview",
+            "code": "import seaborn as sns\nimport matplotlib.pyplot as plt\n\n# Compute Spearman rank correlation for non-normal features\ncorr_matrix = df[['revenue', 'marketing_spend', 'user_tenure', 'churn']].corr(method='spearman')\n\nplt.figure(figsize=(8, 6))\nsns.heatmap(corr_matrix, annot=True, cmap='Blues', fmt='.2f', square=True)\nplt.title('Feature Correlation Matrix')\nplt.tight_layout()"
+          },
+          "resources": [
+            {
+              "name": "EDA Template Notebook",
+              "type": "notebook",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "da-06",
+          "lessonNumber": 6,
+          "title": "Data Visualization using Matplotlib and Seaborn",
+          "slug": "data-visualization-using-matplotlib-and-seaborn",
+          "duration": "1 hr 30 mins",
+          "difficulty": "Intermediate",
+          "access": "Free",
+          "summary": "Move beyond default plots to produce publication-ready visualizations that communicate clearly and persuasively with executives and stakeholders.",
+          "learningObjectives": [
+            "Master Matplotlib's object-oriented API (Figure & Axes)",
+            "Leverage Seaborn for statistical styling and multi-facet grids",
+            "Apply cognitive data design principles: color harmony, annotations, and decluttering"
+          ],
+          "keyTopics": [
+            "The Matplotlib architecture: Figure, Axes, Spines, and Ticks",
+            "Seaborn themes, palettes, and FacetGrid comparisons",
+            "Choosing the right chart: Comparison, composition, distribution, relationship",
+            "Adding contextual annotations to highlight key turning points"
+          ],
+          "practicalExercise": {
+            "title": "Executive KPI Dashboard Plot",
+            "instructions": "Create a multi-panel figure comparing monthly revenue trajectory, category contribution, and customer retention drop-off with branded styling.",
+            "datasetHint": "saas_kpis_sample.csv"
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Multi-axis publication plot with Matplotlib",
+            "code": "fig, ax = plt.subplots(figsize=(10, 5), dpi=300)\nax.plot(df['Month'], df['ActiveUsers'], color='#1e3a8a', linewidth=2.5, label='Active Users')\nax.set_title('Monthly Active User Growth (2024)', fontsize=14, weight='bold', pad=15)\nax.spines['top'].set_visible(False)\nax.spines['right'].set_visible(False)\nax.grid(axis='y', linestyle='--', alpha=0.5)\nax.annotate('Marketing Campaign Launch', xy=(5, 12500), xytext=(3, 14000),\n            arrowprops=dict(facecolor='#06b6d4', shrink=0.05, width=1.5))\nplt.show()"
+          },
+          "resources": [
+            {
+              "name": "Visualization Best Practices Guide",
+              "type": "pdf",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "da-07",
+          "lessonNumber": 7,
+          "title": "Practical Data Analysis Projects",
+          "slug": "practical-data-analysis-projects",
+          "duration": "3 hrs",
+          "difficulty": "Intermediate",
+          "access": "Premium",
+          "summary": "Synthesize every skill acquired into complete, end-to-end analytical portfolios that solve tangible business questions.",
+          "learningObjectives": [
+            "Scaffold and document a portfolio-worthy data project",
+            "Translate business objectives into quantitative KPIs",
+            "Publish interactive findings on GitHub and public documentation platforms"
+          ],
+          "keyTopics": [
+            "Project scoping: Business problem statement vs Analytical question",
+            "Structuring your project repository: data/, notebooks/, reports/, src/",
+            "Writing an insightful Executive Summary in Markdown",
+            "Creating reproducible analysis with virtual environments and requirements.txt"
+          ],
+          "practicalExercise": {
+            "title": "Retail Cohort & Retention Analysis",
+            "instructions": "Execute a full cohort analysis measuring monthly retention rates across 12 months, accompanied by an executive summary slide deck.",
+            "datasetHint": "online_retail_transactions.csv"
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Cohort retention calculation matrix",
+            "code": "# Calculate cohort index and retention rate\ndef get_cohort_matrix(df):\n    df['OrderMonth'] = df['InvoiceDate'].dt.to_period('M')\n    df['Cohort'] = df.groupby('CustomerID')['OrderMonth'].transform('min')\n    cohort_data = df.groupby(['Cohort', 'OrderMonth'])['CustomerID'].nunique().reset_index()\n    cohort_data['Period'] = (cohort_data['OrderMonth'] - cohort_data['Cohort']).apply(lambda x: x.n)\n    return cohort_data.pivot(index='Cohort', columns='Period', values='CustomerID')"
+          },
+          "resources": [
+            {
+              "name": "Capstone Project Starter Repository",
+              "type": "link",
+              "url": "https://github.com/Mike-BM"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "path-data-science",
+      "slug": "data-science",
+      "title": "Data Science Learning Path",
+      "shortTitle": "Data Science",
+      "headline": "Harness Statistical Modeling and Machine Learning to Solve Complex Problems",
+      "description": "Progress from foundational statistical inference to feature engineering, supervised classification, regression, clustering, and robust model evaluation with Python and Scikit-Learn.",
+      "detailedOverview": "The Data Science path bridges rigorous statistical foundations with practical machine learning algorithms. You will learn how real algorithms work under the hood, how to prepare high-dimensional data, how to train predictive models, and how to evaluate model generalizations without succumbing to data leakage or overfitting.",
+      "level": "Intermediate to Advanced",
+      "duration": "10-12 Weeks",
+      "prerequisites": [
+        "Familiarity with Python (loops, functions, lists/dicts)",
+        "Basic knowledge of Pandas and tabular data manipulation",
+        "High school algebra and foundational probability concepts"
+      ],
+      "targetAudience": [
+        "Data analysts looking to transition into predictive machine learning",
+        "Statistics, computer science, and engineering students",
+        "Professionals developing data-driven automated prediction systems"
+      ],
+      "learningObjectives": [
+        "Understand probability distributions, hypothesis testing, and statistical significance",
+        "Implement end-to-end data preprocessing and feature engineering pipelines",
+        "Master Scikit-Learn estimators, transformers, and Pipeline workflows",
+        "Train and tune supervised learning models (Linear/Logistic, Decision Trees, Ensembles, XGBoost)",
+        "Apply unsupervised techniques including K-Means Clustering and PCA",
+        "Evaluate models rigorously using ROC-AUC, precision-recall curves, and cross-validation"
+      ],
+      "featuredTechnologies": [
+        "Python",
+        "Scikit-Learn",
+        "SciPy & Statsmodels",
+        "XGBoost",
+        "Pandas & NumPy",
+        "Matplotlib & Seaborn"
+      ],
+      "careerOpportunities": [
+        "Data Scientist",
+        "Machine Learning Engineer",
+        "Quantitative Analyst",
+        "Predictive Modeling Specialist"
+      ],
+      "lessons": [
+        {
+          "id": "ds-01",
+          "lessonNumber": 1,
+          "title": "Introduction to Data Science",
+          "slug": "introduction-to-data-science",
+          "duration": "45 mins",
+          "difficulty": "Beginner",
+          "access": "Free",
+          "summary": "Demystify data science, its intersection with economics, statistics, and machine learning, and understand the difference between inference and prediction.",
+          "learningObjectives": [
+            "Articulate the difference between data analysis, data science, and AI",
+            "Understand the distinction between statistical inference and predictive modeling",
+            "Navigate the CRISP-DM (Cross-Industry Standard Process for Data Mining) framework"
+          ],
+          "keyTopics": [
+            "The Data Science Venn Diagram: Math/Stats + Domain Knowledge + Hacking Skills",
+            "The Predictive Modeling paradigm: Features (X) → Target (y)",
+            "Problem framing: Is it regression, classification, ranking, or clustering?",
+            "Ethical AI, fairness, and bias in automated decision systems"
+          ],
+          "practicalExercise": {
+            "title": "Problem Formulation Matrix",
+            "instructions": "Given three industry scenarios (Loan defaults, Customer churn, Hospital readmission), classify each as supervised or unsupervised, state the target variable, and identify potential data leakage risks.",
+            "datasetHint": "Case studies provided in the lesson notes."
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Defining feature matrix X and target vector y",
+            "code": "# Standard Data Science framing\nX = df.drop(columns=['target_label', 'id'])\ny = df['target_label']\n\nprint(f'Feature matrix shape: {X.shape}')\nprint(f'Target distribution:\n{y.value_counts(normalize=True)}')"
+          },
+          "resources": [
+            {
+              "name": "CRISP-DM Process Map (PDF)",
+              "type": "pdf",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "ds-02",
+          "lessonNumber": 2,
+          "title": "Statistics for Data Science",
+          "slug": "statistics-for-data-science",
+          "duration": "2 hrs",
+          "difficulty": "Intermediate",
+          "access": "Free",
+          "summary": "Master the statistical fundamentals essential for solid data science: probability distributions, central limit theorem, confidence intervals, and hypothesis testing.",
+          "learningObjectives": [
+            "Compute and interpret probability distributions (Normal, Binomial, Poisson)",
+            "Formulate null (H0) and alternative (H1) hypotheses",
+            "Execute and interpret Student's t-tests, Chi-square tests, and ANOVA in Python"
+          ],
+          "keyTopics": [
+            "Population vs Sample; Sampling bias and Central Limit Theorem",
+            "Measures of spread: Variance, standard deviation, interquartile range",
+            "P-values, significance levels (alpha), and Type I vs Type II errors",
+            "A/B testing basics and sample size estimation"
+          ],
+          "practicalExercise": {
+            "title": "E-Commerce A/B Test Significance Analysis",
+            "instructions": "Determine whether a new checkout design produced a statistically significant increase in conversion rate using two-proportion z-test.",
+            "datasetHint": "ab_testing_experiment_results.csv"
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Conducting hypothesis tests with SciPy",
+            "code": "from scipy import stats\n\n# Independent two-sample t-test\ngroup_a = df[df['variant'] == 'control']['spending']\ngroup_b = df[df['variant'] == 'treatment']['spending']\n\nt_stat, p_val = stats.ttest_ind(group_a, group_b, equal_var=False)\nprint(f'T-statistic: {t_stat:.4f}, p-value: {p_val:.4e}')\nif p_val < 0.05:\n    print('Reject null hypothesis: Significant difference detected!')"
+          },
+          "resources": [
+            {
+              "name": "Statistics Formula & Reference Sheet",
+              "type": "pdf",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "ds-03",
+          "lessonNumber": 3,
+          "title": "Data Preprocessing",
+          "slug": "data-preprocessing",
+          "duration": "1 hr 45 mins",
+          "difficulty": "Intermediate",
+          "access": "Free",
+          "summary": "Transform raw datasets into machine-readable numerical matrices using scaling, encoding, and train-test splits without data leakage.",
+          "learningObjectives": [
+            "Properly split data into train, validation, and test partitions",
+            "Scale numerical features using StandardScaler, MinMaxScaler, and RobustScaler",
+            "Encode categorical variables with One-Hot, Ordinal, and Target Encoding"
+          ],
+          "keyTopics": [
+            "Train-test split strategies and stratification for imbalanced targets",
+            "Data leakage: Why fit_transform must only run on training data",
+            "Feature scaling: When to standardize vs when to normalize",
+            "Handling high-cardinality categorical features"
+          ],
+          "practicalExercise": {
+            "title": "Build a Leakage-Free Preprocessing Pipeline",
+            "instructions": "Construct a clean Scikit-Learn ColumnTransformer that handles mixed numerical and categorical features for a loan approval dataset.",
+            "datasetHint": "loan_approval_dataset.csv"
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Scikit-Learn ColumnTransformer pipeline",
+            "code": "from sklearn.compose import ColumnTransformer\nfrom sklearn.preprocessing import StandardScaler, OneHotEncoder\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\n\nnum_pipeline = Pipeline([\n    ('imputer', SimpleImputer(strategy='median')),\n    ('scaler', StandardScaler())\n])\n\ncat_pipeline = Pipeline([\n    ('imputer', SimpleImputer(strategy='most_frequent')),\n    ('encoder', OneHotEncoder(handle_unknown='ignore'))\n])\n\npreprocessor = ColumnTransformer(transformers=[\n    ('num', num_pipeline, ['age', 'income', 'credit_score']),\n    ('cat', cat_pipeline, ['employment_type', 'education'])\n])"
+          },
+          "resources": [
+            {
+              "name": "Scikit-Learn Preprocessing Lab Notebook",
+              "type": "notebook",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "ds-04",
+          "lessonNumber": 4,
+          "title": "Feature Engineering",
+          "slug": "feature-engineering",
+          "duration": "2 hrs",
+          "difficulty": "Intermediate",
+          "access": "Premium",
+          "summary": "Feature engineering is where domain expertise meets mathematical creativity. Learn how to craft predictive signals that drastically improve model accuracy.",
+          "learningObjectives": [
+            "Extract datetime, periodic, and cyclical features (sin/cos transforms)",
+            "Generate interaction terms, domain ratios, and rolling aggregations",
+            "Select the most impactful features using mutual information and recursive feature elimination (RFE)"
+          ],
+          "keyTopics": [
+            "Domain-specific ratio creation (e.g. Debt-to-Income, Price-to-Earnings)",
+            "Cyclical time features: Hour of day, day of week encoding with trigonometry",
+            "Logarithmic and Power transformations for skewed distributions",
+            "Feature selection: Filter methods, wrapper methods, and embedded importance"
+          ],
+          "practicalExercise": {
+            "title": "Wearable Biosensor Signal Feature Extraction",
+            "instructions": "Extract time-domain and frequency-domain statistical features (mean, variance, peak count) from raw skin temperature and EDA sensor readings.",
+            "datasetHint": "sensor_stress_timeseries.csv"
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Cyclical time feature engineering",
+            "code": "import numpy as np\n\n# Encode hour of day into continuous 24-hr cyclical coordinates\ndf['hour'] = df['timestamp'].dt.hour\ndf['sin_hour'] = np.sin(2 * np.pi * df['hour'] / 24.0)\ndf['cos_hour'] = np.cos(2 * np.pi * df['hour'] / 24.0)\n\n# Interaction ratio\ndf['spending_to_income_ratio'] = df['monthly_spend'] / (df['income'] + 1)"
+          },
+          "resources": [
+            {
+              "name": "Feature Engineering Cookbook (PDF)",
+              "type": "pdf",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "ds-05",
+          "lessonNumber": 5,
+          "title": "Introduction to Machine Learning",
+          "slug": "introduction-to-machine-learning",
+          "duration": "1 hr 30 mins",
+          "difficulty": "Intermediate",
+          "access": "Free",
+          "summary": "Understand the core taxonomy of machine learning: how models learn loss functions, optimize parameters, and balance the bias-variance tradeoff.",
+          "learningObjectives": [
+            "Explain the difference between parametric and non-parametric algorithms",
+            "Understand the Bias-Variance tradeoff and combat overfitting",
+            "Demystify Gradient Descent and loss optimization"
+          ],
+          "keyTopics": [
+            "The fundamental ML equation: Loss function + Regularization + Optimizer",
+            "Overfitting vs Underfitting: Identifying model diagnosis curves",
+            "Cross-validation techniques: K-Fold, Stratified K-Fold, and TimeSeriesSplit",
+            "The Scikit-Learn API: fit(), predict(), predict_proba(), and transform()"
+          ],
+          "practicalExercise": {
+            "title": "Bias-Variance Tradeoff Visualization",
+            "instructions": "Fit polynomial regression models of varying degrees (1 to 15) to noisy sine data and plot train vs validation error curves.",
+            "datasetHint": "polynomial_synthetic_lab.ipynb"
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Stratified K-Fold cross validation loop",
+            "code": "from sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.ensemble import RandomForestClassifier\n\nclf = RandomForestClassifier(n_estimators=100, random_state=42)\ncv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)\nscores = cross_val_score(clf, X, y, cv=cv, scoring='roc_auc')\n\nprint(f'Cross-validated ROC-AUC: {scores.mean():.4f} +/- {scores.std():.4f}')"
+          },
+          "resources": [
+            {
+              "name": "Machine Learning Fundamentals Cheatsheet",
+              "type": "pdf",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "ds-06",
+          "lessonNumber": 6,
+          "title": "Supervised and Unsupervised Learning",
+          "slug": "supervised-and-unsupervised-learning",
+          "duration": "2 hrs 30 mins",
+          "difficulty": "Intermediate",
+          "access": "Premium",
+          "summary": "Deep dive into core algorithms: Linear and Logistic Regression, Decision Trees, Random Forests, XGBoost, K-Means Clustering, and PCA.",
+          "learningObjectives": [
+            "Train and interpret Linear and Logistic Regression with L1/L2 penalties",
+            "Harness ensemble methods: Bagging (Random Forest) and Boosting (XGBoost)",
+            "Discover latent structures with K-Means clustering and Principal Component Analysis (PCA)"
+          ],
+          "keyTopics": [
+            "Linear regression: OLS, assumptions, Ridge, and Lasso regularization",
+            "Logistic regression: Sigmoid function, log-odds, and decision boundaries",
+            "Tree-based algorithms: Gini impurity, entropy, and feature importance",
+            "Boosting fundamentals: How XGBoost builds sequential correction trees",
+            "Clustering: Elbow method, silhouette scores, and PCA dimensionality reduction"
+          ],
+          "practicalExercise": {
+            "title": "Customer Segmentation & Churn Predictor",
+            "instructions": "First cluster customers into behavioral segments using K-Means and PCA, then train an XGBoost classifier to forecast churn risk.",
+            "datasetHint": "telecom_customer_churn.csv"
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Training an XGBoost classifier with early stopping",
+            "code": "from xgboost import XGBClassifier\nfrom sklearn.metrics import classification_report\n\nxgb = XGBClassifier(\n    n_estimators=200,\n    learning_rate=0.05,\n    max_depth=4,\n    subsample=0.8,\n    random_state=42\n)\nxgb.fit(X_train, y_train)\ny_pred = xgb.predict(X_test)\nprint(classification_report(y_test, y_pred))"
+          },
+          "resources": [
+            {
+              "name": "Supervised & Unsupervised Algorithms Handbook",
+              "type": "notebook",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "ds-07",
+          "lessonNumber": 7,
+          "title": "Model Training and Evaluation",
+          "slug": "model-training-and-evaluation",
+          "duration": "2 hrs",
+          "difficulty": "Advanced",
+          "access": "Premium",
+          "summary": "Learn why Accuracy is deceiving. Master precision, recall, F1-score, ROC-AUC, confusion matrices, and hyperparameter tuning with Optuna and GridSearchCV.",
+          "learningObjectives": [
+            "Evaluate imbalanced classification problems effectively",
+            "Interpret ROC curves, Precision-Recall curves, and choose optimal thresholds",
+            "Tune hyperparameters using RandomizedSearchCV and Bayesian optimization"
+          ],
+          "keyTopics": [
+            "Confusion Matrix anatomy: TP, FP, TN, FN",
+            "The Precision vs Recall tradeoff in clinical and fraud detection settings",
+            "ROC-AUC vs PR-AUC under severe class imbalance",
+            "Hyperparameter optimization: Grid search, Random search, and Bayesian tuning"
+          ],
+          "practicalExercise": {
+            "title": "Threshold Tuning for Fraud Detection",
+            "instructions": "Given an imbalanced fraud dataset (0.5% fraud), plot the precision-recall curve and calibrate the probability cutoff threshold to capture 90% of fraud while minimizing false alarms.",
+            "datasetHint": "credit_card_fraud_sample.csv"
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Precision-Recall curve and optimal threshold selection",
+            "code": "from sklearn.metrics import precision_recall_curve\nimport matplotlib.pyplot as plt\n\ny_probs = model.predict_proba(X_test)[:, 1]\nprecisions, recalls, thresholds = precision_recall_curve(y_test, y_probs)\n\n# Find threshold where recall is at least 0.85\nidx = np.where(recalls >= 0.85)[0][-1]\noptimal_threshold = thresholds[idx]\nprint(f'Selected Decision Cutoff: {optimal_threshold:.3f}')"
+          },
+          "resources": [
+            {
+              "name": "Model Evaluation Metrics Matrix",
+              "type": "pdf",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        },
+        {
+          "id": "ds-08",
+          "lessonNumber": 8,
+          "title": "Practical Data Science Projects",
+          "slug": "practical-data-science-projects",
+          "duration": "3 hrs",
+          "difficulty": "Advanced",
+          "access": "Premium",
+          "summary": "Bring every discipline together to deploy and showcase an end-to-end machine learning project ready for industry presentation.",
+          "learningObjectives": [
+            "Serialize and package trained models using Joblib and ONNX",
+            "Build an inference script or interactive prototype app",
+            "Document methodology, baseline comparisons, and business impact"
+          ],
+          "keyTopics": [
+            "Packaging models: joblib.dump and inference pipelines",
+            "Model explainability: Feature importances and SHAP values",
+            "Monitoring data drift and model degradation over time",
+            "Authoring an impressive GitHub project portfolio README"
+          ],
+          "practicalExercise": {
+            "title": "Full Capstone: SME Financial Distress Predictor",
+            "instructions": "Train, tune, interpret with SHAP, and export an end-to-end predictive model forecasting financial distress in SMEs.",
+            "datasetHint": "sme_financial_health.csv"
+          },
+          "codeSnippet": {
+            "language": "python",
+            "caption": "Explaining model predictions with SHAP values",
+            "code": "import shap\n\nexplainer = shap.TreeExplainer(xgb_model)\nshap_values = explainer.shap_values(X_test)\n# Summary plot of top contributing predictive factors\nshap.summary_plot(shap_values, X_test, show=False)\nplt.title('SHAP Feature Contribution Analysis', fontsize=14)\nplt.tight_layout()"
+          },
+          "resources": [
+            {
+              "name": "Data Science Capstone Blueprint",
+              "type": "notebook",
+              "url": "/learning-hub/resources"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "res-01",
+      "title": "Pandas DataFrame Master Cheatsheet",
+      "description": "Essential syntax, grouping methods, merging, and reshaping functions for everyday data manipulation.",
+      "category": "Data Analysis",
+      "type": "pdf",
+      "access": "Free",
+      "format": "PDF",
+      "fileSize": "1.2 MB",
+      "topic": "NumPy & Pandas",
+      "downloadUrl": "#",
+      "tags": ["Pandas", "Python", "Cheatsheet"]
+    },
+    {
+      "id": "res-02",
+      "title": "Exploratory Data Analysis (EDA) Starter Notebook",
+      "description": "A structured Jupyter notebook template with pre-built cells for distribution checks, outlier detection, and correlation analysis.",
+      "category": "Data Analysis",
+      "type": "notebook",
+      "access": "Free",
+      "format": "Jupyter (.ipynb)",
+      "fileSize": "850 KB",
+      "topic": "EDA",
+      "downloadUrl": "#",
+      "tags": ["EDA", "Jupyter", "Visualization"]
+    },
+    {
+      "id": "res-03",
+      "title": "Statistics & Probability Reference Guide",
+      "description": "Clear explanations of hypothesis testing, p-values, central limit theorem, and probability distributions with Python code examples.",
+      "category": "Data Science",
+      "type": "notes",
+      "access": "Free",
+      "format": "Markdown / PDF",
+      "fileSize": "2.4 MB",
+      "topic": "Statistics",
+      "downloadUrl": "#",
+      "tags": ["Statistics", "Hypothesis Testing", "Math"]
+    },
+    {
+      "id": "res-04",
+      "title": "Global COVID-19 Historical Trends Dataset",
+      "description": "Cleaned multi-country dataset tracking cases, deaths, vaccination rates, and economic indicators across Kenya, India, US, and China.",
+      "category": "Data Analysis",
+      "type": "dataset",
+      "access": "Free",
+      "format": "CSV",
+      "fileSize": "4.8 MB",
+      "topic": "Public Health",
+      "downloadUrl": "#",
+      "tags": ["Dataset", "EDA", "Healthcare"]
+    },
+    {
+      "id": "res-05",
+      "title": "Data Cleaning & Sanitation Playbook",
+      "description": "Comprehensive guide on handling messy strings, missing records, corrupted timestamps, and outlier filtering.",
+      "category": "Data Analysis",
+      "type": "pdf",
+      "access": "Free",
+      "format": "PDF",
+      "fileSize": "3.1 MB",
+      "topic": "Data Cleaning",
+      "downloadUrl": "#",
+      "tags": ["Data Cleaning", "Best Practices"]
+    },
+    {
+      "id": "res-06",
+      "title": "Scikit-Learn Machine Learning Pipeline Template",
+      "description": "End-to-end boilerplate for building leakage-free data preprocessing, model training, cross-validation, and metric reporting.",
+      "category": "Data Science",
+      "type": "notebook",
+      "access": "Free",
+      "format": "Jupyter (.ipynb)",
+      "fileSize": "1.1 MB",
+      "topic": "Machine Learning",
+      "downloadUrl": "#",
+      "tags": ["Scikit-Learn", "Pipelines", "ML"]
+    },
+    {
+      "id": "res-07",
+      "title": "African SMEs Financial Performance Dataset",
+      "description": "Curated dataset featuring balance sheet ratios, cash flow indicators, and business health ratings for SME credit analysis.",
+      "category": "Data Science",
+      "type": "dataset",
+      "access": "Premium",
+      "format": "CSV / Parquet",
+      "fileSize": "6.2 MB",
+      "topic": "Financial Analytics",
+      "downloadUrl": "#",
+      "tags": ["FinTech", "SMEs", "Machine Learning"]
+    },
+    {
+      "id": "res-08",
+      "title": "Feature Engineering Cookbook for Tabular Data",
+      "description": "In-depth guide covering cyclical encodings, target encoding, interaction terms, and automated feature selection.",
+      "category": "Data Science",
+      "type": "notes",
+      "access": "Premium",
+      "format": "PDF",
+      "fileSize": "4.5 MB",
+      "topic": "Feature Engineering",
+      "downloadUrl": "#",
+      "tags": ["Features", "Advanced ML"]
+    },
+    {
+      "id": "res-09",
+      "title": "Wearable Biosensor Stress Detection Dataset",
+      "description": "Multi-channel physiological recordings including EDA (Electrodermal Activity) and Skin Temperature labeled for stress states.",
+      "category": "Data Science",
+      "type": "dataset",
+      "access": "Premium",
+      "format": "CSV",
+      "fileSize": "12.4 MB",
+      "topic": "AI & Healthcare",
+      "downloadUrl": "#",
+      "tags": ["Sensors", "Time Series", "AI"]
+    },
+    {
+      "id": "res-10",
+      "title": "Building Executive Visual Dashboards with Python",
+      "description": "Recorded video walkthrough covering Matplotlib figure design, typography choices, and executive storytelling techniques.",
+      "category": "Data Analysis",
+      "type": "tutorial",
+      "access": "Free",
+      "format": "Video Tutorial",
+      "fileSize": "45 mins",
+      "topic": "Visualization",
+      "downloadUrl": "#",
+      "tags": ["Matplotlib", "Seaborn", "Storytelling"]
+    },
+    {
+      "id": "res-11",
+      "title": "Customer Churn Prediction Challenge & Rubric",
+      "description": "Self-assessment assignment with business background, problem statement, evaluation test script, and solution benchmark.",
+      "category": "Data Science",
+      "type": "exercise",
+      "access": "Premium",
+      "format": "Assignment (.zip)",
+      "fileSize": "2.8 MB",
+      "topic": "Model Evaluation",
+      "downloadUrl": "#",
+      "tags": ["Assignment", "Classification", "Evaluation"]
+    },
+    {
+      "id": "res-12",
+      "title": "SQL for Data Analysts: Querying & Aggregation Guide",
+      "description": "Cheat sheet of essential SQL statements: window functions, CTEs, self-joins, and aggregations for analytical reporting.",
+      "category": "Data Analysis",
+      "type": "notes",
+      "access": "Free",
+      "format": "Markdown / PDF",
+      "fileSize": "1.8 MB",
+      "topic": "SQL",
+      "downloadUrl": "#",
+      "tags": ["SQL", "Databases", "Reporting"]
+    }
+  ],
+  "workshops": [
+    {
+      "id": "ws-01",
+      "title": "Hands-on Exploratory Data Analysis & Storytelling with Python",
+      "description": "An interactive live workshop walking through real-world messy data. Participants explore an uncleaned dataset, formulate hypotheses, uncover patterns, and present visualizations.",
+      "date": "2026-11-28",
+      "time": "14:00 - 17:00 EAT",
+      "format": "Online",
+      "location": "Google Meet & Live Colab",
+      "status": "upcoming",
+      "objectives": [
+        "Learn systematic EDA workflows for any unfamiliar dataset",
+        "Clean dirty data columns with vectorized Pandas operations",
+        "Generate publication-quality charts in Matplotlib and Seaborn",
+        "Deliver a mini data story with actionable insights"
+      ],
+      "targetAudience": "Coursemates, students, and junior analysts seeking hands-on practice",
+      "registrationOpen": true,
+      "registrationLink": "#register",
+      "access": "Free"
+    },
+    {
+      "id": "ws-02",
+      "title": "Practical Machine Learning with Scikit-Learn: From Theory to Prediction",
+      "description": "A comprehensive deep dive into training classification and regression models. Covers preprocessing pipelines, feature engineering, cross-validation, and metric evaluation.",
+      "date": "2026-12-12",
+      "time": "10:00 - 13:30 EAT",
+      "format": "Physical",
+      "location": "University Science Computing Lab, Nairobi",
+      "status": "upcoming",
+      "objectives": [
+        "Construct robust, leakage-free Scikit-Learn pipelines",
+        "Train Logistic Regression, Random Forest, and XGBoost classifiers",
+        "Evaluate models beyond accuracy: ROC-AUC and precision-recall trade-offs",
+        "Interpret feature importance to explain model decisions"
+      ],
+      "targetAudience": "Learners with basic Python knowledge looking to build predictive models",
+      "registrationOpen": true,
+      "registrationLink": "#register",
+      "access": "Free"
+    },
+    {
+      "id": "ws-03",
+      "title": "Python & Pandas Foundations for Coursemates",
+      "description": "Physical peer-led workshop for economics and statistics coursemates transitioning from theoretical statistics and Excel to computational data analysis.",
+      "date": "2026-09-14",
+      "time": "11:00 - 15:00 EAT",
+      "format": "Physical",
+      "location": "Computer Lab 4, Campus",
+      "status": "completed",
+      "objectives": [
+        "Setup Python and Jupyter environment on personal laptops",
+        "Master DataFrame slicing, grouping, and aggregations",
+        "Solve practical economics data problem sets with Pandas"
+      ],
+      "targetAudience": "Economics & Statistics undergraduate coursemates",
+      "registrationOpen": false,
+      "materialsLink": "/learning-hub/resources",
+      "access": "Free",
+      "highlightRecap": "Trained 18 coursemates on practical data manipulation, resulting in 100% of participants submitting working Python scripts for their coursework assignments."
+    },
+    {
+      "id": "ws-04",
+      "title": "Statistical Thinking & Hypothesis Testing in Practice",
+      "description": "Online interactive session demystifying statistical inference: p-values, t-tests, ANOVA, and how to avoid misleading conclusions in research projects.",
+      "date": "2026-07-22",
+      "time": "15:00 - 17:30 EAT",
+      "format": "Online",
+      "location": "Zoom Session",
+      "status": "completed",
+      "objectives": [
+        "Understand real-world implications of Central Limit Theorem",
+        "Formulate and test statistical hypotheses in Python with SciPy",
+        "Interpret analytical research papers with confidence"
+      ],
+      "targetAudience": "Undergraduate researchers and aspiring data scientists",
+      "registrationOpen": false,
+      "materialsLink": "/learning-hub/resources",
+      "access": "Free",
+      "highlightRecap": "Over 25 attendees participated in live hypothesis testing drills comparing socio-economic sample groups."
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-01",
+      "slug": "retail-cohort-retention-analysis",
+      "title": "E-Commerce Customer Behavior & Cohort Retention Analysis",
+      "category": "Data Analysis",
+      "difficulty": "Intermediate",
+      "access": "Free",
+      "problemStatement": "An e-commerce business is experiencing declining quarterly revenue despite customer acquisition spending. The leadership team needs to understand customer retention over time, identify high-value customer cohorts, and determine at which month customer churn peaks.",
+      "datasetName": "Global Online Retail Transactions (500k+ records)",
+      "datasetDescription": "Transactional dataset containing InvoiceNo, StockCode, Description, Quantity, InvoiceDate, UnitPrice, CustomerID, and Country.",
+      "datasetSize": "24.5 MB",
+      "datasetUrl": "#",
+      "technologies": ["Python", "Pandas", "NumPy", "Seaborn", "Matplotlib", "Jupyter Notebook"],
+      "stepByStepInstructions": [
+        "Load the dataset and conduct sanity checks for missing CustomerIDs, negative quantities, and canceled orders (invoices starting with 'C').",
+        "Create an 'InvoiceMonth' column and identify the first purchase month ('Cohort') for every unique CustomerID.",
+        "Calculate cohort retention by tracking active customer counts across subsequent purchase periods (Month 0 to Month 12).",
+        "Compute retention rates by dividing subsequent monthly active counts by the cohort size at Month 0.",
+        "Visualize the retention matrix using a customized Seaborn heatmap with percentage annotations.",
+        "Synthesize strategic recommendations for customer marketing retention campaigns based on drop-off trends."
+      ],
+      "expectedOutput": [
+        "Sanitized analytical DataFrame with outliers and returns treated",
+        "12x12 Monthly Cohort Retention Heatmap with color gradient",
+        "Average customer lifespan and churn velocity metrics",
+        "Structured Executive Insights report highlighting critical intervention points"
+      ],
+      "githubUrl": "https://github.com/Mike-BM",
+      "resourceLink": "/learning-hub/resources"
+    },
+    {
+      "id": "proj-02",
+      "slug": "covid-19-comparative-global-tracker",
+      "title": "Global COVID-19 Epidemiology & Vaccination Tracker",
+      "category": "Data Analysis",
+      "difficulty": "Beginner",
+      "access": "Free",
+      "problemStatement": "Public health agencies require comparative empirical data across distinct developing and developed countries (Kenya, India, US, and China) to evaluate the relationship between vaccination coverage, case fatality ratios, and government intervention timelines.",
+      "datasetName": "Our World In Data COVID-19 Cross-Country Panel",
+      "datasetDescription": "Time-series daily recordings of confirmed cases, tests, deaths, fully vaccinated population shares, and GDP per capita.",
+      "datasetSize": "8.2 MB",
+      "datasetUrl": "#",
+      "technologies": ["Python", "Pandas", "Matplotlib", "Seaborn", "Plotly", "Statistical Testing"],
+      "stepByStepInstructions": [
+        "Filter and standardize data for the four focus countries across a 2-year timeline.",
+        "Handle missing reporting dates and calculate 7-day rolling averages to smooth weekend reporting lags.",
+        "Compute Case Fatality Rate (CFR = total deaths / confirmed cases) and Vaccination Rate over time.",
+        "Construct side-by-side time-series comparison charts highlighting pandemic waves.",
+        "Conduct Spearman correlation analysis between vaccination milestones and subsequent hospitalizations.",
+        "Draft an empirical case study memo documenting public health takeaways."
+      ],
+      "expectedOutput": [
+        "7-day smoothed trendlines showing comparative wave trajectories",
+        "Correlation matrix between vaccination rollout speed and fatality attenuation",
+        "Comparative summary table with peak case periods and recovery indices",
+        "Clean Jupyter Notebook following analytical storytelling guidelines"
+      ],
+      "githubUrl": "https://github.com/Mike-BM/Covid-19-Global-Data-Tracker.git",
+      "resourceLink": "https://app.notion.com/p/Covid-19-Analysis-Case-Study-3d0dbc2e564d80d68f01c570f9b778ea"
+    },
+    {
+      "id": "proj-03",
+      "slug": "fintech-sme-distress-prediction",
+      "title": "FinTech Early Warning System: SME Financial Distress Classifier",
+      "category": "Data Science",
+      "difficulty": "Advanced",
+      "access": "Premium",
+      "problemStatement": "African small and medium enterprises (SMEs) face liquidity constraints that often lead to loan default or insolvency. Traditional credit bureaus lack adequate data. We need a machine learning classifier that examines alternative accounting indicators, cash velocity, and expense ratios to forecast distress 6 months in advance.",
+      "datasetName": "African SMEs Financial Metrics & Health Ratings",
+      "datasetDescription": "Panel dataset of 3,500 SME fiscal records with 28 balance sheet and cash flow features.",
+      "datasetSize": "14.1 MB",
+      "datasetUrl": "#",
+      "technologies": ["Python", "Scikit-Learn", "XGBoost", "SHAP", "Pandas", "Seaborn"],
+      "stepByStepInstructions": [
+        "Perform exploratory data analysis on financial ratios: Current Ratio, Debt-to-Equity, Cash Burn Rate, and Profit Margin.",
+        "Apply power transformations to mitigate high skewness in revenue figures.",
+        "Implement a Stratified 5-Fold cross-validation strategy to prevent training leakage.",
+        "Train baseline Logistic Regression and benchmark against Random Forest and XGBoost classifiers.",
+        "Tune XGBoost hyperparameters with Bayesian optimization focusing on PR-AUC due to class imbalance.",
+        "Calculate SHAP (SHapley Additive exPlanations) values to explain individual enterprise risk scores to credit underwriters."
+      ],
+      "expectedOutput": [
+        "Trained classification model achieving > 0.88 ROC-AUC on holdout test set",
+        "SHAP summary plot illustrating the most influential risk drivers",
+        "Interactive risk classification function taking SME balance sheet inputs",
+        "Model governance documentation detailing false positive vs false negative financial impact"
+      ],
+      "githubUrl": "https://github.com/Mike-BM/FinSight-AI.git",
+      "resourceLink": "https://app.notion.com/p/FINSIGHT-AI-3d1dbc2e564d80f68458cab2a1e1f18b"
+    },
+    {
+      "id": "proj-04",
+      "slug": "sensor-stress-detection-ai",
+      "title": "Biosensor Signal Processing & Stress Detection with AI",
+      "category": "Data Science",
+      "difficulty": "Intermediate",
+      "access": "Premium",
+      "problemStatement": "Continuous physiological monitoring enables non-invasive mental health and stress assessment. Using time-series electrodermal activity (EDA) and skin temperature signals, build a machine learning model capable of distinguishing acute stress states from baseline physiological rest.",
+      "datasetName": "Wearable EDA & Temperature Sensor Signals (WESAD Protocol)",
+      "datasetDescription": "High-frequency sensor stream recordings annotated with psychological stress protocol labels.",
+      "datasetSize": "18.6 MB",
+      "datasetUrl": "#",
+      "technologies": ["Python", "SciPy", "Scikit-Learn", "Random Forest", "KMeans", "PCA"],
+      "stepByStepInstructions": [
+        "Filter and smooth raw biometric sensor streams using butterworth low-pass filters.",
+        "Segment continuous signals into 30-second sliding windows with 50% overlap.",
+        "Extract statistical features per window: Mean, Standard Deviation, Min/Max, Peak Count, and Spectral Energy.",
+        "Apply PCA (Principal Component Analysis) to visualize physiological cluster separation in 2D space.",
+        "Train an ensemble classifier (Random Forest) to predict stress states.",
+        "Evaluate model performance across user-independent leave-one-subject-out (LOSO) validation."
+      ],
+      "expectedOutput": [
+        "Feature extraction script transforming raw continuous signals into tabular matrices",
+        "PCA 2D projection scatter plot showing baseline vs stress separation",
+        "Confusion matrix and classification report across independent test subjects",
+        "Technical writeup linking findings to UN Sustainable Development Goal 3 (Good Health and Well-being)"
+      ],
+      "githubUrl": "https://github.com/Mike-BM/Stress-Detection-With-AI-.git",
+      "resourceLink": "https://app.notion.com/p/STRESS-DETECTION-WITH-AI-3d0dbc2e564d80148355cc4f505afbbb"
+    }
+  ],
+  "learnerShowcase": [
+    {
+      "id": "ls-01",
+      "learnerName": "Kevin Mwangi",
+      "role": "Economics Coursemate & Aspiring Analyst",
+      "cohort": "Campus Data Analytics Cohort 2024",
+      "projectTitle": "Mobile Money Fraud Pattern Detector",
+      "description": "Built an anomaly detection pipeline analyzing synthetic M-Pesa transaction records to flag fraudulent transfers, achieving 94% precision on abnormal transaction frequencies.",
+      "technologies": ["Python", "Pandas", "Scikit-Learn", "Isolation Forest"],
+      "githubUrl": "https://github.com",
+      "quote": "Brian's hands-on approach completely changed how I look at coding. He broke down complex Pandas indexing and made sure everyone in our study group actually wrote and tested code rather than just reading slides.",
+      "publishedWithConsent": true
+    },
+    {
+      "id": "ls-02",
+      "learnerName": "Faith Muthoni",
+      "role": "Healthcare Data Specialist",
+      "cohort": "Peer Mentorship Group 2025",
+      "projectTitle": "Maternal Health Clinic Patient Flow Analysis",
+      "description": "Cleaned and modeled patient queue and waiting time records across 4 rural clinics, creating an executive dashboard that identified key bottleneck hours and recommended staff reallocation.",
+      "technologies": ["Python", "Seaborn", "Statsmodels", "Matplotlib"],
+      "githubUrl": "https://github.com",
+      "quote": "I struggled with data cleaning until Brian walked me through his systematic approach to missing values and categorical normalization. His mentorship gave me the confidence to present my findings directly to clinical directors.",
+      "publishedWithConsent": true
+    },
+    {
+      "id": "ls-03",
+      "learnerName": "David Kiprop",
+      "role": "Statistics Coursemate",
+      "cohort": "Campus Machine Learning Lab 2024",
+      "projectTitle": "Agricultural Commodity Price Forecasting",
+      "description": "Constructed an econometric time-series analysis exploring maize and wheat price fluctuations in Kenyan wholesale markets using lag features and rolling seasonal indicators.",
+      "technologies": ["Python", "NumPy", "Pandas", "Scipy", "Matplotlib"],
+      "githubUrl": "https://github.com",
+      "quote": "Brian's ability to bridge statistical theory with real Python code is exceptional. He helped me translate complex classroom formulas into working code for my final year research project.",
+      "publishedWithConsent": true
+    },
+    {
+      "id": "ls-04",
+      "learnerName": "Mercy Chebet",
+      "role": "Junior Business Analyst",
+      "cohort": "Peer Mentorship Group 2025",
+      "projectTitle": "Retail Inventory Turnover Optimization",
+      "description": "Developed a dynamic inventory replenishment notebook that classifies SKUs into ABC velocity tiers and projects stockout risk 30 days in advance.",
+      "technologies": ["Python", "Pandas", "Plotly", "Excel Integration"],
+      "githubUrl": "https://github.com",
+      "quote": "Working with Brian taught me how to think like a decision-maker. It wasn't just about writing code; it was about communicating what the numbers actually mean for a business.",
+      "publishedWithConsent": true
+    }
+  ]
+}
