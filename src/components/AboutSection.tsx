@@ -2,6 +2,7 @@
 
 import { ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
+import { FormattedText } from "@/components/FormattedText";
 
 export function AboutSection() {
   const [aboutTitle, setAboutTitle] = useState("About Me");
@@ -40,11 +41,7 @@ export function AboutSection() {
                   <div className="h-4 bg-muted rounded w-5/6"></div>
                 </div>
               ) : aboutContent ? (
-                aboutContent.split('\n').map((paragraph, index) => (
-                  paragraph.trim() && (
-                    <p key={index} dangerouslySetInnerHTML={{ __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-                  )
-                ))
+                <FormattedText text={aboutContent} />
               ) : (
                 <p>Failed to load about section.</p>
               )}

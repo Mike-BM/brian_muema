@@ -1,5 +1,7 @@
 "use client";
 
+import { FormattedText } from "@/components/FormattedText";
+
 import { GraduationCap, Award, Briefcase, Globe, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -140,8 +142,8 @@ export function ExperienceSection() {
                     </div>
                   </div>
                   {exp.description && (
-                    <div className="mt-4 pt-4 border-t border-border/50 text-muted-foreground whitespace-pre-line">
-                      {exp.description}
+                    <div className="mt-4 pt-4 border-t border-border/50 text-muted-foreground">
+                      <FormattedText text={exp.description} />
                     </div>
                   )}
                 </div>
@@ -194,8 +196,8 @@ export function ExperienceSection() {
                         </div>
                       </div>
                       {exp.description && (
-                        <div className="mt-4 pt-4 border-t border-border/50 text-muted-foreground whitespace-pre-line">
-                          {exp.description}
+                        <div className="mt-4 pt-4 border-t border-border/50 text-muted-foreground">
+                          <FormattedText text={exp.description} />
                         </div>
                       )}
                     </div>

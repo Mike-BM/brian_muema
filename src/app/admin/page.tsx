@@ -1053,12 +1053,12 @@ export default function AdminPage() {
                 
                 <div>
                   <label htmlFor="description" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Short Description <span className="text-red-500">*</span></label>
-                  <textarea required id="description" name="description" value={formData.description} onChange={handleInputChange} rows={2} placeholder="Brief summary (shown on card)..." className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                  <textarea required id="description" name="description" value={formData.description} onChange={handleInputChange} rows={3} placeholder="Brief summary (shown on card). Press Enter twice for a new paragraph." maxLength={2000} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
                 </div>
                 
                 <div>
                   <label htmlFor="fullDescription" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Description</label>
-                  <textarea id="fullDescription" name="fullDescription" value={formData.fullDescription} onChange={handleInputChange} rows={4} placeholder="Detailed project description..." className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                  <textarea id="fullDescription" name="fullDescription" value={formData.fullDescription} onChange={handleInputChange} rows={8} placeholder="Detailed project description. Press Enter twice to start a new paragraph; **text** makes bold." maxLength={10000} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
@@ -1367,7 +1367,7 @@ export default function AdminPage() {
 
                 <div>
                   <label htmlFor="description" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Description</label>
-                  <textarea id="description" name="description" value={expFormData.description} onChange={handleExpInputChange} rows={3} placeholder="Key responsibilities..." className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
+                  <textarea id="description" name="description" value={expFormData.description} onChange={handleExpInputChange} rows={6} placeholder="Key responsibilities. Press Enter twice for a new paragraph." maxLength={10000} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow" />
                 </div>
                 
                 {expFormData.type === 'Formal' ? (
@@ -1623,7 +1623,8 @@ export default function AdminPage() {
                   </div>
                   <div>
                     <label htmlFor="aboutContent" className="block text-sm font-medium mb-1">About Me Text (Supports **bold**)</label>
-                    <textarea id="aboutContent" rows={5} value={aboutContent} onChange={(e) => setAboutContent(e.target.value)} className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary resize-none" />
+                    <textarea id="aboutContent" rows={12} value={aboutContent} onChange={(e) => setAboutContent(e.target.value)} maxLength={20000} placeholder="Write your about text. Press Enter twice to start a new paragraph. Use **double asterisks** for bold." className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary resize-y" />
+                    <p className="text-xs text-muted-foreground mt-1">Tip: press Enter twice to leave a blank line between paragraphs. Wrap words in **double asterisks** to make them bold.</p>
                   </div>
                   <button type="submit" className="bg-indigo-600 text-white font-medium px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors self-start">
                     Save Changes

@@ -1,5 +1,7 @@
 "use client";
 
+import { FormattedText } from "@/components/FormattedText";
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -139,7 +141,7 @@ export function ProjectsSection() {
                     )}
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-3">{project.title}</h3>
-                  <p className="text-muted-foreground mb-4">{project.description}</p>
+                  <FormattedText text={project.description} className="text-muted-foreground mb-4" />
                   
                   {project.fullDescription && (
                     <div className="mb-4">
@@ -151,8 +153,8 @@ export function ProjectsSection() {
                         {expandedId === project.id ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                       </button>
                       {expandedId === project.id && (
-                        <div className="mt-3 p-4 bg-muted/50 rounded-md text-sm text-foreground whitespace-pre-line border border-border">
-                          {project.fullDescription}
+                        <div className="mt-3 p-4 bg-muted/50 rounded-md text-sm text-foreground border border-border">
+                          <FormattedText text={project.fullDescription} />
                         </div>
                       )}
                     </div>
