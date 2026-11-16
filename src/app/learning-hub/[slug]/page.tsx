@@ -1,21 +1,22 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { getLearningHubData, getLearningPathBySlug } from "@/lib/learning-hub-data";
+import { getLearningHubData, getLearningPathBySlug, isLearningHubLive } from "@/lib/learning-hub-data";
 import { PathDetailView } from "@/components/learning-hub/PathDetailView";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  return [
-    { slug: "data-analysis" },
-    { slug: "data-science" },
-  ];
-}
+// Rendered per request so the Live / Stay-tuned switch in the admin applies immediately.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+
+  if (!(await isLearningHubLive())) {
+    return { title: "Learning Hub | Brian Muema Michael", robots: { index: false, follow: false } };
+  }
+
   const path = await getLearningPathBySlug(slug);
 
   if (!path) {
@@ -40,6 +41,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function LearningPathDetailPage({ params }: PageProps) {
   const { slug } = await params;
+
+  // Not live yet: send visitors to the "Stay tuned" page without loading any content.
+  if (!(await isLearningHubLive())) {
+    redirect("/learning-hub");
+  }
+
   const data = await getLearningHubData();
   const path = data.paths.find((p) => p.slug === slug);
 

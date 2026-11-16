@@ -1,6 +1,10 @@
 import { MetadataRoute } from 'next';
+import { isLearningHubLive } from '@/lib/learning-hub-data';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const dynamic = 'force-dynamic';
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const learningHubLive = await isLearningHubLive();
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://brianmuema.com';
 
   return [
@@ -16,19 +20,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
-    {
-      url: `${baseUrl}/learning-hub/data-analysis`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/learning-hub/data-science`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-
+    ...(learningHubLive
+      ? [
+          { url: `${baseUrl}/learning-hub/data-analysis`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
+          { url: `${baseUrl}/learning-hub/data-science`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
+        ]
+      : []),
     {
       url: `${baseUrl}/privacy`,
       lastModified: new Date(),

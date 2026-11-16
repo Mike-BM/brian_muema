@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getLearningHubData } from "@/lib/learning-hub-data";
+import { getLearningHubData, isLearningHubLive } from "@/lib/learning-hub-data";
+import { LearningHubComingSoon } from "@/components/learning-hub/LearningHubComingSoon";
 import { LearningHubHero } from "@/components/learning-hub/LearningHubHero";
 import { LearningPathsSection } from "@/components/learning-hub/LearningPathsSection";
 import { LearningResourcesSection } from "@/components/learning-hub/LearningResourcesSection";
@@ -13,7 +14,7 @@ import { LearningContactSection } from "@/components/learning-hub/LearningContac
 export const metadata: Metadata = {
   title: "Learning Hub | Brian Muema Michael",
   description:
-    "Learn by Doing. Build with Data. Structured learning paths, open resources, interactive workshops, and hands-on capstone projects in Data Analysis and Data Science.",
+    "Learning Hub coming soon. A space for practical learning in Data Analysis and Data Science. Stay tuned.",
   openGraph: {
     title: "Learning Hub | Learn by Doing. Build with Data.",
     description:
@@ -27,7 +28,15 @@ export const metadata: Metadata = {
   },
 };
 
+// Always evaluate on the server per request so the admin switch takes effect immediately.
+export const dynamic = "force-dynamic";
+
 export default async function LearningHubPage() {
+  // Not live yet: show the "Stay tuned" page and never even load the content.
+  if (!(await isLearningHubLive())) {
+    return <LearningHubComingSoon />;
+  }
+
   const data = await getLearningHubData();
 
   return (

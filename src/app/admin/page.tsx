@@ -19,7 +19,8 @@ import {
   LogOut, 
   GraduationCap,
   Layers,
-  ExternalLink
+  ExternalLink,
+  BookOpen
 } from "lucide-react";
 import { LearningHubAdmin } from "@/components/admin/LearningHubAdmin";
 
@@ -88,6 +89,7 @@ export default function AdminPage() {
   const [learningStats, setLearningStats] = useState({ resources: 0, workshops: 0, showcases: 0, projects: 0 });
 
   const [maintenance, setMaintenance] = useState(false);
+  const [learningHubLive, setLearningHubLive] = useState(false);
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [aboutTitle, setAboutTitle] = useState("About Me");
   const [aboutContent, setAboutContent] = useState("");
@@ -202,7 +204,8 @@ export default function AdminPage() {
       const res = await fetch(`/api/settings?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        setMaintenance(data.maintenance);
+        setMaintenance(data.maintenance === true);
+        setLearningHubLive(data.learningHubLive === true);
       }
     } catch (error) {
       console.error('Failed to fetch settings', error);
@@ -478,6 +481,22 @@ export default function AdminPage() {
     } catch (error) {
       console.error('Failed to update maintenance mode', error);
       setMaintenance(!newValue); // revert
+    }
+  };
+
+  const handleLearningHubToggle = async () => {
+    const newValue = !learningHubLive;
+    setLearningHubLive(newValue);
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ learningHubLive: newValue }),
+      });
+      if (!res.ok) throw new Error('Request failed');
+    } catch (error) {
+      console.error('Failed to update Learning Hub visibility', error);
+      setLearningHubLive(!newValue); // revert
     }
   };
 
@@ -1534,6 +1553,33 @@ export default function AdminPage() {
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
                       maintenance ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Learning Hub visibility */}
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6 rounded-xl flex items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-bold flex items-center mb-1">
+                    <BookOpen className="mr-2 h-5 w-5" /> Learning Hub: {learningHubLive ? 'Live' : 'Stay Tuned'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {learningHubLive
+                      ? 'Visitors can see all learning hub content.'
+                      : 'Visitors see a "Stay tuned" page with hints only. Your content stays hidden until you switch this on.'}
+                  </p>
+                </div>
+                <button
+                  onClick={handleLearningHubToggle}
+                  aria-label="Toggle Learning Hub visibility"
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors ${
+                    learningHubLive ? 'bg-primary' : 'bg-muted-foreground/30'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
+                      learningHubLive ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
                 </button>

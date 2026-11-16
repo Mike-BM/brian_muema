@@ -5,7 +5,8 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
 
-const LEARNING_HUB_PATH = 'public/data/learning-hub.json';
+// Stored OUTSIDE /public so the raw JSON is never downloadable from the website.
+const LEARNING_HUB_PATH = 'data/learning-hub.json';
 
 function safeParseData(content?: string): LearningHubData {
   if (!content) {

@@ -3,7 +3,9 @@ import { LearningHubData, LearningPath } from './learning-hub-types';
 import fs from 'fs/promises';
 import path from 'path';
 
-const LEARNING_HUB_PATH = 'public/data/learning-hub.json';
+// Stored OUTSIDE /public so the raw JSON is never downloadable from the website.
+const LEARNING_HUB_PATH = 'data/learning-hub.json';
+const SETTINGS_PATH = 'public/data/settings.json';
 
 export async function getLearningHubData(): Promise<LearningHubData> {
   try {
@@ -16,7 +18,7 @@ export async function getLearningHubData(): Promise<LearningHubData> {
   }
 
   try {
-    const fullPath = path.join(process.cwd(), 'public', 'data', 'learning-hub.json');
+    const fullPath = path.join(process.cwd(), 'data', 'learning-hub.json');
     const content = await fs.readFile(fullPath, 'utf8');
     return JSON.parse(content);
   } catch (err) {
@@ -36,3 +38,19 @@ export async function getLearningPathBySlug(slug: string): Promise<LearningPath 
   return data.paths.find((p) => p.slug === slug) || null;
 }
 
+
+/**
+ * The learning hub is shown to visitors only when the admin switches it Live.
+ * Until then the public sees a "Stay tuned" page. Default: NOT live.
+ */
+export async function isLearningHubLive(): Promise<boolean> {
+  try {
+    const file = await getGithubFile(SETTINGS_PATH);
+    if (file?.content) {
+      return JSON.parse(file.content).learningHubLive === true;
+    }
+  } catch (e) {
+    console.warn('Could not read learning hub visibility setting:', e);
+  }
+  return false;
+}

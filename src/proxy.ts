@@ -1,24 +1,31 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { ADMIN_COOKIE, verifySessionToken } from '@/lib/admin-auth';
+
+// GET endpoints that must only be readable by the signed-in admin
+const ADMIN_ONLY_GET = ['/api/learning-hub', '/api/credentials'];
 
 export async function proxy(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
-  
-  // Exclude public API routes that don't need auth
+
+  // Public API routes that don't need auth (contact form and the login endpoint itself)
   const isPublicApi = pathName === '/api/contact' || pathName === '/api/auth';
-  
-  // Authentication for protected API routes
-  if (pathName.startsWith('/api') && request.method !== 'GET' && !isPublicApi) {
-    const hasAdminToken = request.cookies.has('admin_token');
-    
-    if (hasAdminToken) {
+
+  if (pathName.startsWith('/api') && !isPublicApi) {
+    const needsAdmin =
+      request.method !== 'GET' || ADMIN_ONLY_GET.some((p) => pathName === p || pathName.startsWith(p + '/'));
+
+    if (needsAdmin) {
+      // The cookie must carry a valid server-signed token. Merely having a cookie is not enough.
+      const valid = await verifySessionToken(request.cookies.get(ADMIN_COOKIE)?.value);
+      if (!valid) {
+        return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+        });
+      }
       return NextResponse.next();
     }
-
-    return new NextResponse(
-      JSON.stringify({ error: 'Unauthorized' }),
-      { status: 401, headers: { 'content-type': 'application/json' } }
-    );
   }
 
   // Exclude API GET, Next.js internal, Maintenance page, and static assets

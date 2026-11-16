@@ -28,6 +28,7 @@ declare module 'lucide-react' {
   export const ChevronUp: Icon;
   export const Clock: Icon;
   export const Code2: Icon;
+  export const Compass: Icon;
   export const Copy: Icon;
   export const Database: Icon;
   export const Download: Icon;
@@ -38,6 +39,8 @@ declare module 'lucide-react' {
   export const FileSpreadsheet: Icon;
   export const FileText: Icon;
   export const Filter: Icon;
+  export const Library: Icon;
+  export const Trophy: Icon;
   export const FolderGit2: Icon;
   export const FolderPlus: Icon;
   export const Globe: Icon;

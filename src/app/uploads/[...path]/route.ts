@@ -24,7 +24,15 @@ export async function GET(
       return new NextResponse('Not Found', { status: 404 });
     }
 
+    // Block path tricks such as "..", hidden files, backslashes, and unknown file types
+    if (pathSegments.some((seg) => !seg || seg === '.' || seg === '..' || seg.startsWith('.') || /[\\\0]/.test(seg))) {
+      return new NextResponse('Not Found', { status: 404 });
+    }
+
     const subPath = pathSegments.join('/');
+    if (!MIME_TYPES[subPath.split('.').pop()?.toLowerCase() || '']) {
+      return new NextResponse('Not Found', { status: 404 });
+    }
     const relPath = `public/uploads/${subPath}`;
     
     const buffer = await getGithubBinary(relPath);
